@@ -18,6 +18,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:label="GAME"
+            android:name=".GameActivity">
+        </activity>
+
     </application>
 
 </manifest>
