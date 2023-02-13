@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ServiceApp</string>
+    <string name="zen">Emptiness is the fullness of potential…</string>
+    <string name="check_prime">CHECK PRIME</string>
+    <string name="current_random_number">CURRENT RANDOM NUMBER</string>
+    <string name="hint">Insert number here</string>
+</resources>
