@@ -13,8 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import edu.singaporetech.services.databinding.ActivityGameBinding
 
-
-class GameActivity : AppCompatActivity(), SensorEventListener {
+class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
 
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
@@ -22,34 +21,29 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var gyroscopeSensor: Sensor
     private lateinit var gameObjectView: GameObjectView
 
+    private var FPSlock = 1L
+    private var engine = GameEngine(FPSlock, this)
+
     private val handler = Handler()
-    private val updateInterval = 1L // update interval in millisecond
+
     private lateinit var fpsView: TextView
     private lateinit var dtView: TextView
 
     private val updateRunnable = object : Runnable {
-        var previousTime = System.currentTimeMillis()
-        var fpsTime = System.currentTimeMillis()
-        var deltaTime: Float = 0f
-        var frames = 0
+
 
         override fun run() {
             // Perform tasks here when the activity is updated
-            frames++
-            deltaTime = (System.currentTimeMillis() - previousTime) / 1000f
-            previousTime = System.currentTimeMillis()
+            engine.EngineUpdate()
 
-            if (System.currentTimeMillis() - fpsTime >= 1000) {
+            if (engine.getFPSUpdated()) {
                 //Log.d("Game:", "Game is Running at $frames fps")
-                fpsView?.text = "$frames FPS"
-                dtView?.text = "${deltaTime}s dt"
-                frames = 0
-                fpsTime = System.currentTimeMillis()
+                fpsView?.text = "${engine.getFPS()} FPS"
+                dtView?.text = "${engine.getDeltaTime()}s dt"
             }
             /*Log.d("ObjPos",gameObjectView.getXPosition().toString())
             Log.d("ObjPos",gameObjectView.getYPosition().toString())*/
-            onUpdate(deltaTime)
-            handler.postDelayed(this, updateInterval)
+            handler.postDelayed(this, engine.updateInterval)
         }
     }
 
@@ -63,15 +57,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TODO: GAME LOGIC HERE
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         // FIND ALL SCREEN OBJECTS
         gameObjectView =  binding.gameObject1
         fpsView =   binding.textViewFPS
         dtView =  binding.textViewDeltaTime
-
-
 
     }
 
@@ -86,7 +77,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
             SensorManager.SENSOR_DELAY_NORMAL
         )
-        handler.postDelayed(updateRunnable, updateInterval)
+        handler.postDelayed(updateRunnable, engine.updateInterval)
     }
 
     /*
@@ -126,7 +117,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             if(y.toInt() != 0)
             {
                 event?.let {
-                    gameObjectView.updatePosition(gameObjectView.getXPosition() + y * 100,0.0f)
+                    gameObjectView.updatePosition(gameObjectView.getXPosition() + y * 100,gameObjectView.getYPosition())
                 }
             }
         }
@@ -147,12 +138,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    /*
-    *
-    * */
-    private fun onUpdate(dt : Float) {
-        // Perform tasks here when the activity is updated
-        // TODO: GAME LOGIC HERE
+    override fun GameLogicInit(){
+
+    }
+    override fun PhysicsInit(){
+
+    }
+    override fun OnPhysicsUpdate(dt : Float){
+
+    }
+    override fun OnGameLogicUpdate(dt : Float){
+
     }
 
 }
