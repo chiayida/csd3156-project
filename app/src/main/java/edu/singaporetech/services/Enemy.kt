@@ -1,50 +1,72 @@
 package edu.singaporetech.services
 
-import android.content.Context.WINDOW_SERVICE
-import android.graphics.Point
+import android.util.Log
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ImageView
 
-@Suppress("DEPRECATION")
-class Enemy(private val gameActivity: GameActivity) {
+class Enemy(private val gameActivity: GameActivity) : Entity() {
+    private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
+    private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
+    private val projectiles: MutableList<Projectile> = mutableListOf()
+    private val length: Float = 200F
+
+    private var projectileTimer: Float = 1000F
+    private var projectileDelay: Float = 1000F
+
     private val imageView: ImageView
 
-    companion object {
-        private var xPos: Float = 0F
-        private var yPos: Float = 0F
-        private var length: Float = 200F
-        private var speed: Float = 1F
-    }
 
     init {
-        // Get the window manager to retrieve the screen width and height
-        val windowManager = gameActivity.getSystemService(WINDOW_SERVICE) as WindowManager
-        val display = windowManager.defaultDisplay
-        val screenWidth = Point()
-        display.getSize(screenWidth)
-
         // Initialise variables (Top-Middle of screen)
-        xPos = (screenWidth.x / 2).toFloat()
+        xPos = screenWidth / 2F
+        yPos = 0F
+        velocity = 0.5F
 
-        // Create an ImageView for the enemy
+        // Create an ImageView for the enemy (Placeholder for OpenGL texture)
         imageView = ImageView(gameActivity)
         imageView.setImageResource(R.drawable.coin)
-        gameActivity.addContentView(imageView,
-            ViewGroup.LayoutParams(length.toInt(), length.toInt()))
+        gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt()))
     }
 
-    fun update(dt : Float) {
-        xPos += speed * dt
 
-        if (xPos + length >= gameActivity.resources.displayMetrics.widthPixels) {
-            speed = -speed
-        } else if (xPos <= 0) {
-            speed = -speed
+    private fun updateShoot(dt: Float) {
+        projectileTimer -= dt
+        if (projectileTimer <= 0F) {
+            val projectile = Projectile(gameActivity, xPos)
+            projectiles.add(projectile)
+            projectileTimer = projectileDelay
+        }
+    }
+
+
+    fun update(dt: Float) {
+        // Update position
+        xPos += velocity * dt
+
+        // Enemy bugs out (snapping?) occasionally when touching the sides of the screen.
+        // Could be a ImageView issue, I am not too sure.
+        if (xPos + length >= screenWidth || xPos <= 0F) {
+            velocity = -velocity
         }
 
-        // Update image's position
+        // Update image's position (Placeholder for OpenGL texture)
         imageView.x = xPos
         imageView.y = yPos
+
+
+        // Shooting out projectile at delayed intervals
+        updateShoot(dt)
+
+
+        // Updating projectiles
+        for (projectile in projectiles) {
+            projectile.update(dt)
+
+            // Projectile out of bounds
+            if (projectile.yPos > screenHeight) {
+                // Might need to destroy the projectile, for now just remove from list
+                projectiles.remove(projectile)
+            }
+        }
     }
 }

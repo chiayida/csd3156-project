@@ -10,9 +10,11 @@ import android.os.Handler
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import edu.singaporetech.services.databinding.ActivityGameBinding
+
 
 class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
 
@@ -20,10 +22,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var binding: ActivityGameBinding
     private lateinit var sensorManager: SensorManager
     private lateinit var gameObjectView: GameObjectView
+    private lateinit var gameEnemy: Enemy
 
     private var FPSCap = 1L
     private var engine = GameEngine(FPSCap, this)
-    private lateinit var gameEnemy: Enemy
 
     private val handler = Handler()
 
@@ -52,7 +54,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
     }
 
-    //private lateinit var gLView: GameGLSurfaceView
     /*
     *
     * */
@@ -73,10 +74,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         dtView =  binding.textViewDeltaTime
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
-        gameObjectView.updatePosition(resources.displayMetrics.widthPixels.toFloat()/2
-            ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
-        direction = 0F
+
+        var screenWidth = resources.displayMetrics.widthPixels.toFloat()
+        var screenHeight = resources.displayMetrics.widthPixels.toFloat()
+
+        gameObjectView.updatePosition(screenWidth / 2,screenHeight - offsetBottom)
         gameEnemy = Enemy(this)
+
+        direction = 0F
         val rootView = findViewById<View>(android.R.id.content)
         rootView.setOnClickListener {
             Log.d(TAG,"Screen is tapped")
@@ -128,7 +133,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             val y = event.values[1]
             /*Log.d("Sensor x",x.toString())
             Log.d("Sensor y",y.toString())*/
-            // Shift the gameobj base on Y rot which is the x direction
+            // Shift the game obj base on Y rot which is the x direction
             if(y > 0.5)
             {
                 direction = 4.0f
@@ -169,14 +174,30 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     override fun GameLogicInit(){
 
     }
+
+
     override fun PhysicsInit(){
 
     }
+
+
     override fun OnPhysicsUpdate(dt : Float){
 
     }
+
+
     override fun OnGameLogicUpdate(dt : Float){
         gameEnemy.update(dt)
     }
 
+
+    // Function not working i think.
+    // ImageView is not being removed. Idky its crashing when reach bottom of screen (projectile)
+    // Hacky method to stop crashing but memory increasing when emulator is running as it is not removed.
+    // Wait for jw texture to replace all imageView (projectile + enemy)
+    fun removeView(view: View) {
+        if (view.parent != null) {
+            (view.parent as ViewGroup).removeView(view)
+        }
+    }
 }
