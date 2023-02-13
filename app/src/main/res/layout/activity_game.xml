@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textViewFPS"
@@ -36,4 +37,11 @@
         android:text="Button"
         tools:layout_editor_absoluteX="30dp"
         tools:layout_editor_absoluteY="128dp" />
+
+    <edu.singaporetech.services.GameObjectView
+        android:id="@+id/game_object_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
