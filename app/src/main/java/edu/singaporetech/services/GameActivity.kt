@@ -19,13 +19,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
     private lateinit var sensorManager: SensorManager
-    private lateinit var gyroscopeSensor: Sensor
     private lateinit var gameObjectView: GameObjectView
 
     private val handler = Handler()
     private val updateInterval = 1L // update interval in millisecond
     private lateinit var fpsView: TextView
     private lateinit var dtView: TextView
+    private var direction:Float = 0.0f
+    private var offsetBottom:Float = 250.0f
 
     private val updateRunnable = object : Runnable {
         var previousTime = System.currentTimeMillis()
@@ -48,6 +49,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             }
             /*Log.d("ObjPos",gameObjectView.getXPosition().toString())
             Log.d("ObjPos",gameObjectView.getYPosition().toString())*/
+            gameObjectView.updatePosition(gameObjectView.getXPosition() + direction
+                ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
             onUpdate(deltaTime)
             handler.postDelayed(this, updateInterval)
         }
@@ -71,8 +74,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         fpsView =   binding.textViewFPS
         dtView =  binding.textViewDeltaTime
 
-
-
+        gameObjectView = findViewById(R.id.gameObject1)
+        Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
+        gameObjectView.updatePosition(resources.displayMetrics.widthPixels.toFloat()/2
+            ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
+        fpsView = findViewById(R.id.textViewFPS)
+        dtView = findViewById(R.id.textViewDeltaTime)
+        direction = 0F
     }
 
     /*
@@ -118,17 +126,28 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             // Get the three values for the gyroscope
             val x = event.values[0]
             val y = event.values[1]
-            val z = event.values[2]
-            /*Log.d("Sensor x",x.toString())
+            Log.d("Sensor x",x.toString())
             Log.d("Sensor y",y.toString())
-            Log.d("Sensor z",z.toString())*/
             // Shift the gameobj base on Y rot which is the x direction
-            if(y.toInt() != 0)
+            if(y > 0.5)
+            {
+                direction = 4.0f
+            }
+            if(y < -0.5)
+            {
+                direction = -4.0f
+            }
+            /*if(y < 0.5f && y > -0.5)
+            {
+                direction = 0.0f
+            }*/
+            /*if(y.toInt() != 0)
             {
                 event?.let {
-                    gameObjectView.updatePosition(gameObjectView.getXPosition() + y * 100,0.0f)
+                    gameObjectView.updatePosition(gameObjectView.getXPosition() + y * 100
+                        ,resources.displayMetrics.heightPixels.toFloat() - 300.0f)
                 }
-            }
+            }*/
         }
     }
 
