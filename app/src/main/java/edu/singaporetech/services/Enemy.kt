@@ -14,7 +14,7 @@ class Enemy(private val gameActivity: GameActivity) {
         private var xPos: Float = 0F
         private var yPos: Float = 0F
         private var halfExtents: Float = 200F
-        private var speed: Float = 100F
+        private var speed: Float = 1F
     }
 
     init {
