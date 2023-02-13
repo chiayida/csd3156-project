@@ -10,10 +10,12 @@ import android.os.Handler
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import edu.singaporetech.services.databinding.ActivityGameBinding
 
 
 class GameActivity : AppCompatActivity(), SensorEventListener {
     val TAG: String = "GameActivity"
+    private lateinit var binding: ActivityGameBinding
     private lateinit var sensorManager: SensorManager
     private lateinit var gyroscopeSensor: Sensor
     private lateinit var gameObjectView: GameObjectView
@@ -49,16 +51,26 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             handler.postDelayed(this, updateInterval)
         }
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"Calling onCreate")
-        setContentView(R.layout.activity_game)
+
+        // Initialize view binding
+        binding = ActivityGameBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
+
+        // TODO: GAME LOGIC HERE
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         gameObjectView = findViewById(R.id.game_object_view)
-        // TODO: GAME LOGIC HERE
         fpsView = findViewById(R.id.textViewFPS)
         dtView = findViewById(R.id.textViewDeltaTime)
     }
+
+
     override fun onResume() {
         super.onResume()
         // Register the listener for the gyroscope sensor
@@ -69,12 +81,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         )
         handler.postDelayed(updateRunnable, updateInterval)
     }
+
+
     override fun onPause() {
         super.onPause()
         // Unregister the listener
         sensorManager.unregisterListener(this)
         handler.removeCallbacks(updateRunnable)
     }
+
+
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
             // Get the three values for the gyroscope
@@ -103,6 +119,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             Log.d(TAG, "Sensor accuracy changed to HIGH")
         }
     }
+
 
     private fun onUpdate(dt : Float) {
         // Perform tasks here when the activity is updated

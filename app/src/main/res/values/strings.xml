@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Game Project</string>
     <string name="_Play">PLAY</string>
+    <string name="_Credits">CREDITS</string>
+    <string name="_Back">BACK</string>
     <string name="todo">TODO</string>
 </resources>
