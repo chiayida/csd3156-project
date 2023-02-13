@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import edu.singaporetech.services.databinding.ActivityGameBinding
@@ -75,8 +76,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         gameObjectView.updatePosition(resources.displayMetrics.widthPixels.toFloat()/2
             ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
         direction = 0F
-
         gameEnemy = Enemy(this)
+        val rootView = findViewById<View>(android.R.id.content)
+        rootView.setOnClickListener {
+            Log.d(TAG,"Screen is tapped")
+        }
     }
 
     /*
@@ -122,8 +126,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             // Get the three values for the gyroscope
             val x = event.values[0]
             val y = event.values[1]
-            Log.d("Sensor x",x.toString())
-            Log.d("Sensor y",y.toString())
+            /*Log.d("Sensor x",x.toString())
+            Log.d("Sensor y",y.toString())*/
             // Shift the gameobj base on Y rot which is the x direction
             if(y > 0.5)
             {
