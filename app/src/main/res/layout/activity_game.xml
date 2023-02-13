@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewFPS" />
 
     <edu.singaporetech.services.GameObjectView
-        android:id="@+id/game_object_view"
+        android:id="@+id/gameObject1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
