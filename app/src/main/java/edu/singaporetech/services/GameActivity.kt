@@ -1,10 +1,10 @@
 package edu.singaporetech.services
+
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -31,7 +31,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         var deltaTime: Float = 0f
         var frames = 0
 
-
         override fun run() {
             // Perform tasks here when the activity is updated
             frames++
@@ -46,7 +45,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
                 frames = 0
                 fpsTime = System.currentTimeMillis()
             }
-
+            /*Log.d("ObjPos",gameObjectView.getXPosition().toString())
+            Log.d("ObjPos",gameObjectView.getYPosition().toString())*/
             onUpdate(deltaTime)
             handler.postDelayed(this, updateInterval)
         }
@@ -60,12 +60,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-
         // TODO: GAME LOGIC HERE
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         gameObjectView = findViewById(R.id.game_object_view)
+
         fpsView = findViewById(R.id.textViewFPS)
         dtView = findViewById(R.id.textViewDeltaTime)
     }
@@ -97,13 +95,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             val x = event.values[0]
             val y = event.values[1]
             val z = event.values[2]
-            Log.d("Sensor x",x.toString())
+            /*Log.d("Sensor x",x.toString())
             Log.d("Sensor y",y.toString())
-            Log.d("Sensor z",z.toString())
-            // Do something with the values, e.g. update a text view
-            event?.let {
-                gameObjectView.updatePosition(gameObjectView.getXPosition() + event.values[0] * 100,
-                    gameObjectView.getYPosition() + event.values[1] * 100)
+            Log.d("Sensor z",z.toString())*/
+            // Shift the gameobj base on Y rot which is the x direction
+            if(y.toInt() != 0)
+            {
+                event?.let {
+                    gameObjectView.updatePosition(gameObjectView.getXPosition() + y * 100,0.0f)
+                }
             }
         }
     }
