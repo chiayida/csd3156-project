@@ -13,7 +13,7 @@ class Enemy(private val gameActivity: GameActivity) {
     companion object {
         private var xPos: Float = 0F
         private var yPos: Float = 0F
-        private var halfExtents: Float = 200F
+        private var length: Float = 200F
         private var speed: Float = 1F
     }
 
@@ -31,15 +31,15 @@ class Enemy(private val gameActivity: GameActivity) {
         imageView = ImageView(gameActivity)
         imageView.setImageResource(R.drawable.coin)
         gameActivity.addContentView(imageView,
-            ViewGroup.LayoutParams(200, 200))
+            ViewGroup.LayoutParams(length.toInt(), length.toInt()))
     }
 
     fun update(dt : Float) {
         xPos += speed * dt
 
-        if (xPos - halfExtents >= gameActivity.resources.displayMetrics.widthPixels) {
+        if (xPos + length >= gameActivity.resources.displayMetrics.widthPixels) {
             speed = -speed
-        } else if (xPos + halfExtents <= 0) {
+        } else if (xPos <= 0) {
             speed = -speed
         }
 
