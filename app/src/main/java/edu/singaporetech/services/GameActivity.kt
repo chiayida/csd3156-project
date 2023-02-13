@@ -21,6 +21,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var gameObjectView: GameObjectView
 
+    private lateinit var gameEnemy: Enemy
+
     private val handler = Handler()
     private val updateInterval = 1L // update interval in millisecond
     private lateinit var fpsView: TextView
@@ -81,6 +83,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         fpsView = findViewById(R.id.textViewFPS)
         dtView = findViewById(R.id.textViewDeltaTime)
         direction = 0F
+
+        gameEnemy = Enemy(this)
     }
 
     /*
@@ -172,6 +176,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private fun onUpdate(dt : Float) {
         // Perform tasks here when the activity is updated
         // TODO: GAME LOGIC HERE
+
+        gameEnemy.update(dt)
     }
 
 }
