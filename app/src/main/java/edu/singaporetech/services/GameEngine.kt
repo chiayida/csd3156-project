@@ -21,7 +21,7 @@ class GameEngine constructor( val updateInterval: Long, private val listener: On
 
     fun EngineUpdate() {
         frames++
-        deltaTime = (System.currentTimeMillis() - previousTime) / 1000f
+        deltaTime = (System.currentTimeMillis() - previousTime).toFloat()
         previousTime = System.currentTimeMillis()
         FPSUpdated = false
 

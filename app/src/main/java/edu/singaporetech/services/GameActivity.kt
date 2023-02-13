@@ -41,7 +41,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             if (engine.getFPSUpdated()) {
                 //Log.d("Game:", "Game is Running at $frames fps")
                 fpsView?.text = "${engine.getFPS()} FPS"
-                dtView?.text = "${engine.getDeltaTime()}s dt"
+                dtView?.text = "${engine.getDeltaTime()}ms dt"
             }
             /*Log.d("ObjPos",gameObjectView.getXPosition().toString())
             Log.d("ObjPos",gameObjectView.getYPosition().toString())*/

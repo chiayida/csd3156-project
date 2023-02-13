@@ -13,8 +13,8 @@ class Enemy(private val gameActivity: GameActivity) {
     companion object {
         private var xPos: Float = 0F
         private var yPos: Float = 0F
-        private var length: Float = 200F
-        private var speed: Float = 500F
+        private var halfExtents: Float = 200F
+        private var speed: Float = 1F
     }
 
     init {
@@ -37,9 +37,9 @@ class Enemy(private val gameActivity: GameActivity) {
     fun update(dt : Float) {
         xPos += speed * dt
 
-        if (xPos + length >= gameActivity.resources.displayMetrics.widthPixels) {
+        if (xPos - halfExtents >= gameActivity.resources.displayMetrics.widthPixels) {
             speed = -speed
-        } else if ((xPos) <= 0) {
+        } else if (xPos + halfExtents <= 0) {
             speed = -speed
         }
 
