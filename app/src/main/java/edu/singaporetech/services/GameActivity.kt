@@ -8,12 +8,14 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import edu.singaporetech.services.databinding.ActivityGameBinding
 
 
 class GameActivity : AppCompatActivity(), SensorEventListener {
+
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
     private lateinit var sensorManager: SensorManager
@@ -21,7 +23,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var gameObjectView: GameObjectView
 
     private val handler = Handler()
-    private val updateInterval = 16L // update interval in millisecond
+    private val updateInterval = 1L // update interval in millisecond
     private lateinit var fpsView: TextView
     private lateinit var dtView: TextView
 
@@ -31,11 +33,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         var deltaTime: Float = 0f
         var frames = 0
 
-
         override fun run() {
             // Perform tasks here when the activity is updated
             frames++
-
             deltaTime = (System.currentTimeMillis() - previousTime) / 1000f
             previousTime = System.currentTimeMillis()
 
@@ -52,25 +52,31 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-
+    /*
+    *
+    * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"Calling onCreate")
 
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
         // TODO: GAME LOGIC HERE
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        gameObjectView = findViewById(R.id.game_object_view)
-        fpsView = findViewById(R.id.textViewFPS)
-        dtView = findViewById(R.id.textViewDeltaTime)
+
+        // FIND ALL SCREEN OBJECTS
+        gameObjectView =  binding.gameObject1
+        fpsView =   binding.textViewFPS
+        dtView =  binding.textViewDeltaTime
+
+
+
     }
 
-
+    /*
+    *
+    * */
     override fun onResume() {
         super.onResume()
         // Register the listener for the gyroscope sensor
@@ -82,7 +88,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         handler.postDelayed(updateRunnable, updateInterval)
     }
 
-
+    /*
+    *
+    * */
     override fun onPause() {
         super.onPause()
         // Unregister the listener
@@ -90,7 +98,20 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         handler.removeCallbacks(updateRunnable)
     }
 
+    /*
+    *
+    * */
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        Log.i("Mouse","X: ${event.x}, Y: ${event.y} ")
+        val touchX = event.x
+        val touchY = event.y
+        gameObjectView.updatePosition(touchX, touchY)
+        return super.onTouchEvent(event)
+    }
 
+    /*
+    *
+    * */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
             // Get the three values for the gyroscope
@@ -108,6 +129,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /*
+    *
+    * */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         if (accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
             Log.w(TAG, "Sensor accuracy changed to UNRELIABLE")
@@ -120,10 +144,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-
+    /*
+    *
+    * */
     private fun onUpdate(dt : Float) {
         // Perform tasks here when the activity is updated
-       // Log.d("Game:", "Game is Running at ${dt.toBigDecimal()} seconds per frame")
+        // TODO: GAME LOGIC HERE
     }
 
 }
