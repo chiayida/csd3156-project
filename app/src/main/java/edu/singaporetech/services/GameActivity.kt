@@ -9,8 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
+
 
 class GameActivity : AppCompatActivity(), SensorEventListener {
     val TAG: String = "GameActivity"
@@ -24,7 +23,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private val updateRunnable = object : Runnable {
         var previousTime = System.currentTimeMillis()
         var fpsTime = System.currentTimeMillis()
-        var deltaTime : Float = 0f
+        var deltaTime: Float = 0f
         var frames = 0
 
         override fun run() {
@@ -40,8 +39,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             onUpdate(deltaTime)
             handler.postDelayed(this, updateInterval)
         }
-    
-
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"Calling onCreate")
@@ -59,11 +57,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
             SensorManager.SENSOR_DELAY_NORMAL
         )
+        handler.postDelayed(updateRunnable, updateInterval)
     }
     override fun onPause() {
         super.onPause()
         // Unregister the listener
         sensorManager.unregisterListener(this)
+        handler.removeCallbacks(updateRunnable)
     }
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
@@ -97,16 +97,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private fun onUpdate(dt : Float) {
         // Perform tasks here when the activity is updated
         Log.d("Game:", "Game is Running at ${dt.toBigDecimal()} seconds per frame")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        handler.postDelayed(updateRunnable, updateInterval)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        handler.removeCallbacks(updateRunnable)
     }
 
 }
