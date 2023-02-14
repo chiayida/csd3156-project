@@ -9,14 +9,14 @@ import android.R
 import android.content.Context
 
 import android.graphics.Bitmap
-
-
+import android.graphics.Matrix
+import android.opengl.Matrix.multiplyMM
 
 
 const val COORDS_PER_VERTEX = 3
 const val COORDS_PER_TEXTURE = 2
 
-class GameGLSquare {
+class GameGLSquare(context: Context) {
     private var squareCoords = floatArrayOf(
         -0.5f,  0.5f, 0.0f, 0f, 0f,     // top left
         -0.5f, -0.5f, 0.0f, 0f, 1f,     // bottom left
@@ -26,8 +26,10 @@ class GameGLSquare {
     private val drawOrder = shortArrayOf(0, 1, 2, 0, 2, 3) // order to draw vertices
 
     //private var positionHandle: Int = 0
-    //private var textureHandle: Int = 0
+    private var textureHandle: Int = edu.singaporetech.services.R.drawable.coin
     private var samplerHandle: Int = 0
+
+    private val mContext: Context = context
 
     private val vertexStride: Int = (COORDS_PER_VERTEX + COORDS_PER_TEXTURE) * 4 // 4 bytes per vertex
     private val vertexBuffer: FloatBuffer =
@@ -40,61 +42,112 @@ class GameGLSquare {
             }
         }
 
-
-
     private lateinit var bufferId : IntBuffer
     private var textureId = IntArray(1)
 
-    fun init(mProgram : Int, context: Context) {
-        var intId = intArrayOf(
-            0,  0
-        )
-        bufferId =
-            ByteBuffer.allocateDirect(8).run {
-                order(ByteOrder.nativeOrder())
-                asIntBuffer().apply {
-                    put(intId)
-                    position(0)
-                }
-            }
-        GLES20.glGenBuffers(2, bufferId);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferId[0]);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, bufferId[1]);
+    var x: Float = 0f
+    var y: Float = 0f
 
-        val drawListBuffer: ShortBuffer =
-            // (# of coordinate values * 2 bytes per short)
-            ByteBuffer.allocateDirect(drawOrder.size * 2).run {
-                order(ByteOrder.nativeOrder())
-                asShortBuffer().apply {
-                    put(drawOrder)
-                    position(0)
-                }
-            }
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, 48, vertexBuffer, GLES20.GL_STATIC_DRAW);
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, 12, drawListBuffer, GLES20.GL_STATIC_DRAW);
+    var xScale: Float = 1f
+    var yScale: Float = 1f
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+    private var worldMatrix = FloatArray(16){ i ->
+        if (i % 5 == 0) 1f else 0f
+    }
+    private var resultMatrix= FloatArray(16)
 
+    companion object {
+        private var mProgram: Int = 0
 
-        glGenTextures(1, textureId, 0)
-        glBindTexture(GL_TEXTURE_2D, textureId[0])
-        val bitmap = BitmapFactory.decodeResource(context.getResources(), edu.singaporetech.services.R.drawable.coin)
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
-        bitmap.recycle()
-        samplerHandle = GLES20.glGetUniformLocation(mProgram, "u_TextureUnit")
-
-        GLES20.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        GLES20.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-        glBindTexture(GL_TEXTURE_2D, 0)
-
-        GLES20.glEnableVertexAttribArray(0)
-        GLES20.glEnableVertexAttribArray(1)
+        val toBeInitializeList: MutableList<GameGLSquare> = mutableListOf()
+        val squareList: MutableList<GameGLSquare> = mutableListOf()
+        fun InitStartSquare(program : Int) {
+            mProgram = program
+        }
     }
 
-    fun draw(mProgram : Int, mvpMatrix: FloatArray) {
+    init {
+        Init()
+    }
+
+    fun Init() {
+        if (mProgram == 0) {
+            toBeInitializeList.add(this)
+        }
+        else {
+            GLES20.glUseProgram(mProgram)
+
+            var intId = intArrayOf(
+                0,  0
+            )
+            bufferId =
+                ByteBuffer.allocateDirect(8).run {
+                    order(ByteOrder.nativeOrder())
+                    asIntBuffer().apply {
+                        put(intId)
+                        position(0)
+                    }
+                }
+            GLES20.glGenBuffers(2, bufferId);
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferId[0]);
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, bufferId[1]);
+
+            val drawListBuffer: ShortBuffer =
+                // (# of coordinate values * 2 bytes per short)
+                ByteBuffer.allocateDirect(drawOrder.size * 2).run {
+                    order(ByteOrder.nativeOrder())
+                    asShortBuffer().apply {
+                        put(drawOrder)
+                        position(0)
+                    }
+                }
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, 48, vertexBuffer, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, 12, drawListBuffer, GLES20.GL_STATIC_DRAW);
+
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+            glGenTextures(1, textureId, 0)
+            glBindTexture(GL_TEXTURE_2D, textureId[0])
+            val bitmap = BitmapFactory.decodeResource(mContext.getResources(), textureHandle)
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+            bitmap.recycle()
+            samplerHandle = GLES20.glGetUniformLocation(mProgram, "u_TextureUnit")
+
+            GLES20.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            GLES20.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_2D, 0)
+
+            GLES20.glEnableVertexAttribArray(0)
+            GLES20.glEnableVertexAttribArray(1)
+
+            squareList.add(this)
+
+            GLES20.glUseProgram(0)
+        }
+    }
+
+    fun setImageResource(id: Int) {
+        textureHandle = id
+
+        if (mProgram != 0) {
+            glBindTexture(GL_TEXTURE_2D, textureId[0])
+            val bitmap = BitmapFactory.decodeResource(mContext.getResources(), textureHandle)
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+            bitmap.recycle()
+            samplerHandle = GLES20.glGetUniformLocation(mProgram, "u_TextureUnit")
+
+            glBindTexture(GL_TEXTURE_2D, 0)
+        }
+    }
+
+    fun draw(mvpMatrix: FloatArray) {
+        worldMatrix[12] = x
+        worldMatrix[13] = y
+
+        android.opengl.Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, worldMatrix, 0)
         GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(mProgram, "uMVPMatrix"), 1, false, mvpMatrix, 0)
 
 

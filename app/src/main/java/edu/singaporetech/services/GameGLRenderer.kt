@@ -7,11 +7,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
-
     private var mContext: Context = context
-
-    private var mProgram: Int = 0
-
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
@@ -38,12 +34,23 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
                 //"   gl_FragColor = vec4(0, 0, 0, 1);\n" +
                 "}"
 
-
+    private var mProgram: Int = 0
     companion object {
+        //private var mProgram: Int = 0
+        //private lateinit var mContext: Context
+        //private val squareList: MutableList<GameGLSquare> = mutableListOf()
 
+        //fun AddSquare(): GameGLSquare {
+        //    GLES20.glUseProgram(mProgram)
+        //    //Shape Initialize
+        //    val Square = GameGLSquare()
+        //    Square.init()
+        //    GLES20.glUseProgram(0)
+        //
+        //    squareList.add(Square)
+        //    return Square
+        //}
     }
-    private lateinit var mSquare: GameGLSquare
-
 
     fun loadShader(type: Int, shaderCode: String): Int {
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
@@ -67,6 +74,8 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
+        //mContext = mTContext
+
         // Set the background frame color
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
 
@@ -89,12 +98,13 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
                 throw RuntimeException("Error linking program:\n$log")
             }
         }
+        GameGLSquare.InitStartSquare(mProgram)
 
-        GLES20.glUseProgram(mProgram)
-        //Shape Initialize
-        mSquare = GameGLSquare()
-        mSquare.init(mProgram, mContext)
-        GLES20.glUseProgram(0)
+        for (sl in GameGLSquare.toBeInitializeList) {
+            sl.Init()
+        }
+
+        GameGLSquare.toBeInitializeList.clear()
     }
 
     override fun onDrawFrame(unused: GL10) {
@@ -108,7 +118,9 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
 
         GLES20.glUseProgram(mProgram)
 
-        mSquare.draw(mProgram, vPMatrix)
+        for (sl in GameGLSquare.squareList) {
+            sl.draw(vPMatrix)
+        }
 
         GLES20.glUseProgram(0)
     }
