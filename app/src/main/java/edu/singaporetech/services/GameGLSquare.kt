@@ -1,30 +1,36 @@
 package edu.singaporetech.services
 
+import android.graphics.BitmapFactory
 import android.opengl.GLES10.*
-import android.opengl.GLES11.glVertexPointer
 import android.opengl.GLES20
-import android.opengl.GLES30
-import android.opengl.GLES30.glGenVertexArrays
+import android.opengl.GLUtils
 import java.nio.*
+import android.R
+import android.content.Context
+
+import android.graphics.Bitmap
+
+
+
 
 const val COORDS_PER_VERTEX = 3
+const val COORDS_PER_TEXTURE = 2
 
 class GameGLSquare {
-    var squareCoords = floatArrayOf(
-        -0.5f,  0.5f, 0.0f,      // top left
-        -0.5f, -0.5f, 0.0f,      // bottom left
-        0.5f, -0.5f, 0.0f,      // bottom right
-        0.5f,  0.5f, 0.0f       // top right
+    private var squareCoords = floatArrayOf(
+        -0.5f,  0.5f, 0.0f, 0f, 0f,     // top left
+        -0.5f, -0.5f, 0.0f, 0f, 1f,     // bottom left
+        0.5f, -0.5f, 0.0f,  1f, 1f,    // bottom right
+        0.5f,  0.5f, 0.0f,  1f, 0f    // top right
     )
-
     private val drawOrder = shortArrayOf(0, 1, 2, 0, 2, 3) // order to draw vertices
 
-    private var positionHandle: Int = 0
-    private var mColorHandle: Int = 0
+    //private var positionHandle: Int = 0
+    //private var textureHandle: Int = 0
+    private var samplerHandle: Int = 0
 
-    private val vertexCount: Int = squareCoords.size / COORDS_PER_VERTEX
-    private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 4 bytes per vertex
-    val vertexBuffer: FloatBuffer =
+    private val vertexStride: Int = (COORDS_PER_VERTEX + COORDS_PER_TEXTURE) * 4 // 4 bytes per vertex
+    private val vertexBuffer: FloatBuffer =
         // (# of coordinate values * 4 bytes per float)
         ByteBuffer.allocateDirect(squareCoords.size * 4).run {
             order(ByteOrder.nativeOrder())
@@ -37,19 +43,20 @@ class GameGLSquare {
 
 
     private lateinit var bufferId : IntBuffer
+    private var textureId = IntArray(1)
 
-    fun init(mProgram : Int) {
+    fun init(mProgram : Int, context: Context) {
         var intId = intArrayOf(
             0,  0
         )
         bufferId =
-        ByteBuffer.allocateDirect(8).run {
-            order(ByteOrder.nativeOrder())
-            asIntBuffer().apply {
-                put(intId)
-                position(0)
+            ByteBuffer.allocateDirect(8).run {
+                order(ByteOrder.nativeOrder())
+                asIntBuffer().apply {
+                    put(intId)
+                    position(0)
+                }
             }
-        }
         GLES20.glGenBuffers(2, bufferId);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferId[0]);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, bufferId[1]);
@@ -68,19 +75,49 @@ class GameGLSquare {
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+        glGenTextures(1, textureId, 0)
+        glBindTexture(GL_TEXTURE_2D, textureId[0])
+        val bitmap = BitmapFactory.decodeResource(context.getResources(), edu.singaporetech.services.R.drawable.coin)
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+        bitmap.recycle()
+        samplerHandle = GLES20.glGetUniformLocation(mProgram, "u_TextureUnit")
+
+        GLES20.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        GLES20.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0)
+
+        GLES20.glEnableVertexAttribArray(0)
+        GLES20.glEnableVertexAttribArray(1)
     }
 
     fun draw(mProgram : Int, mvpMatrix: FloatArray) {
         GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(mProgram, "uMVPMatrix"), 1, false, mvpMatrix, 0)
 
-        // get handle to vertex shader's vPosition member
-        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition")
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0])
+        GLES20.glUniform1i(samplerHandle, 0)
+
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(positionHandle)
-        // Prepare the triangle coordinate data
+        vertexBuffer.position(0)
+        //GLES20.glEnableVertexAttribArray(positionHandle)
         GLES20.glVertexAttribPointer(
-            positionHandle,
+            0,
             COORDS_PER_VERTEX,
+            GLES20.GL_FLOAT,
+            false,
+            vertexStride,
+            vertexBuffer
+        )
+        vertexBuffer.position(COORDS_PER_VERTEX)
+        //GLES20.glEnableVertexAttribArray(textureHandle)
+        GLES20.glVertexAttribPointer(
+            1,
+            COORDS_PER_TEXTURE,
             GLES20.GL_FLOAT,
             false,
             vertexStride,
@@ -92,7 +129,8 @@ class GameGLSquare {
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_SHORT, 0);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandle)
+        //GLES20.glDisableVertexAttribArray(textureHandle)
+        //GLES20.glDisableVertexAttribArray(positionHandle)
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);

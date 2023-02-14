@@ -54,6 +54,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
     }
 
+    private lateinit var gLView: GameGLSurfaceView
     /*
     *
     * */

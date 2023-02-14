@@ -12,7 +12,7 @@ class GameGLSurfaceView(context: Context) : GLSurfaceView(context) {
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2)
 
-        renderer = GameGLRenderer()
+        renderer = GameGLRenderer(context)
 
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(renderer)

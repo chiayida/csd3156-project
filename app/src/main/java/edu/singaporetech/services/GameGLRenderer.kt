@@ -1,35 +1,49 @@
 package edu.singaporetech.services
-import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.opengles.GL10
+import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.opengles.GL10
 
-class GameGLRenderer : GLSurfaceView.Renderer {
+class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
+
+    private var mContext: Context = context
+
     private var mProgram: Int = 0
 
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
     private val vertexShaderCode =
-        "uniform mat4 uMVPMatrix;" +
-                "attribute vec4 vPosition;" +
-                "void main() {" +
-                "  gl_Position = uMVPMatrix * " +
-                "mat4(0.1, 0., 0., 0.," +
-                "0., 0.1, 0., 0., " +
-                "0., 0., 0.1, 0.," +
-                "0., 0., 0., 1.) * vPosition;" +
-                "}"
+        "uniform mat4 uMVPMatrix;\n" +
+                "varying vec2 v_TextureCoordinates;\n" +
+                "attribute vec3 vPosition;\n" +
+                "attribute vec2 vTexture;\n" +
+                "void main() {\n" +
+                "  v_TextureCoordinates = vTexture;\n" +
+                "  gl_Position = uMVPMatrix * \n" +
+                "mat4(0.1, 0., 0., 0.,\n" +
+                "0., 0.1, 0., 0.,\n" +
+                "0., 0., 0.1, 0., 0., 0., 0., 1.) * vec4(vPosition, 1.0);\n" +
+                "}\n"
 
     private val fragmentShaderCode =
-        "precision mediump float;" +
-                "uniform vec4 vColor;" +
-                "void main() {" +
-                "  gl_FragColor = vec4(0, 0, 0, 1);" +
+        "precision mediump float;\n" +
+                "uniform sampler2D u_TextureUnit;\n" +
+                "varying vec2 v_TextureCoordinates;\n" +
+                "void main() {\n" +
+                //"   gl_FragColor = vec4(v_TextureCoordinates, 0.0, 1.0);\n" +
+                "   gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates);\n" +
+                //"   gl_FragColor = vec4(0, 0, 0, 1);\n" +
                 "}"
 
+
+    companion object {
+
+    }
     private lateinit var mSquare: GameGLSquare
+
 
     fun loadShader(type: Int, shaderCode: String): Int {
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
@@ -67,11 +81,20 @@ class GameGLRenderer : GLSurfaceView.Renderer {
             GLES20.glAttachShader(it, fragmentShader)
             // creates OpenGL ES program executables
             GLES20.glLinkProgram(it)
+
+            val linkStatus = IntArray(1)
+            GLES20.glGetProgramiv(it, GLES20.GL_LINK_STATUS, linkStatus, 0)
+            if (linkStatus[0] != GLES20.GL_TRUE) {
+                val log = GLES20.glGetProgramInfoLog(it)
+                throw RuntimeException("Error linking program:\n$log")
+            }
         }
 
+        GLES20.glUseProgram(mProgram)
         //Shape Initialize
         mSquare = GameGLSquare()
-        mSquare.init(mProgram)
+        mSquare.init(mProgram, mContext)
+        GLES20.glUseProgram(0)
     }
 
     override fun onDrawFrame(unused: GL10) {
