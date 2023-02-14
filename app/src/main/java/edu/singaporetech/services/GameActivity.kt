@@ -203,8 +203,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         gameEnemy.update(dt)
 
         var entity = Entity()
-        entity.xPos = screenWidth / 2
-        entity.yPos = screenHeight + offsetBottom
+        entity.xPos = gameObjectView.getXPosition()
+        entity.yPos = gameObjectView.getYPosition()
 
         shoot.update(dt, entity, isShoot)
         isShoot = false
