@@ -144,8 +144,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             // Get the three values for the gyroscope
             val x = event.values[0]
             val y = event.values[1]
-            /*Log.d("Sensor x",x.toString())
-            Log.d("Sensor y",y.toString())*/
             // Shift the game obj base on Y rot which is the x direction
             if(y > 0.5)
             {
@@ -155,17 +153,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             {
                 direction = -4.0f
             }
-            /*if(y < 0.5f && y > -0.5)
-            {
-                direction = 0.0f
-            }*/
-            /*if(y.toInt() != 0)
-            {
-                event?.let {
-                    gameObjectView.updatePosition(gameObjectView.getXPosition() + y * 100
-                        ,resources.displayMetrics.heightPixels.toFloat() - 300.0f)
-                }
-            }*/
         }
     }
 
@@ -203,7 +190,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         gameEnemy.update(dt)
 
         var entity = Entity()
-        entity.xPos = gameObjectView.getXPosition()
+        entity.xPos = gameObjectView.getXPosition() - 50f
         entity.yPos = gameObjectView.getYPosition()
 
         shoot.update(dt, entity, isShoot)
