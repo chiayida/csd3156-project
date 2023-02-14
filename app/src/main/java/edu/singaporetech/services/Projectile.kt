@@ -1,26 +1,29 @@
 package edu.singaporetech.services
 
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
 
-class Projectile(private val gameActivity: GameActivity, private val _xPos: Float) : Entity() {
-    private val screenHeight = gameActivity.resources.displayMetrics.heightPixels.toFloat()
-    private val imageView: ImageView
+class Projectile(private val gameActivity: GameActivity,
+                 private val entity: Entity, private val _velocity: Float,
+                 private val boundary: Float) : Entity() {
     private var length: Float = 100F
+    private var flag: Boolean = _velocity > 0F
 
+    private val imageView: ImageView
 
     init {
         // Initialise variables (Bottom-Middle of screen)
-        xPos = _xPos
-        yPos = 0F
-        velocity = 0.5F
+        xPos = entity.xPos
+        yPos = entity.yPos
+        velocity = _velocity
 
         // Create an ImageView for the projectile (Placeholder for OpenGL texture)
         imageView = ImageView(gameActivity)
         imageView.setImageResource(R.drawable.coin)
-        gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt())
-        )
+        gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt()))
     }
+
 
     fun update(dt: Float) {
         // Update position
@@ -28,9 +31,9 @@ class Projectile(private val gameActivity: GameActivity, private val _xPos: Floa
 
         // Check if the projectile is out of bounds.
         // Currently imageView is not removed, it will crash the app (idky).
-        if (yPos >= screenHeight) {
+        if ((yPos >= boundary && flag) || (yPos <= boundary && !flag)) {
             // Hacky method to prevent crashing but memory will keep increasing.
-            // removed from list but memory is not deleted, at top of screen lols xD
+            // Memory is not deleted, at top of screen lol xD
             yPos = 0F - length
             velocity = 0F
         }

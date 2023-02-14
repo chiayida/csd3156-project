@@ -34,6 +34,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private var direction:Float = 0.0f
     private var offsetBottom:Float = 250.0f
 
+    private var screenWidth: Float = 0F
+    private var screenHeight: Float = 0f
+
+    private lateinit var shoot: Shoot
+    private var isShoot: Boolean = false
+
     private val updateRunnable = object : Runnable {
 
 
@@ -76,16 +82,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
 
-        var screenWidth = resources.displayMetrics.widthPixels.toFloat()
-        var screenHeight = resources.displayMetrics.widthPixels.toFloat()
+        screenWidth = resources.displayMetrics.widthPixels.toFloat()
+        screenHeight = resources.displayMetrics.widthPixels.toFloat()
+
+        shoot = Shoot(this,1000F, -0.5F, 0F, false)
 
         gameObjectView.updatePosition(screenWidth / 2,screenHeight - offsetBottom)
         gameEnemy = Enemy(this)
 
         direction = 0F
+
+
         val rootView = findViewById<View>(android.R.id.content)
         rootView.setOnClickListener {
             Log.d(TAG,"Screen is tapped")
+
+            isShoot = true
         }
     }
 
@@ -189,6 +201,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     override fun OnGameLogicUpdate(dt : Float){
         gameEnemy.update(dt)
+
+        var entity = Entity()
+        entity.xPos = screenWidth / 2
+        entity.yPos = screenHeight + offsetBottom
+
+        shoot.update(dt, entity, isShoot)
+        isShoot = false
     }
 
 
