@@ -17,20 +17,25 @@ class Shoot(private val gameActivity: GameActivity,
             projectiles.add(projectile)
             projectileTimer = projectileDelay
         }
-        else if (isShooting && projectileTimer <= 0F) {
-            val projectile = Projectile(gameActivity, entity, shootVelocity, boundary)
-            projectiles.add(projectile)
-            projectileTimer = projectileDelay
-        }
+        //else if (isShooting && projectileTimer <= 0F) {
+        //    val projectile = Projectile(gameActivity, entity, shootVelocity, boundary)
+        //    projectiles.add(projectile)
+        //    projectileTimer = projectileDelay
+        //}
 
 
         // Updating projectiles
+        val toBeDeleted: MutableList<Projectile> = mutableListOf()
         for (projectile in projectiles) {
-            projectile.update(dt)
+            if (projectile.update(dt) == false) {
 
-            // Projectile out of bounds
-            // Might need to destroy the projectile, and remove from list
-            //projectiles.remove(projectile)
+                // Projectile out of bounds
+                // Might need to destroy the projectile, and remove from list
+                toBeDeleted.add(projectile)
+            }
+        }
+        for (projectile in toBeDeleted) {
+            projectiles.remove(projectile)
         }
     }
 }

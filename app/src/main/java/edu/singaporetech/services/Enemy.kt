@@ -10,7 +10,7 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
     private val length: Float = 200F
     private val speed: Float = 0.5F
 
-    private val shoot: Shoot = Shoot(gameActivity,1000F, 0.5F, screenHeight, true)
+    private val shoot: Shoot = Shoot(gameActivity,3000F, 0.5F, screenHeight, true)
 
     //private val imageView: ImageView
     private val imageView: GameGLSquare
@@ -49,6 +49,6 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
         imageView.y = yPos
 
         // Shooting out projectile at delayed intervals
-        //shoot.update(dt, this, false)
+        shoot.update(dt, this, false)
     }
 }

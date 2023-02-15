@@ -55,26 +55,29 @@ class GameGLSquare(context: Context) {
         if (i % 5 == 0) 1f else 0f
     }
     private var resultMatrix= FloatArray(16)
-
+    private var isInitialized: Boolean = false
     companion object {
         private var mProgram: Int = 0
 
         val toBeInitializeList: MutableList<GameGLSquare> = mutableListOf()
         val squareList: MutableList<GameGLSquare> = mutableListOf()
+        val toBeDeleted: MutableList<GameGLSquare> = mutableListOf()
         fun InitStartSquare(program : Int) {
             mProgram = program
         }
     }
 
     init {
-        Init()
+        toBeInitializeList.add(this)
+        //Init()
     }
 
     fun Init() {
-        if (mProgram == 0) {
-            toBeInitializeList.add(this)
-        }
-        else {
+        //if (mProgram == 0) {
+        //    toBeInitializeList.add(this)
+        //}
+        //else {
+        isInitialized = true
             GLES20.glUseProgram(mProgram)
 
             var intId = intArrayOf(
@@ -126,13 +129,14 @@ class GameGLSquare(context: Context) {
             squareList.add(this)
 
             GLES20.glUseProgram(0)
-        }
+        //}
     }
 
     fun setImageResource(id: Int) {
         textureHandle = id
 
-        if (mProgram != 0) {
+        //if (mProgram != 0) {
+        if (isInitialized == true) {
             glBindTexture(GL_TEXTURE_2D, textureId[0])
             val bitmap = BitmapFactory.decodeResource(mContext.getResources(), textureHandle)
             GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)

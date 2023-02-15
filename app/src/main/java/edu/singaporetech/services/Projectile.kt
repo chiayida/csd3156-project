@@ -27,7 +27,7 @@ class Projectile(private val gameActivity: GameActivity,
     }
 
 
-    fun update(dt: Float) {
+    fun update(dt: Float): Boolean {
         // Update position
         yPos += velocity * dt
 
@@ -36,12 +36,18 @@ class Projectile(private val gameActivity: GameActivity,
         if ((yPos >= boundary && flag) || (yPos <= boundary && !flag)) {
             // Hacky method to prevent crashing but memory will keep increasing.
             // Memory is not deleted, at top of screen lol xD
-            yPos = 0F - length
+            yPos = length
             velocity = 0F
+
+            GameGLSquare.toBeDeleted.add(imageView)
+
+            return false
         }
 
         // Update image's position (Placeholder for OpenGL texture)
         imageView.x = xPos
         imageView.y = yPos
+
+        return true
     }
 }

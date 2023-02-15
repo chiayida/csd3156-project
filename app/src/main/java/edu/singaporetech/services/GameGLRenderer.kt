@@ -3,6 +3,7 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.util.Log
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -108,7 +109,6 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         for (sl in GameGLSquare.toBeInitializeList) {
             sl.Init()
         }
-
         GameGLSquare.toBeInitializeList.clear()
     }
 
@@ -122,6 +122,16 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
         GLES20.glUseProgram(mProgram)
+
+        for (sl in GameGLSquare.toBeInitializeList) {
+            sl.Init()
+        }
+        GameGLSquare.toBeInitializeList.clear()
+        //Log.d("MainActivity", " ------------------------------------------------Deleting ")
+        for (sl in GameGLSquare.toBeDeleted) {
+            GameGLSquare.squareList.remove(sl)
+        }
+        GameGLSquare.toBeDeleted.clear()
 
         for (sl in GameGLSquare.squareList) {
             val mvpMatrix1 = vPMatrix.copyOf()
