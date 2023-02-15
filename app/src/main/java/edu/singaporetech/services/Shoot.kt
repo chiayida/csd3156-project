@@ -1,36 +1,28 @@
 package edu.singaporetech.services
 
-import android.util.Log
 
 class Shoot(private val gameActivity: GameActivity,
-            private val projectileDelay: Float, private val shootVelocity: Float,
-            private val boundary: Float, private val isAutoShoot: Boolean) {
+            private val projectileDelay: Float, private val projectileVelocity: Float,
+            private val projectileBoundary: Float, private val isAutoShoot: Boolean) {
     private val projectiles: MutableList<Projectile> = mutableListOf()
     private var projectileTimer: Float = projectileDelay
 
 
-    fun update(dt: Float, entity: Entity, isShooting: Boolean) {
+    fun update(dt: Float, entity: Entity, isClickToShoot: Boolean) {
         projectileTimer -= dt
 
-        if (isAutoShoot && projectileTimer <= 0F) {
-            val projectile = Projectile(gameActivity, entity, shootVelocity, boundary)
-            projectiles.add(projectile)
-            projectileTimer = projectileDelay
+        if (projectileTimer <= 0F) {
+            if (isAutoShoot || isClickToShoot) {
+                val projectile = Projectile(gameActivity, entity, projectileVelocity, projectileBoundary)
+                projectiles.add(projectile)
+                projectileTimer = projectileDelay
+            }
         }
-        //else if (isShooting && projectileTimer <= 0F) {
-        //    val projectile = Projectile(gameActivity, entity, shootVelocity, boundary)
-        //    projectiles.add(projectile)
-        //    projectileTimer = projectileDelay
-        //}
 
-
-        // Updating projectiles
+        // Update projectiles
         val toBeDeleted: MutableList<Projectile> = mutableListOf()
         for (projectile in projectiles) {
-            if (projectile.update(dt) == false) {
-
-                // Projectile out of bounds
-                // Might need to destroy the projectile, and remove from list
+            if (!projectile.update(dt)) {
                 toBeDeleted.add(projectile)
             }
         }

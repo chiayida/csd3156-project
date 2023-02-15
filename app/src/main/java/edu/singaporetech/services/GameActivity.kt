@@ -232,15 +232,4 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         shoot.update(dt, entity, isShoot)
         isShoot = false
     }
-
-
-    // Function not working i think.
-    // ImageView is not being removed. Idky its crashing when reach bottom of screen (projectile)
-    // Hacky method to stop crashing but memory increasing when emulator is running as it is not removed.
-    // Wait for jw texture to replace all imageView (projectile + enemy)
-    fun removeView(view: View) {
-        if (view.parent != null) {
-            (view.parent as ViewGroup).removeView(view)
-        }
-    }
 }

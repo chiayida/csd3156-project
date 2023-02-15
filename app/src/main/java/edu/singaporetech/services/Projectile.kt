@@ -7,11 +7,11 @@ import android.widget.ImageView
 class Projectile(private val gameActivity: GameActivity,
                  private val entity: Entity, private val _velocity: Float,
                  private val boundary: Float) : Entity() {
-    private var length: Float = 100F
     private var flag: Boolean = _velocity > 0F
+    //private val scale: Float = 100F
 
     //private val imageView: ImageView
-    private val imageView: GameGLSquare
+    private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
     init {
         // Initialise variables (Bottom-Middle of screen)
@@ -19,11 +19,8 @@ class Projectile(private val gameActivity: GameActivity,
         yPos = entity.yPos
         velocity = _velocity
 
-        // Create an ImageView for the projectile (Placeholder for OpenGL texture)
-        //imageView = ImageView(gameActivity)
-        imageView = GameGLSquare(gameActivity)
-        imageView.setImageResource(R.drawable.coin)
-        //gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt()))
+        // Setting texture
+        renderObject.setImageResource(R.drawable.coin)
     }
 
 
@@ -32,21 +29,14 @@ class Projectile(private val gameActivity: GameActivity,
         yPos += velocity * dt
 
         // Check if the projectile is out of bounds.
-        // Currently imageView is not removed, it will crash the app (idky).
         if ((yPos >= boundary && flag) || (yPos <= boundary && !flag)) {
-            // Hacky method to prevent crashing but memory will keep increasing.
-            // Memory is not deleted, at top of screen lol xD
-            yPos = length
-            velocity = 0F
-
-            GameGLSquare.toBeDeleted.add(imageView)
-
+            GameGLSquare.toBeDeleted.add(renderObject)
             return false
         }
 
-        // Update image's position (Placeholder for OpenGL texture)
-        imageView.x = xPos
-        imageView.y = yPos
+        // Update image's position
+        renderObject.x = xPos
+        renderObject.y = yPos
 
         return true
     }
