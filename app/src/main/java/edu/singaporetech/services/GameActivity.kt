@@ -37,6 +37,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private var screenWidth: Float = 0F
     private var screenHeight: Float = 0f
 
+    var directionSpeed:Float = 1.5f
+    var currentOrientation:Float = 0.0f
     private lateinit var shoot: Shoot
     private var isShoot: Boolean = false
 
@@ -171,14 +173,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             // Get the three values for the gyroscope
             val x = event.values[0]
             val y = event.values[1]
+            val deltaOrientationY = y * event.timestamp
+            currentOrientation += deltaOrientationY
+            /*Log.d(TAG,currentOrientation.toString())*/
             // Shift the game obj base on Y rot which is the x direction
-            if(y > 0.5)
+            if(currentOrientation > 0.1)
             {
-                direction = 4.0f
+                direction = directionSpeed
             }
-            if(y < -0.5)
+            else if(currentOrientation < -0.1)
             {
-                direction = -4.0f
+                direction = -directionSpeed
+            }
+            else
+            {
+                direction = 0.0f
             }
         }
     }
