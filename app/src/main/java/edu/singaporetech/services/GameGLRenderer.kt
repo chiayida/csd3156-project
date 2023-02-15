@@ -121,18 +121,18 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-        GLES20.glUseProgram(mProgram)
+
 
         for (sl in GameGLSquare.toBeInitializeList) {
             sl.Init()
         }
         GameGLSquare.toBeInitializeList.clear()
-        //Log.d("MainActivity", " ------------------------------------------------Deleting ")
         for (sl in GameGLSquare.toBeDeleted) {
             GameGLSquare.squareList.remove(sl)
         }
         GameGLSquare.toBeDeleted.clear()
 
+        GLES20.glUseProgram(mProgram)
         for (sl in GameGLSquare.squareList) {
             val mvpMatrix1 = vPMatrix.copyOf()
             sl.draw(mvpMatrix1)
