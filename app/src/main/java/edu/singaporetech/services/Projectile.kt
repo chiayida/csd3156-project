@@ -17,10 +17,14 @@ class Projectile(private val gameActivity: GameActivity,
         // Initialise variables (Bottom-Middle of screen)
         xPos = entity.xPos
         yPos = entity.yPos
+        xScale = 1F
+        yScale = 1F
         velocity = _velocity
 
         // Setting texture
         renderObject.setImageResource(R.drawable.coin)
+        renderObject.xScale = xScale
+        renderObject.yScale = yScale
     }
 
 

@@ -6,7 +6,6 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
     private val speed: Float = 0.5F
-    //private val scale: Float = 200F
 
     private val shoot: Shoot = Shoot(gameActivity,1000F, 0.5F, screenHeight, true)
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
@@ -15,10 +14,15 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
         // Initialise variables (Top-Middle of screen)
         xPos = screenWidth / 2
         yPos = screenHeight / 8
+        xScale = 4F
+        yScale = 2F
+
         velocity = speed
 
         // Setting texture
         renderObject.setImageResource(R.drawable.coin)
+        renderObject.xScale = xScale
+        renderObject.yScale = yScale
     }
 
 
