@@ -15,12 +15,14 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val maxYPos: Float = (screenHeight - 50f) // height is the height of the screen
 
     val shoot: Shoot = Shoot(gameActivity,1000F, -0.5F, 0F, false)
+    val projectileDamage: Int = 1
+    var health: Int = 5
+
 
     init {
         position = Vector2(screenWidth / 2F, screenHeight - 50f)
         colliderScale = Vector2(100F, 100F)
         speed = 0.5F
-        tag = ProjectileType.PLAYER
 
         // Setting texture
         renderObject.setImageResource(R.drawable.coin)

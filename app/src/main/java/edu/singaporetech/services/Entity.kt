@@ -22,7 +22,6 @@ open class Entity {
     var colliderScale : Vector2 = Vector2(1F, 1F)
     var speed: Float = 1F
     var velocity: Vector2 = Vector2(0F, 0F)
-    var tag: ProjectileType = ProjectileType.NONE
 
     fun getColliderMax() : Vector2 {
         val max = Vector2(position.x, position.y)

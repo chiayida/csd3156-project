@@ -1,6 +1,7 @@
 package edu.singaporetech.services
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -32,6 +33,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     private lateinit var fpsView: TextView
     private lateinit var dtView: TextView
+
+    private lateinit var playerHealthView: TextView
+    private lateinit var enemyHealthView: TextView
+
     private var direction:Float = 0.0f
     private var offsetBottom:Float = 250.0f
 
@@ -107,8 +112,23 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
 
+
         gamePlayer = Player(this)
         gameEnemy = Enemy(this)
+
+        playerHealthView = TextView(this)
+        playerHealthView.text = "Player Health: " + gamePlayer.health
+        playerHealthView.textSize = 24f
+        playerHealthView.x = 600f
+        addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
+        enemyHealthView = TextView(this)
+        enemyHealthView.text = "Enemy Health: " + gameEnemy.health
+        enemyHealthView.textSize = 24f
+        enemyHealthView.x = 600f
+        enemyHealthView.y = 100f
+        addContentView(enemyHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
 
         direction = 0F
 
@@ -116,7 +136,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         val rootView = findViewById<View>(android.R.id.content)
         rootView.setOnClickListener {
             Log.d(TAG,"Screen is tapped")
-
             isShoot = true
         }
 
@@ -224,7 +243,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     var playerAABB = AABB(playerMIN, playerMAX)
 
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
-                        Log.i("lol", "Player got hit")
+                        gamePlayer.health -= gameEnemy.projectileDamage
+                        playerHealthView.text = "Player Health: " + gamePlayer.health
+
+                        if (gamePlayer.health <= 0) {
+                            // TODO Go to Lose/Win screen
+                            //val intent = Intent(this, GameActivity::class.java)
+                            //startActivity(intent)
+                        }
                     }
                 }
             }
@@ -247,7 +273,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                                 enemyAABB, Enemies[j].velocity, dt
                             )
                         ) {
-                            Log.i("lol", "Enemy got hit")
+                            gameEnemy.health -= gamePlayer.projectileDamage
+                            enemyHealthView.text = "Enemy Health: " + gameEnemy.health
+
+                            if (gameEnemy.health <= 0) {
+                                // TODO Go to Lose/Win screen
+                                //val intent = Intent(this, GameActivity::class.java)
+                                //startActivity(intent)
+                            }
                         }
                     }
                 }
