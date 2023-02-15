@@ -69,8 +69,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         //gLView = GameGLSurfaceView(this)
+        setContentView(binding.root)
         //setContentView(gLView)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager

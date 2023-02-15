@@ -7,6 +7,7 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
     private val length: Float = 200F
+    private val speed: Float = 0.5F
 
     private val shoot: Shoot = Shoot(gameActivity,1000F, 0.5F, screenHeight, true)
 
@@ -17,7 +18,8 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
         // Initialise variables (Top-Middle of screen)
         xPos = screenWidth / 2F
         yPos = 0F
-        velocity = 0.5F
+        velocity = speed
+        //velocity = 0.5F
 
         // Create an ImageView for the enemy (Placeholder for OpenGL texture)
         imageView = ImageView(gameActivity)
@@ -32,8 +34,11 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
 
         // Enemy bugs out (snapping?) occasionally when touching the sides of the screen.
         // Could be a ImageView issue, I am not too sure.
-        if ((xPos + length >= screenWidth) || (xPos <= 0F)) {
-            velocity = -velocity
+        if (xPos + length >= screenWidth)
+        {
+            velocity = -speed
+        } else if (xPos <= 0F) {
+            velocity = speed
         }
 
         // Update image's position (Placeholder for OpenGL texture)
