@@ -36,23 +36,8 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
                 "}"
 
     private var mProgram: Int = 0
-    companion object {
-        //private var mProgram: Int = 0
-        //private lateinit var mContext: Context
-        //private val squareList: MutableList<GameGLSquare> = mutableListOf()
 
-        //fun AddSquare(): GameGLSquare {
-        //    GLES20.glUseProgram(mProgram)
-        //    //Shape Initialize
-        //    val Square = GameGLSquare()
-        //    Square.init()
-        //    GLES20.glUseProgram(0)
-        //
-        //    squareList.add(Square)
-        //    return Square
-        //}
-    }
-
+    //Load shader by compiling the string data
     fun loadShader(type: Int, shaderCode: String): Int {
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
         // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
@@ -64,6 +49,8 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         }
     }
 
+    //Function to be called when surface changed
+    //Update the width, height, viewport and projection matrix
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
 
@@ -79,9 +66,9 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         GameActivity.halfScreenHeight = GameActivity.screenHeight / 2F
     }
 
+    //Function to be called when surface is created
+    //Setup shaders
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
-        //mContext = mTContext
-
         // Set the background frame color
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
 
@@ -112,6 +99,8 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         GameGLSquare.toBeInitializeList.clear()
     }
 
+    //Function to be called every frame
+    //Clear color and draw all squares
     override fun onDrawFrame(unused: GL10) {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)

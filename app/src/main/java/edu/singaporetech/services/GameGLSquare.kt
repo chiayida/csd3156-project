@@ -11,6 +11,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.opengl.Matrix.multiplyMM
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 const val COORDS_PER_VERTEX = 3
@@ -48,8 +49,8 @@ class GameGLSquare(context: Context) {
     var x: Float = 0f
     var y: Float = 0f
 
-    var xScale: Float = 1f
-    var yScale: Float = 1f
+    var xScale: Float = 70f
+    var yScale: Float = 70f
 
     private var worldMatrix = FloatArray(16){ i ->
         if (i % 5 == 0) 1f else 0f
@@ -59,9 +60,9 @@ class GameGLSquare(context: Context) {
     companion object {
         private var mProgram: Int = 0
 
-        val toBeInitializeList: MutableList<GameGLSquare> = mutableListOf()
-        val squareList: MutableList<GameGLSquare> = mutableListOf()
-        val toBeDeleted: MutableList<GameGLSquare> = mutableListOf()
+        val toBeInitializeList: CopyOnWriteArrayList<GameGLSquare> = CopyOnWriteArrayList()
+        val squareList: CopyOnWriteArrayList<GameGLSquare> = CopyOnWriteArrayList()
+        val toBeDeleted: CopyOnWriteArrayList<GameGLSquare> = CopyOnWriteArrayList()
         fun InitStartSquare(program : Int) {
             mProgram = program
         }
@@ -69,14 +70,11 @@ class GameGLSquare(context: Context) {
 
     init {
         toBeInitializeList.add(this)
-        //Init()
     }
 
+    //Initialize function to set up all the VBO for vertex and index
+    //Set up texture to be drawn for the square
     fun Init() {
-        //if (mProgram == 0) {
-        //    toBeInitializeList.add(this)
-        //}
-        //else {
         isInitialized = true
             GLES20.glUseProgram(mProgram)
 
@@ -132,6 +130,7 @@ class GameGLSquare(context: Context) {
         //}
     }
 
+    //Change texture for the square
     fun setImageResource(id: Int) {
         textureHandle = id
 
@@ -147,11 +146,12 @@ class GameGLSquare(context: Context) {
         }
     }
 
+    //Run time draw function to be called by renderer
     fun draw(mvpMatrix: FloatArray) {
         worldMatrix[12] = (x - GameActivity.halfScreenWidth) / GameActivity.screenWidth
         worldMatrix[13] = ((y - GameActivity.halfScreenHeight) / GameActivity.screenHeight) * -2F
-        worldMatrix[0] = xScale
-        worldMatrix[5] = yScale
+        worldMatrix[0] = (xScale / GameActivity.halfScreenWidth) * 10F
+        worldMatrix[5] = (yScale / GameActivity.halfScreenHeight) * 20F
 
         android.opengl.Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, worldMatrix, 0)
         GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(mProgram, "uMVPMatrix"), 1, false, mvpMatrix, 0)
