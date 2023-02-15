@@ -40,6 +40,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var shoot: Shoot
     private var isShoot: Boolean = false
 
+    companion object {
+        var screenWidth: Float = 0F
+        var halfScreenWidth: Float = 0F
+        var screenHeight: Float = 0F
+        var halfScreenHeight: Float = 0F
+    }
+
     private val updateRunnable = object : Runnable {
 
 
@@ -66,6 +73,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        screenWidth = (resources.displayMetrics.widthPixels).toFloat()
+        halfScreenWidth = screenWidth / 2F
+        screenHeight = (resources.displayMetrics.heightPixels).toFloat()
+        halfScreenHeight = screenHeight / 2F
+
 
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)

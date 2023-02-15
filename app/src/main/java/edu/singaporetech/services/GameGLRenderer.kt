@@ -71,6 +71,11 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
+
+        GameActivity.screenWidth = width.toFloat()
+        GameActivity.halfScreenWidth = GameActivity.screenWidth / 2F
+        GameActivity.screenHeight = height.toFloat()
+        GameActivity.halfScreenHeight = GameActivity.screenHeight / 2F
     }
 
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -119,7 +124,8 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
         GLES20.glUseProgram(mProgram)
 
         for (sl in GameGLSquare.squareList) {
-            sl.draw(vPMatrix)
+            val mvpMatrix1 = vPMatrix.copyOf()
+            sl.draw(mvpMatrix1)
         }
 
         GLES20.glUseProgram(0)
