@@ -13,6 +13,8 @@ class Shoot(private val gameActivity: GameActivity,
             projectile.updatePosition(dt)
         }
     }
+
+
     fun update(dt: Float, entity: Entity, isClickToShoot: Boolean) {
         projectileTimer -= dt
 
@@ -27,7 +29,7 @@ class Shoot(private val gameActivity: GameActivity,
         // Update projectiles
         val toBeDeleted: MutableList<Projectile> = mutableListOf()
         for (projectile in projectiles) {
-            if (!projectile.update(dt)) {
+            if (!projectile.update()) {
                 toBeDeleted.add(projectile)
             }
         }

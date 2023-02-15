@@ -40,6 +40,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     var directionSpeed:Float = 1.5f
     var currentOrientation:Float = 0.0f
+
     private var isShoot: Boolean = false
 
     companion object {
