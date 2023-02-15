@@ -10,7 +10,8 @@ class Projectile(private val gameActivity: GameActivity,
     private var length: Float = 100F
     private var flag: Boolean = _velocity > 0F
 
-    private val imageView: ImageView
+    //private val imageView: ImageView
+    private val imageView: GameGLSquare
 
     init {
         // Initialise variables (Bottom-Middle of screen)
@@ -19,9 +20,10 @@ class Projectile(private val gameActivity: GameActivity,
         velocity = _velocity
 
         // Create an ImageView for the projectile (Placeholder for OpenGL texture)
-        imageView = ImageView(gameActivity)
+        //imageView = ImageView(gameActivity)
+        imageView = GameGLSquare(gameActivity)
         imageView.setImageResource(R.drawable.coin)
-        gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt()))
+        //gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt()))
     }
 
 

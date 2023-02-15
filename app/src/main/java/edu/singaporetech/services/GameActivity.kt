@@ -69,16 +69,30 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)
-        //gLView = GameGLSurfaceView(this)
-        setContentView(binding.root)
-        //setContentView(gLView)
+        gLView = GameGLSurfaceView(this)
+        //setContentView(binding.root)
+        setContentView(gLView)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         // FIND ALL SCREEN OBJECTS
         gameObjectView =  binding.gameObject1
-        fpsView =   binding.textViewFPS
-        dtView =  binding.textViewDeltaTime
+
+        //val tfpsView = TextView(this)
+        fpsView = TextView(this)
+        fpsView.text = "Hello, world!"
+        fpsView.textSize = 24f
+        addContentView(fpsView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
+        //val tdtView = TextView(this)
+        dtView = TextView(this)
+        dtView.text = " delta time"
+        dtView.textSize = 24f
+        dtView.y = 100f
+        addContentView(dtView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
+        //fpsView =   binding.textViewFPS
+        //dtView =  binding.textViewDeltaTime
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
 
