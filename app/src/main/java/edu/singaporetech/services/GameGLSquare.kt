@@ -150,6 +150,8 @@ class GameGLSquare(context: Context) {
     fun draw(mvpMatrix: FloatArray) {
         worldMatrix[12] = (x - GameActivity.halfScreenWidth) / GameActivity.screenWidth
         worldMatrix[13] = ((y - GameActivity.halfScreenHeight) / GameActivity.screenHeight) * -2F
+        worldMatrix[0] = xScale
+        worldMatrix[5] = yScale
 
         android.opengl.Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, worldMatrix, 0)
         GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(mProgram, "uMVPMatrix"), 1, false, mvpMatrix, 0)
