@@ -5,7 +5,7 @@ class Projectile(gameActivity: GameActivity,
                  shooterPosition: Vector2, _velocity: Float,
                  private val projectileBoundary: Float): Entity() {
     private var flag: Boolean = _velocity > 0F
-    private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
+    val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
     init {
         position = Vector2(shooterPosition.x, shooterPosition.y)

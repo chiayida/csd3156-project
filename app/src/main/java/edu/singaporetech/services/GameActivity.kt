@@ -233,6 +233,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // COLLISION CHECK
         if(Enemies.isNotEmpty()){
             for(k in Enemies.indices) {
+                val toBeDeleted: MutableList<Projectile> = mutableListOf()
                 for(projectile in Enemies[k].shoot.projectiles){
                     var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
                     var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
@@ -243,6 +244,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     var playerAABB = AABB(playerMIN, playerMAX)
 
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
+                        toBeDeleted.add(projectile)
                         gamePlayer.health -= gameEnemy.projectileDamage
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
@@ -253,9 +255,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         }
                     }
                 }
+                for (projectile in toBeDeleted) {
+                    GameGLSquare.toBeDeleted.add(projectile.renderObject)
+                    Enemies[k].shoot.projectiles.remove(projectile)
+                }
             }
         }
         if(gamePlayer.shoot.projectiles.isNotEmpty()) {
+            val toBeDeleted: MutableList<Projectile> = mutableListOf()
             for (projectile in gamePlayer.shoot.projectiles) {
                 var projMIN = Vector2(projectile.getColliderMin().x, projectile.getColliderMin().y)
                 var projMAX = Vector2(projectile.getColliderMax().x, projectile.getColliderMax().y)
@@ -273,6 +280,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                                 enemyAABB, Enemies[j].velocity, dt
                             )
                         ) {
+                            toBeDeleted.add(projectile)
                             gameEnemy.health -= gamePlayer.projectileDamage
                             enemyHealthView.text = "Enemy Health: " + gameEnemy.health
 
@@ -284,6 +292,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         }
                     }
                 }
+            }
+            for (projectile in toBeDeleted) {
+                GameGLSquare.toBeDeleted.add(projectile.renderObject)
+                gamePlayer.shoot.projectiles.remove(projectile)
             }
         }
 
