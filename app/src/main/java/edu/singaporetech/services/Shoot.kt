@@ -8,7 +8,7 @@ class Shoot(private val gameActivity: GameActivity,
     private var projectileTimer: Float = projectileDelay
 
 
-    fun updateMovement(dt: Float) {
+    fun updatePositions(dt: Float) {
         for (projectile in projectiles) {
             projectile.updatePosition(dt)
         }
@@ -17,10 +17,10 @@ class Shoot(private val gameActivity: GameActivity,
 
     fun update(dt: Float, entity: Entity, isClickToShoot: Boolean) {
         projectileTimer -= dt
-
         if (projectileTimer <= 0F) {
             if (isAutoShoot || isClickToShoot) {
-                val projectile = Projectile(gameActivity, entity.position, projectileVelocity, projectileBoundary, ProjectileType.ENEMY)
+                val projectile = Projectile(gameActivity, entity.position,
+                    projectileVelocity, projectileBoundary)
                 projectiles.add(projectile)
                 projectileTimer = projectileDelay
             }

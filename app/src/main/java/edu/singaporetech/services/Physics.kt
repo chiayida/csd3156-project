@@ -1,13 +1,10 @@
 package edu.singaporetech.services
 
-import android.util.Log
 import java.lang.Float.max
 import java.lang.Float.min
 
 
-class AABB(var min: Vector2, var max: Vector2) {
-
-}
+class AABB(var min: Vector2, var max: Vector2)
 
 
 class Physics private constructor() {

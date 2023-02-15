@@ -107,9 +107,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
 
-        screenWidth = resources.displayMetrics.widthPixels.toFloat()
-        screenHeight = resources.displayMetrics.widthPixels.toFloat()
-
         gamePlayer = Player(this)
         gameEnemy = Enemy(this)
 
@@ -258,13 +255,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         // MOVEMENT UPDATE
-        gamePlayer.updateShootMovement(dt)
+        gamePlayer.updateProjectilesPosition(dt)
+
+
         if(Enemies.isNotEmpty()) {
             for (i in Enemies.indices) {
-                Enemies[i].updateShootMovement(dt)
+                Enemies[i].updateProjectilesPosition(dt)
                 Enemies[i].updatePosition(dt)
             }
         }
+
         gamePlayer.updatePosition(gamePlayer.position.x + direction
             ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
     }

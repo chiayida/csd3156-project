@@ -14,7 +14,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
         colliderScale = Vector2(200F, 100F)
         speed = 0.5F
         velocity.x = speed
-        tag = "enemy"
+        tag = ProjectileType.ENEMY
 
         // Setting texture
         renderObject.setImageResource(R.drawable.coin)
@@ -23,8 +23,8 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     }
 
 
-    fun updateShootMovement(dt: Float) {
-        shoot.updateMovement(dt)
+    fun updateProjectilesPosition(dt: Float) {
+        shoot.updatePositions(dt)
     }
 
 

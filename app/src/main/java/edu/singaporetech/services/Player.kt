@@ -20,7 +20,7 @@ class Player(gameActivity: GameActivity) : Entity() {
         position = Vector2(screenWidth / 2F, screenHeight - 50f)
         colliderScale = Vector2(100F, 100F)
         speed = 0.5F
-        tag = "player"
+        tag = ProjectileType.PLAYER
 
         // Setting texture
         renderObject.setImageResource(R.drawable.coin)
@@ -35,8 +35,8 @@ class Player(gameActivity: GameActivity) : Entity() {
     }
 
 
-    fun updateShootMovement(dt: Float) {
-        shoot.updateMovement(dt)
+    fun updateProjectilesPosition(dt: Float) {
+        shoot.updatePositions(dt)
     }
 
 
