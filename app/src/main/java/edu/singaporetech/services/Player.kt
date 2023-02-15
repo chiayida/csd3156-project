@@ -8,40 +8,44 @@ import android.view.View
 import java.lang.Float.max
 import java.lang.Float.min
 
-class GameObjectView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class Player(private val gameActivity: GameActivity) : Entity() {
 
-    private val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-    private val screenWidth = displayMetrics.widthPixels
-    private val screenHeight = displayMetrics.heightPixels
+    private val screenWidth = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
+    private val screenHeight = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
     private val paint = Paint()
-    private val textureBitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.sit_logo)
-    private val imageView: GameGLSquare
+    //private val textureBitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.sit_logo)
+    private val imageView: GameGLSquare = GameGLSquare(gameActivity)
 
-    private var xPos: Float = 0f
-    private var yPos: Float = 0f
     private val minXPos: Float = 50f
     private val maxXPos: Float = (screenWidth - 50f) // width is the width of the screen
     private val minYPos: Float = 50f
     private val maxYPos: Float = (screenHeight - 50f) // height is the height of the screen
 
+    val shoot: Shoot = Shoot(gameActivity,1000F, -0.5F, screenHeight, true)
+
     init{
-        imageView = GameGLSquare(context)
+        // Initialise variables (Top-Middle of screen)
+        position.x = screenWidth / 2F
+        position.y = screenHeight - 50f
+        speed = 0.5F
+        tag = "player"
         imageView.setImageResource(R.drawable.coin)
+        colliderScale = Vector2(100F, 100F)
     }
     fun updatePosition(x: Float, y: Float) {
-        xPos = max(minXPos, min(x, maxXPos))
-        yPos = max(minYPos, min(y, maxYPos))
-        imageView.x = xPos
-        imageView.y = yPos
+        position.x = max(minXPos, min(x, maxXPos))
+        position.y = max(minYPos, min(y, maxYPos))
         /*invalidate()*/
     }
-    fun getXPosition():Float
-    {
-        return xPos
+
+    fun updateShootMovement(dt: Float){
+        shoot.updateMovement(dt)
     }
-    fun getYPosition():Float
-    {
-        return yPos
+    fun update(dt: Float, isShoot: Boolean) {
+        shoot.update(dt, this, isShoot)
+        // Update image's position (Placeholder for OpenGL texture)
+        imageView.x = position.x
+        imageView.y = position.y
     }
    /* override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)

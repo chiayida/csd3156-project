@@ -1,39 +1,55 @@
 package edu.singaporetech.services
 
 
-class Projectile(gameActivity: GameActivity,
-                 entity: Entity, _velocity: Float,
-                 private val boundary: Float) : Entity() {
-                 private var flag: Boolean = _velocity > 0F
+enum class ProjectileType {
+    ENEMY,
+    PLAYER,
+}
+
+class Projectile(private val gameActivity: GameActivity,
+                 private val shooterPosition: Vector2, private val _velocity: Float,
+                 private val boundary: Float, val type : ProjectileType) : Entity() {
+    private var length: Float = 100F
+    private var flag: Boolean = _velocity > 0F
+
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
     init {
-        xPos = entity.xPos
-        yPos = entity.yPos
+        // Initialise variables (Bottom-Middle of screen)
+        position.x = shooterPosition.x
+        position.y = shooterPosition.y
         xScale = 1F
         yScale = 1F
-        velocity = _velocity
+        speed = _velocity
+        velocity.y = speed
 
         // Setting texture
         renderObject.setImageResource(R.drawable.coin)
         renderObject.xScale = xScale
         renderObject.yScale = yScale
+        colliderScale = Vector2(100F, 100F)
+        //gameActivity.addContentView(imageView, ViewGroup.LayoutParams(length.toInt(), length.toInt()))
     }
 
 
     fun update(dt: Float): Boolean {
-        // Update position
-        yPos += velocity * dt
 
         // Check if the projectile is out of bounds.
-        if ((yPos >= boundary && flag) || (yPos <= boundary && !flag)) {
+        // Currently imageView is not removed, it will crash the app (idky).
+        if ((position.y >= boundary && flag) || (position.y <= boundary && !flag)) {
+            // Hacky method to prevent crashing but memory will keep increasing.
+            // Memory is not deleted, at top of screen lol xD
+            position.y = length
+            velocity.toZero()
+
             GameGLSquare.toBeDeleted.add(renderObject)
+
             return false
         }
 
         // Update image's position
-        renderObject.x = xPos
-        renderObject.y = yPos
+        renderObject.x = position.x
+        renderObject.y = position.y
 
         return true
     }

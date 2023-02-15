@@ -4,16 +4,21 @@ package edu.singaporetech.services
 class Shoot(private val gameActivity: GameActivity,
             private val projectileDelay: Float, private val projectileVelocity: Float,
             private val projectileBoundary: Float, private val isAutoShoot: Boolean) {
-    private val projectiles: MutableList<Projectile> = mutableListOf()
+    val projectiles: MutableList<Projectile> = mutableListOf()
     private var projectileTimer: Float = projectileDelay
 
 
+    fun updateMovement(dt: Float) {
+        for (projectile in projectiles) {
+            projectile.updatePosition(dt)
+        }
+    }
     fun update(dt: Float, entity: Entity, isClickToShoot: Boolean) {
         projectileTimer -= dt
 
         if (projectileTimer <= 0F) {
             if (isAutoShoot || isClickToShoot) {
-                val projectile = Projectile(gameActivity, entity, projectileVelocity, projectileBoundary)
+                val projectile = Projectile(gameActivity, entity.position, projectileVelocity, projectileBoundary, ProjectileType.ENEMY)
                 projectiles.add(projectile)
                 projectileTimer = projectileDelay
             }

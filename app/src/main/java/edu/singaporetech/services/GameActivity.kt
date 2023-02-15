@@ -21,8 +21,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
     private lateinit var sensorManager: SensorManager
-    private lateinit var gameObjectView: GameObjectView
+    private lateinit var gamePlayer: Player
     private lateinit var gameEnemy: Enemy
+    private var Enemies: MutableList<Enemy> = mutableListOf()
 
     private var FPSCap = 1L
     private var engine = GameEngine(FPSCap, this)
@@ -39,7 +40,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     var directionSpeed:Float = 1.5f
     var currentOrientation:Float = 0.0f
-    private lateinit var shoot: Shoot
     private var isShoot: Boolean = false
 
     companion object {
@@ -51,20 +51,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     private val updateRunnable = object : Runnable {
 
-
         override fun run() {
             // Perform tasks here when the activity is updated
             engine.EngineUpdate()
 
             if (engine.getFPSUpdated()) {
-                //Log.d("Game:", "Game is Running at $frames fps")
                 fpsView?.text = "${engine.getFPS()} FPS"
                 dtView?.text = "${engine.getDeltaTime()}ms dt"
             }
-            /*Log.d("ObjPos",gameObjectView.getXPosition().toString())
-            Log.d("ObjPos",gameObjectView.getYPosition().toString())*/
-            gameObjectView.updatePosition(gameObjectView.getXPosition() + direction
-                ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
+
             handler.postDelayed(this, engine.updateInterval)
         }
     }
@@ -91,7 +86,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         // FIND ALL SCREEN OBJECTS
-        gameObjectView =  binding.gameObject1
 
         //val tfpsView = TextView(this)
         fpsView = TextView(this)
@@ -114,9 +108,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         screenWidth = resources.displayMetrics.widthPixels.toFloat()
         screenHeight = resources.displayMetrics.widthPixels.toFloat()
 
-        shoot = Shoot(this,1000F, -0.5F, 0F, false)
-
-        gameObjectView.updatePosition(screenWidth / 2,screenHeight - offsetBottom)
+        gamePlayer = Player(this)
         gameEnemy = Enemy(this)
 
         direction = 0F
@@ -128,6 +120,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
             isShoot = true
         }
+
+        engine.EngineInit()
     }
 
     /*
@@ -161,7 +155,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         Log.i("Mouse","X: ${event.x}, Y: ${event.y} ")
         val touchX = event.x
         val touchY = event.y
-        gameObjectView.updatePosition(touchX, touchY)
+        gamePlayer.updatePosition(touchX, touchY)
         return super.onTouchEvent(event)
     }
 
@@ -208,7 +202,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     }
 
     override fun GameLogicInit(){
-
+        Enemies.add(gameEnemy)
     }
 
 
@@ -218,7 +212,50 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
 
     override fun OnPhysicsUpdate(dt : Float){
+        // COLLISION CHECK
+        for(k in Enemies.indices) {
+            for(projectile in Enemies[k].shoot.projectiles){
+                var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
+                var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
+                var projAABB = AABB(projMIN, projMAX)
 
+                var playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
+                var playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
+                var playerAABB = AABB(playerMIN, playerMAX)
+
+//                Log.i("lol", "Player Scale: ${gamePlayer.colliderScale.VectoString()} " +
+//                    "Player Min: ${playerMIN.VectoString()}" +
+//                        " , Max: ${playerMAX.VectoString()}")
+
+                if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
+                    Log.i("lol", "Player got hit")
+                }
+            }
+        }
+        for(projectile in gamePlayer.shoot.projectiles){
+            var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
+            var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
+            var projAABB = AABB(projMIN, projMAX)
+            // else if it is the player's projectile, check collision with All ENEMIES
+            for(j in Enemies.indices) {
+                var enemyMIN = Vector2(Enemies[j].getColliderMin().x , Enemies[j].getColliderMin().y)
+                var enemyMAX = Vector2(Enemies[j].getColliderMax().x , Enemies[j].getColliderMax().y)
+                var enemyAABB = AABB(enemyMIN, enemyMAX)
+                if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity,
+                        enemyAABB, Enemies[j].velocity, dt)){
+                    Log.i("lol", "Enemy got hit")
+                }
+            }
+        }
+
+        // MOVEMENT UPDATE
+        gamePlayer.updateShootMovement(dt)
+        for(i in Enemies.indices) {
+            Enemies[i].updateShootMovement(dt)
+            Enemies[i].updatePosition(dt)
+        }
+        gamePlayer.updatePosition(gamePlayer.position.x + direction
+            ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
     }
 
 
@@ -226,10 +263,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         gameEnemy.update(dt)
 
         var entity = Entity()
-        entity.xPos = gameObjectView.getXPosition() - 50f
-        entity.yPos = gameObjectView.getYPosition()
+        entity.position.x = gamePlayer.position.x - 50f
+        entity.position.y = gamePlayer.position.y
 
-        shoot.update(dt, entity, isShoot)
+        gamePlayer.update(dt, isShoot)
         isShoot = false
     }
 }
