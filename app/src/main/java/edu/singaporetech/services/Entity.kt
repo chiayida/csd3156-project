@@ -1,5 +1,6 @@
 package edu.singaporetech.services
 
+
 // Parent class that is to be inherited by other classes
 open class Entity {
     var xPos: Float = 0F

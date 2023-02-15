@@ -1,7 +1,7 @@
 package edu.singaporetech.services
 
 
-class Enemy(private val gameActivity: GameActivity) : Entity() {
+class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
@@ -11,7 +11,7 @@ class Enemy(private val gameActivity: GameActivity) : Entity() {
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
     init {
-        // Initialise variables (Top-Middle of screen)
+        // Top middle of screen
         xPos = screenWidth / 2
         yPos = screenHeight / 8
         xScale = 4F
