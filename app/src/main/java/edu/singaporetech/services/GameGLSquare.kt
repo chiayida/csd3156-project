@@ -66,6 +66,12 @@ class GameGLSquare(context: Context) {
         fun InitStartSquare(program : Int) {
             mProgram = program
         }
+
+        fun Clear() {
+            toBeInitializeList.clear()
+            squareList.clear()
+            toBeDeleted.clear()
+        }
     }
 
     init {

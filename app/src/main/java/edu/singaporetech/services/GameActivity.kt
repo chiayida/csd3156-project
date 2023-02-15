@@ -48,6 +48,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         var halfScreenWidth: Float = 0F
         var screenHeight: Float = 0F
         var halfScreenHeight: Float = 0F
+
+        private lateinit var gLView: GameGLSurfaceView
     }
 
     private val updateRunnable = object : Runnable {
@@ -65,7 +67,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
     }
 
-    private lateinit var gLView: GameGLSurfaceView
     /*
     *
     * */
@@ -77,7 +78,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         screenHeight = (resources.displayMetrics.heightPixels).toFloat()
         halfScreenHeight = screenHeight / 2F
 
-
+        GameGLSquare.Clear()
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)
         gLView = GameGLSurfaceView(this)
