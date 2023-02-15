@@ -213,46 +213,55 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     override fun OnPhysicsUpdate(dt : Float){
         // COLLISION CHECK
-        for(k in Enemies.indices) {
-            for(projectile in Enemies[k].shoot.projectiles){
-                var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
-                var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
-                var projAABB = AABB(projMIN, projMAX)
+        if(Enemies.isNotEmpty()){
+            for(k in Enemies.indices) {
+                for(projectile in Enemies[k].shoot.projectiles){
+                    var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
+                    var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
+                    var projAABB = AABB(projMIN, projMAX)
 
-                var playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
-                var playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
-                var playerAABB = AABB(playerMIN, playerMAX)
+                    var playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
+                    var playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
+                    var playerAABB = AABB(playerMIN, playerMAX)
 
-//                Log.i("lol", "Player Scale: ${gamePlayer.colliderScale.VectoString()} " +
-//                    "Player Min: ${playerMIN.VectoString()}" +
-//                        " , Max: ${playerMAX.VectoString()}")
-
-                if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
-                    Log.i("lol", "Player got hit")
+                    if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
+                        Log.i("lol", "Player got hit")
+                    }
                 }
             }
         }
-        for(projectile in gamePlayer.shoot.projectiles){
-            var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
-            var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
-            var projAABB = AABB(projMIN, projMAX)
-            // else if it is the player's projectile, check collision with All ENEMIES
-            for(j in Enemies.indices) {
-                var enemyMIN = Vector2(Enemies[j].getColliderMin().x , Enemies[j].getColliderMin().y)
-                var enemyMAX = Vector2(Enemies[j].getColliderMax().x , Enemies[j].getColliderMax().y)
-                var enemyAABB = AABB(enemyMIN, enemyMAX)
-                if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity,
-                        enemyAABB, Enemies[j].velocity, dt)){
-                    Log.i("lol", "Enemy got hit")
+        if(gamePlayer.shoot.projectiles.isNotEmpty()) {
+            for (projectile in gamePlayer.shoot.projectiles) {
+                var projMIN = Vector2(projectile.getColliderMin().x, projectile.getColliderMin().y)
+                var projMAX = Vector2(projectile.getColliderMax().x, projectile.getColliderMax().y)
+                var projAABB = AABB(projMIN, projMAX)
+                // else if it is the player's projectile, check collision with All ENEMIES
+                if(Enemies.isNotEmpty()) {
+                    for (j in Enemies.indices) {
+                        var enemyMIN =
+                            Vector2(Enemies[j].getColliderMin().x, Enemies[j].getColliderMin().y)
+                        var enemyMAX =
+                            Vector2(Enemies[j].getColliderMax().x, Enemies[j].getColliderMax().y)
+                        var enemyAABB = AABB(enemyMIN, enemyMAX)
+                        if (Physics.collisionIntersectionRectRect(
+                                projAABB, projectile.velocity,
+                                enemyAABB, Enemies[j].velocity, dt
+                            )
+                        ) {
+                            Log.i("lol", "Enemy got hit")
+                        }
+                    }
                 }
             }
         }
 
         // MOVEMENT UPDATE
         gamePlayer.updateShootMovement(dt)
-        for(i in Enemies.indices) {
-            Enemies[i].updateShootMovement(dt)
-            Enemies[i].updatePosition(dt)
+        if(Enemies.isNotEmpty()) {
+            for (i in Enemies.indices) {
+                Enemies[i].updateShootMovement(dt)
+                Enemies[i].updatePosition(dt)
+            }
         }
         gamePlayer.updatePosition(gamePlayer.position.x + direction
             ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
