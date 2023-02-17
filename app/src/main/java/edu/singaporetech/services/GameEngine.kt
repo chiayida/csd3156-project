@@ -27,7 +27,7 @@ class GameEngine constructor( val updateInterval: Long, private val listener: On
         SystemsInit()
     }
     fun EngineUpdate() {
-        if(paused) return
+
         frames++
         deltaTime = (System.currentTimeMillis() - previousTime).toFloat()
         previousTime = System.currentTimeMillis()
@@ -41,6 +41,7 @@ class GameEngine constructor( val updateInterval: Long, private val listener: On
             fpsTime = System.currentTimeMillis()
         }
 
+        if(paused) return
         SystemsUpdate(deltaTime)
     }
     /*

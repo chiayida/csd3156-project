@@ -38,10 +38,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     private lateinit var playerHealthView: TextView
     private lateinit var enemyHealthView: TextView
+
+    // PAUSE SCREEN OBJECTS
     private lateinit var pauseButton: Button
     private lateinit var returnMMButton: Button
+    private lateinit var continueButton: Button
     private lateinit var restartButton: Button
     private lateinit var pauseText: TextView
+    private lateinit var confirmationText: TextView
+    private lateinit var yesButton: Button
+    private lateinit var noButton: Button
+    var isRestart = false
 
     private var direction:Float = 0.0f
     private var offsetBottom:Float = 250.0f
@@ -319,48 +326,153 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 //        addContentView(dtView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
     }
 
+    private fun togglePauseView(show : Boolean){
+        if(show){
+            pauseButton.setBackgroundResource(android.R.drawable.ic_media_play)
+            pauseText.visibility = View.VISIBLE
+            restartButton.visibility = View.VISIBLE
+            returnMMButton.visibility = View.VISIBLE
+            continueButton.visibility = View.VISIBLE
+        }
+        else{
+            pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
+            pauseText.visibility = View.INVISIBLE
+            restartButton.visibility = View.INVISIBLE
+            returnMMButton.visibility = View.INVISIBLE
+            continueButton.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun toggleConfirmationView(show : Boolean){
+        if(show){
+            confirmationText.visibility = View.VISIBLE
+            yesButton.visibility = View.VISIBLE
+            noButton.visibility = View.VISIBLE
+        }
+        else{
+            confirmationText.visibility = View.INVISIBLE
+            yesButton.visibility = View.INVISIBLE
+            noButton.visibility = View.INVISIBLE
+        }
+    }
+
     private fun initPauseView(){
         pauseButton = Button(this)
         pauseButton.x = 50f
         pauseButton.y = 0f
         pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
         addContentView(pauseButton, ViewGroup.LayoutParams(250, 250))
-
         pauseButton.setOnClickListener{
-            pauseButton.setBackgroundResource(android.R.drawable.ic_media_play)
-            engine.setPaused(true)
-            pauseText.visibility = View.VISIBLE
-            restartButton.visibility = View.VISIBLE
+            if (!engine.getPaused()){
+                togglePauseView(true)
+                engine.setPaused(true)
+            }
+            else{
+                togglePauseView(false)
+                engine.setPaused(false)
+            }
         }
 
         pauseText = TextView(this)
         pauseText.text = "PAUSED"
-        pauseText.textSize = 60f
+        pauseText.textSize = 90f
         pauseText.setTextColor(resources.getColor(R.color.text_color))
         pauseText.visibility = View.INVISIBLE
-        pauseText.x = (screenWidth / 2f) - 250f
-        pauseText.y = (screenHeight / 2f) - 100f
+        pauseText.x = 0f
+        pauseText.y = 920f
+        pauseText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         pauseText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(pauseText, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        addContentView(pauseText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))
 
         restartButton = Button(this)
         restartButton.x = (screenWidth / 2f) - 250f
-        restartButton.y = (screenHeight / 2f) - 125f
+        restartButton.y = 1500f
         restartButton.text = "RESTART"
         restartButton.textSize = 30f
         restartButton.visibility = View.INVISIBLE
         restartButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
         restartButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(restartButton, ViewGroup.LayoutParams(500, 250))
-
+        addContentView(restartButton, ViewGroup.LayoutParams(500, 150))
         restartButton.setOnClickListener{
-            val intent = Intent(this, GameActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-            finish()
+            isRestart = true
+            confirmationText.text = "Confirm Restart the game?"
+            toggleConfirmationView(true)
+            togglePauseView(false)
         }
 
+        returnMMButton = Button(this)
+        returnMMButton.x = (screenWidth / 2f) - 250f
+        returnMMButton.y = 1700f
+        returnMMButton.text = "Main Menu"
+        returnMMButton.textSize = 30f
+        returnMMButton.visibility = View.INVISIBLE
+        returnMMButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
+        returnMMButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(returnMMButton, ViewGroup.LayoutParams(500, 150))
+        returnMMButton.setOnClickListener{
+            isRestart = false
+            confirmationText.text = "Confirm return to the Main Menu?"
+            toggleConfirmationView(true)
+            togglePauseView(false)
+        }
 
+        continueButton = Button(this)
+        continueButton.x = (screenWidth / 2f) - 250f
+        continueButton.y = 1300f
+        continueButton.text = "CONTINUE"
+        continueButton.textSize = 30f
+        continueButton.visibility = View.INVISIBLE
+        continueButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
+        continueButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(continueButton, ViewGroup.LayoutParams(500, 150))
+        continueButton.setOnClickListener{
+            togglePauseView(false)
+        }
 
+        yesButton = Button(this)
+        yesButton.x = (screenWidth / 2f) - 250f
+        yesButton.y = 1400f
+        yesButton.text = "YES"
+        yesButton.textSize = 30f
+        yesButton.visibility = View.INVISIBLE
+        yesButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
+        yesButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(yesButton, ViewGroup.LayoutParams(500, 150))
+        yesButton.setOnClickListener{
+            if(isRestart){
+                recreate()
+            }
+            else{
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+        }
+
+        noButton = Button(this)
+        noButton.x = (screenWidth / 2f) - 250f
+        noButton.y = 1600f
+        noButton.text = "NO"
+        noButton.textSize = 30f
+        noButton.visibility = View.INVISIBLE
+        noButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
+        noButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(noButton, ViewGroup.LayoutParams(500, 150))
+        noButton.setOnClickListener{
+            togglePauseView(true)
+            toggleConfirmationView(false)
+        }
+
+        confirmationText = TextView(this)
+        confirmationText.text = "CONFIRM?"
+        confirmationText.textSize = 40f
+        confirmationText.setTextColor(resources.getColor(R.color.text_color))
+        confirmationText.visibility = View.INVISIBLE
+        confirmationText.x = 0f
+        confirmationText.y = 1100f
+        confirmationText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        confirmationText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        addContentView(confirmationText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))
     }
 }
