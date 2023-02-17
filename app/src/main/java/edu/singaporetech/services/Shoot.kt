@@ -3,7 +3,8 @@ package edu.singaporetech.services
 
 class Shoot(private val gameActivity: GameActivity,
             private val projectileDelay: Float, private val projectileVelocity: Float,
-            private val projectileBoundary: Float, private val isAutoShoot: Boolean) {
+            private val projectileBoundary: Float, private val isAutoShoot: Boolean,
+            private val projectileType : ProjectileType) {
     val projectiles: MutableList<Projectile> = mutableListOf()
     private var projectileTimer: Float = projectileDelay
 
@@ -20,7 +21,7 @@ class Shoot(private val gameActivity: GameActivity,
         if (projectileTimer <= 0F) {
             if (isAutoShoot || isClickToShoot) {
                 val projectile = Projectile(gameActivity, entity.position,
-                    projectileVelocity, projectileBoundary)
+                    projectileVelocity, projectileBoundary, projectileType)
                 projectiles.add(projectile)
                 projectileTimer = projectileDelay
             }

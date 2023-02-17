@@ -1,9 +1,14 @@
 package edu.singaporetech.services
 
+enum class ProjectileType{
+    Player,
+    Enemy
+}
+
 
 class Projectile(gameActivity: GameActivity,
                  shooterPosition: Vector2, _velocity: Float,
-                 private val projectileBoundary: Float): Entity() {
+                 private val projectileBoundary: Float, type : ProjectileType): Entity() {
     private var flag: Boolean = _velocity > 0F
     val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
@@ -14,7 +19,12 @@ class Projectile(gameActivity: GameActivity,
         velocity.y = speed
 
         // Setting texture
-        renderObject.setImageResource(R.drawable.coin)
+        if(type == ProjectileType.Player){
+            renderObject.setImageResource(R.drawable.player_bullet)
+        }
+        else{
+            renderObject.setImageResource(R.drawable.enemy_bullet)
+        }
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
     }
