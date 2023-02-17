@@ -54,7 +54,7 @@ class Shoot(private val gameActivity: GameActivity,
                 val possiblePowerups = listOf(ProjectileType.DamageBoost, ProjectileType.AddHealth, ProjectileType.Sheild)
                 projectileType = possiblePowerups.random()
                 val projectile = Projectile(gameActivity, pos,
-                    projectileVelocity, projectileBoundary, projectileType)
+                    projectileVelocity, projectileBoundary, ProjectileType.Sheild)
                 projectiles.add(projectile)
             }
         }

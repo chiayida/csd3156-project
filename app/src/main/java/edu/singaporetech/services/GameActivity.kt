@@ -234,10 +234,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         toBeDeleted.add(projectile)
                         if(sheildBool){
                             sheildBool = false
-                            gamePlayer.updatePlayerTexture(R.drawable.player)
+                            gamePlayer.updatePlayerTexture(2)
                         }
                         else{
-                            gamePlayer.health -= gameEnemy.projectileDamage
+                            //gamePlayer.health -= gameEnemy.projectileDamage
                         }
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
@@ -307,7 +307,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         gamePlayer.health += 1
                     if(powerUpProjectile.getProjectileType() == ProjectileType.Sheild)
                     {
-                        gamePlayer.updatePlayerTexture(R.drawable.player_bullet)
+                        gamePlayer.updatePlayerTexture(1)
                         sheildBool = true
                     }
                 }
@@ -336,9 +336,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     override fun OnGameLogicUpdate(dt : Float){
         gameEnemy.update(dt)
 
-        if(scoreCounter > 6){
+        if(scoreCounter > 5){
             powerUpBool = true
-            scoreCounter -= 6
+            scoreCounter -= 5
         }
         if(score > 100)
             gameEnemy.projectileDamage += 1

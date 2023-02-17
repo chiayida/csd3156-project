@@ -1,5 +1,6 @@
 package edu.singaporetech.services
 
+import android.util.Log
 import java.lang.Float.max
 import java.lang.Float.min
 
@@ -33,7 +34,16 @@ class Player(gameActivity: GameActivity) : Entity() {
 
     fun updatePlayerTexture(texture :Int)
     {
-        renderObject.setImageResource(texture)
+        if(texture == 1)
+        {
+            Log.d("Enter","ASDASDASD")
+            renderObject.setImageResource(R.drawable.player_bullet)
+        }
+        if(texture == 2)
+        {
+            Log.d("Enter","enter2")
+            renderObject.setImageResource(R.drawable.player)
+        }
     }
     override fun updatePosition(dt : Float) {
         position.x = max(minXPos, min( position.x + velocity.x * dt, maxXPos))
