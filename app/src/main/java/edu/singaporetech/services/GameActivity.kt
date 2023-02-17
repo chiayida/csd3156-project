@@ -1,7 +1,6 @@
 package edu.singaporetech.services
 
 import android.content.Context
-import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -14,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import edu.singaporetech.services.databinding.ActivityGameBinding
 
 
@@ -64,8 +64,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             engine.EngineUpdate()
 
             if (engine.getFPSUpdated()) {
-                fpsView?.text = "${engine.getFPS()} FPS"
-                dtView?.text = "${engine.getDeltaTime()}ms dt"
+                fpsView.text = "${engine.getFPS()} FPS"
+                dtView.text = "${engine.getDeltaTime()}ms dt"
             }
 
             handler.postDelayed(this, engine.updateInterval)
@@ -98,6 +98,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         fpsView = TextView(this)
         fpsView.text = "Hello, world!"
         fpsView.textSize = 24f
+        fpsView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(fpsView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         //val tdtView = TextView(this)
@@ -105,6 +106,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         dtView.text = " delta time"
         dtView.textSize = 24f
         dtView.y = 100f
+        dtView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(dtView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         //fpsView =   binding.textViewFPS
@@ -120,6 +122,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         playerHealthView.text = "Player Health: " + gamePlayer.health
         playerHealthView.textSize = 24f
         playerHealthView.x = 600f
+        playerHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         enemyHealthView = TextView(this)
@@ -127,6 +130,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         enemyHealthView.textSize = 24f
         enemyHealthView.x = 600f
         enemyHealthView.y = 100f
+        enemyHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(enemyHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
 
@@ -173,7 +177,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         Log.i("Mouse","X: ${event.x}, Y: ${event.y} ")
         val touchX = event.x
         val touchY = event.y
-        gamePlayer.updatePosition(touchX, touchY)
         return super.onTouchEvent(event)
     }
 
@@ -191,15 +194,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             // Shift the game obj base on Y rot which is the x direction
             if(currentOrientation > 0.1)
             {
-                direction = directionSpeed
+                gamePlayer.velocity.x = directionSpeed * gamePlayer.speed
             }
             else if(currentOrientation < -0.1)
             {
-                direction = -directionSpeed
+                gamePlayer.velocity.x = -directionSpeed * gamePlayer.speed
             }
             else
             {
-                direction = 0.0f
+                gamePlayer.velocity.x = 0.0f
             }
         }
     }
@@ -309,18 +312,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 Enemies[i].updatePosition(dt)
             }
         }
-
-        gamePlayer.updatePosition(gamePlayer.position.x + direction
-            ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
+        gamePlayer.updatePosition(dt)
+        //gamePlayer.updatePosition(gamePlayer.position.x + direction
+        //    ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
     }
 
 
     override fun OnGameLogicUpdate(dt : Float){
         gameEnemy.update(dt)
 
-        var entity = Entity()
-        entity.position.x = gamePlayer.position.x - 50f
-        entity.position.y = gamePlayer.position.y
+//        var entity = Entity()
+//        entity.position.x = gamePlayer.position.x - 50f
+//        entity.position.y = gamePlayer.position.y
 
         gamePlayer.update(dt, isShoot)
         isShoot = false

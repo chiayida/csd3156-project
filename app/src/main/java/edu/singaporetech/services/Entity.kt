@@ -23,6 +23,7 @@ open class Entity {
     var speed: Float = 1F
     var velocity: Vector2 = Vector2(0F, 0F)
 
+
     fun getColliderMax() : Vector2 {
         val max = Vector2(position.x, position.y)
         max.x += colliderScale.x
@@ -39,7 +40,7 @@ open class Entity {
     }
 
 
-    fun updatePosition(dt : Float) {
+    open fun updatePosition(dt : Float) {
         position.x += velocity.x * dt
         position.y += velocity.y * dt
     }

@@ -20,7 +20,6 @@ class Player(gameActivity: GameActivity) : Entity() {
 
 
     init {
-        position = Vector2(screenWidth / 2F, screenHeight - 50f)
         colliderScale = Vector2(100F, 100F)
         speed = 0.5F
 
@@ -28,14 +27,14 @@ class Player(gameActivity: GameActivity) : Entity() {
         renderObject.setImageResource(R.drawable.player)
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
+
+        position = Vector2(screenWidth / 2F, screenHeight - renderObject.yScale)
     }
 
-
-    fun updatePosition(x: Float, y: Float) {
-        position.x = max(minXPos, min(x, maxXPos))
-        position.y = max(minYPos, min(y, maxYPos))
+    override fun updatePosition(dt : Float) {
+        position.x = max(minXPos, min( position.x + velocity.x * dt, maxXPos))
+        position.y = max(minYPos, min(position.y + velocity.y * dt, maxYPos))
     }
-
 
     fun updateProjectilesPosition(dt: Float) {
         shoot.updatePositions(dt)
