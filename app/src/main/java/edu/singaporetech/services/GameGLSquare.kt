@@ -5,12 +5,10 @@ import android.opengl.GLES10.*
 import android.opengl.GLES20
 import android.opengl.GLUtils
 import java.nio.*
-import android.R
 import android.content.Context
 
 import android.graphics.Bitmap
-import android.graphics.Matrix
-import android.opengl.Matrix.multiplyMM
+import android.opengl.Matrix
 import java.util.concurrent.CopyOnWriteArrayList
 
 
@@ -51,6 +49,8 @@ class GameGLSquare(context: Context) {
 
     var xScale: Float = 70f
     var yScale: Float = 70f
+
+    var rotation: Float = 0f
 
     private var worldMatrix = FloatArray(16){ i ->
         if (i % 5 == 0) 1f else 0f
@@ -154,10 +154,17 @@ class GameGLSquare(context: Context) {
 
     //Run time draw function to be called by renderer
     fun draw(mvpMatrix: FloatArray) {
-        worldMatrix[12] = (x - GameActivity.halfScreenWidth) / GameActivity.screenWidth
-        worldMatrix[13] = ((y - GameActivity.halfScreenHeight) / GameActivity.screenHeight) * -2F
-        worldMatrix[0] = (xScale / GameActivity.halfScreenWidth) * 10F
-        worldMatrix[5] = (yScale / GameActivity.halfScreenHeight) * 20F
+        //worldMatrix[12] = (x - GameActivity.halfScreenWidth) / GameActivity.screenWidth
+        //worldMatrix[13] = ((y - GameActivity.halfScreenHeight) / GameActivity.screenHeight) * -2F
+        //worldMatrix[0] = (xScale / GameActivity.halfScreenWidth) * 10F
+        //worldMatrix[5] = (yScale / GameActivity.halfScreenHeight) * 20F
+
+        Matrix.setIdentityM(worldMatrix, 0)
+
+        Matrix.translateM(worldMatrix, 0, (x - GameActivity.halfScreenWidth) / GameActivity.screenWidth, ((y - GameActivity.halfScreenHeight) / GameActivity.screenHeight) * -2F, 0F)
+        Matrix.scaleM(worldMatrix, 0, (xScale / GameActivity.halfScreenWidth) * 10F, (yScale / GameActivity.halfScreenHeight) * 20F, 1F)
+        Matrix.rotateM(worldMatrix, 0, rotation, 1F, 0F, 0F)
+
 
         android.opengl.Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, worldMatrix, 0)
         GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(mProgram, "uMVPMatrix"), 1, false, mvpMatrix, 0)
