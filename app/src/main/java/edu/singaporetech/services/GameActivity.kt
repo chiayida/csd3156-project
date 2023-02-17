@@ -231,7 +231,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                         //Bullet hit player
                         toBeDeleted.add(projectile)
-                        //gamePlayer.health -= gameEnemy.projectileDamage
+                        gamePlayer.health -= gameEnemy.projectileDamage
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
                         if (gamePlayer.health <= 0) {
