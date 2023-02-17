@@ -57,6 +57,7 @@ class GameGLSquare(context: Context) {
     }
     private var resultMatrix= FloatArray(16)
     private var isInitialized: Boolean = false
+    private var updateTexture: Boolean = false
     companion object {
         private var mProgram: Int = 0
 
@@ -139,9 +140,13 @@ class GameGLSquare(context: Context) {
     //Change texture for the square
     fun setImageResource(id: Int) {
         textureHandle = id
+        updateTexture = true
 
-        //if (mProgram != 0) {
-        if (isInitialized == true) {
+    }
+
+    //Run time draw function to be called by renderer
+    fun draw(mvpMatrix: FloatArray) {
+        if (updateTexture == true && isInitialized == true) {
             glBindTexture(GL_TEXTURE_2D, textureId[0])
             val bitmap = BitmapFactory.decodeResource(mContext.getResources(), textureHandle)
             GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
@@ -149,11 +154,8 @@ class GameGLSquare(context: Context) {
             samplerHandle = GLES20.glGetUniformLocation(mProgram, "u_TextureUnit")
 
             glBindTexture(GL_TEXTURE_2D, 0)
+            updateTexture = false
         }
-    }
-
-    //Run time draw function to be called by renderer
-    fun draw(mvpMatrix: FloatArray) {
         //worldMatrix[12] = (x - GameActivity.halfScreenWidth) / GameActivity.screenWidth
         //worldMatrix[13] = ((y - GameActivity.halfScreenHeight) / GameActivity.screenHeight) * -2F
         //worldMatrix[0] = (xScale / GameActivity.halfScreenWidth) * 10F
