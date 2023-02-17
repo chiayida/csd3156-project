@@ -6,7 +6,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -18,9 +17,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import edu.singaporetech.services.databinding.ActivityGameBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
+    // SQL Database
+    private lateinit var highscoreRepository: HighscoreRepository
 
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
@@ -39,7 +42,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
    // private lateinit var dtView: TextView
 
     private lateinit var playerHealthView: TextView
-    private lateinit var enemyHealthView: TextView
+    private lateinit var currentScoreView: TextView
 
     // PAUSE SCREEN OBJECTS
     private lateinit var pauseButton: Button
@@ -51,6 +54,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var yesButton: Button
     private lateinit var noButton: Button
     var isRestart = false
+    var isDead = false
 
     // SOUNDS
     var soundSys = SoundSystem(this)
@@ -65,6 +69,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     var directionSpeed:Float = 1.5f
     var currentOrientation:Float = 0.0f
     var score:Int = 0
+    var aliveTime:Float = 0F
     var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
     var sheildBool: Boolean = false
@@ -100,6 +105,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        highscoreRepository = HighscoreRepository(this.applicationContext)
+
         screenWidth = (resources.displayMetrics.widthPixels).toFloat()
         halfScreenWidth = screenWidth / 2F
         screenHeight = (resources.displayMetrics.heightPixels).toFloat()
@@ -131,14 +139,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         playerHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
-        enemyHealthView = TextView(this)
-        enemyHealthView.text = "Enemy Health: " + gameEnemy.health
-        enemyHealthView.textSize = 24f
-        enemyHealthView.setTextColor(resources.getColor(R.color.text_color))
-        enemyHealthView.x = 600f
-        enemyHealthView.y = 100f
-        enemyHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(enemyHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        currentScoreView = TextView(this)
+        currentScoreView.text = "Current score: " + score
+        currentScoreView.textSize = 24f
+        currentScoreView.setTextColor(resources.getColor(R.color.text_color))
+        currentScoreView.x = 600f
+        currentScoreView.y = 100f
+        currentScoreView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(currentScoreView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         direction = 0F
 
@@ -172,7 +180,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     override fun onPause() {
         super.onPause()
         engine.setPaused(true)
-        togglePauseView(true)
+        if (!isDead) togglePauseView(true)
         // Unregister the listener
         sensorManager.unregisterListener(this)
         handler.removeCallbacks(updateRunnable)
@@ -250,15 +258,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                             gamePlayer.updatePlayerTexture(2)
                         }
                         else{
-                            //gamePlayer.health -= gameEnemy.projectileDamage
+                            gamePlayer.health -= gameEnemy.projectileDamage
                         }
                         soundSys.playDamageSFX(true)
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
                         if (gamePlayer.health <= 0) {
-                            // TODO Go to Lose/Win screen
-                            //val intent = Intent(this, GameActivity::class.java)
-                            //startActivity(intent)
+
+                            GlobalScope.launch {
+                                val score = Highscore(0, score, aliveTime)
+                                highscoreRepository.insert(score)
+                            }
+
+                            isDead = true
+
+                            val intent = Intent(this, HighscoreActivity::class.java)
+                            startActivity(intent)
                         }
                     }
                 }
@@ -292,6 +307,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                             //Score Counter logic to be changed later just for testing
                             scoreCounter += 1
                             score += gamePlayer.projectileDamage * 10
+                            currentScoreView.text = "Current score: " + score
                             soundSys.playDamageSFX(false)
                         }
                     }
@@ -426,7 +442,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 engine.setPaused(false)
             }
         }
-
+        
         pauseText = TextView(this)
         pauseText.text = "PAUSED"
         pauseText.textSize = 90f

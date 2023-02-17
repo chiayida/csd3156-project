@@ -5,17 +5,32 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import edu.singaporetech.services.databinding.ActivityMainBinding
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    // SQL Database
+    private lateinit var highscoreRepository: HighscoreRepository
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Upon clicking, user will go to GameActivity
+        // Initialise repositories
+        highscoreRepository = HighscoreRepository(this.applicationContext)
+
+
+        // Run it once be before submission to reset database
+        /*
+        GlobalScope.launch {
+            highscoreRepository.deleteAllHighscore()
+        }
+        */
+
+        // Upon clicking, user will go to HighscoreActivity
         binding.playButton.setOnClickListener {
-            val intent = Intent(this, GameActivity::class.java)
+            val intent = Intent(this, HighscoreActivity::class.java)
             startActivity(intent)
         }
 

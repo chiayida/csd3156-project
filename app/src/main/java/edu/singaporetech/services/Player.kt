@@ -10,6 +10,8 @@ class Player(gameActivity: GameActivity) : Entity() {
 
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
+    var score: Int = 0
+
     private val minXPos: Float = 50f
     private val maxXPos: Float = (screenWidth - 50f) // width is the width of the screen
     private val minYPos: Float = 50f

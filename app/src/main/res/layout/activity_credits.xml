@@ -5,14 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_color">
+    android:background="@color/black_color">
 
     <ImageView
         android:id="@+id/imageSIT"
         android:layout_width="411dp"
         android:layout_height="268dp"
-        android:layout_marginTop="64dp"
-        android:background="@drawable/button_outline"
+        android:layout_marginTop="32dp"
         android:contentDescription="@string/todo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,11 +22,11 @@
         android:id="@+id/textViewTeam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
+        android:layout_marginStart="56dp"
         android:layout_marginTop="32dp"
         android:text="@string/_Team"
-        android:textColor="#A5D6A7"
-        android:textSize="18sp"
+        android:textColor="@color/text_color"
+        android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageSIT" />
 
@@ -36,10 +35,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginEnd="56dp"
         android:text="@string/_Instructor"
-        android:textColor="#A5D6A7"
-        android:textSize="18sp"
+        android:textColor="@color/text_color"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageSIT" />
 
@@ -51,7 +50,8 @@
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="64dp"
         android:background="@drawable/button_outline"
-        android:text="@string/_Back"
+        android:text="@string/_MainMenu"
+        android:textColor="@color/text_color"
         android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

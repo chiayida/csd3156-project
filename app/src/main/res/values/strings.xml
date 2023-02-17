@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">Game Project</string>
     <string name="_Play">PLAY</string>
+    <string name="_Start">START</string>
     <string name="_Credits">CREDITS</string>
-    <string name="_Back">BACK</string>
+    <string name="_MainMenu">MAIN MENU</string>
+    <string name="_Highscore">HIGHSCORE </string>
+    <string name="_Nil">-- </string>
     <string name="todo">TODO</string>
     <string name="_Team">Team Members:\n\nChia Yi Da\n\nReuven Tan\n\nOw Jian Wen\n\nJonathan Lim</string>
     <string name="_Instructor">Instructor:\n\nChen Kan</string>

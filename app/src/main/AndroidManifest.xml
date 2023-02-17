@@ -29,6 +29,11 @@
             android:name=".CreditsActivity">
         </activity>
 
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".HighscoreActivity">
+        </activity>
+
     </application>
 
 </manifest>
