@@ -70,7 +70,7 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
     //Setup shaders
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
         // Set the background frame color
-        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
         //Shader Initialize
         val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)

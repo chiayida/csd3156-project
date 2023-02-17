@@ -19,10 +19,15 @@ class GameEngine constructor( val updateInterval: Long, private val listener: On
     private var FPSUpdated = false
     fun getFPSUpdated(): Boolean { return FPSUpdated }
 
+    private var paused : Boolean = false
+    fun setPaused(_Pause : Boolean) {paused = _Pause}
+    fun getPaused() : Boolean {return paused}
+
     fun EngineInit() {
         SystemsInit()
     }
     fun EngineUpdate() {
+        if(paused) return
         frames++
         deltaTime = (System.currentTimeMillis() - previousTime).toFloat()
         previousTime = System.currentTimeMillis()

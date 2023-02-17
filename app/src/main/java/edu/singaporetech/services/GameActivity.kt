@@ -1,6 +1,7 @@
 package edu.singaporetech.services
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
@@ -31,11 +33,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     private val handler = Handler()
 
-    private lateinit var fpsView: TextView
-    private lateinit var dtView: TextView
+   // private lateinit var fpsView: TextView
+   // private lateinit var dtView: TextView
 
     private lateinit var playerHealthView: TextView
     private lateinit var enemyHealthView: TextView
+    private lateinit var pauseButton: Button
+    private lateinit var returnMMButton: Button
+    private lateinit var restartButton: Button
+    private lateinit var pauseText: TextView
 
     private var direction:Float = 0.0f
     private var offsetBottom:Float = 250.0f
@@ -64,8 +70,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             engine.EngineUpdate()
 
             if (engine.getFPSUpdated()) {
-                fpsView.text = "${engine.getFPS()} FPS"
-                dtView.text = "${engine.getDeltaTime()}ms dt"
+               // fpsView.text = "${engine.getFPS()} FPS"
+               // dtView.text = "${engine.getDeltaTime()}ms dt"
             }
 
             handler.postDelayed(this, engine.updateInterval)
@@ -94,26 +100,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         // FIND ALL SCREEN OBJECTS
 
-        //val tfpsView = TextView(this)
-        fpsView = TextView(this)
-        fpsView.text = "Hello, world!"
-        fpsView.textSize = 24f
-        fpsView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(fpsView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-
-        //val tdtView = TextView(this)
-        dtView = TextView(this)
-        dtView.text = " delta time"
-        dtView.textSize = 24f
-        dtView.y = 100f
-        dtView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(dtView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-
-        //fpsView =   binding.textViewFPS
-        //dtView =  binding.textViewDeltaTime
+        initViews()
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
-
 
         gamePlayer = Player(this)
         gameEnemy = Enemy(this)
@@ -121,6 +110,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         playerHealthView = TextView(this)
         playerHealthView.text = "Player Health: " + gamePlayer.health
         playerHealthView.textSize = 24f
+        playerHealthView.setTextColor(resources.getColor(R.color.text_color))
         playerHealthView.x = 600f
         playerHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
@@ -128,14 +118,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         enemyHealthView = TextView(this)
         enemyHealthView.text = "Enemy Health: " + gameEnemy.health
         enemyHealthView.textSize = 24f
+        enemyHealthView.setTextColor(resources.getColor(R.color.text_color))
         enemyHealthView.x = 600f
         enemyHealthView.y = 100f
         enemyHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(enemyHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
-
         direction = 0F
-
 
         val rootView = findViewById<View>(android.R.id.content)
         rootView.setOnClickListener {
@@ -312,5 +301,66 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         gamePlayer.update(dt, isShoot)
         isShoot = false
+    }
+
+    private fun initViews(){
+        initPauseView()
+        //        fpsView = TextView(this)
+//        fpsView.text = "Hello, world!"
+//        fpsView.textSize = 24f
+//        fpsView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+//        addContentView(fpsView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
+//        dtView = TextView(this)
+//        dtView.text = " delta time"
+//        dtView.textSize = 24f
+//        dtView.y = 100f
+//        dtView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+//        addContentView(dtView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+    }
+
+    private fun initPauseView(){
+        pauseButton = Button(this)
+        pauseButton.x = 50f
+        pauseButton.y = 0f
+        pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
+        addContentView(pauseButton, ViewGroup.LayoutParams(250, 250))
+
+        pauseButton.setOnClickListener{
+            pauseButton.setBackgroundResource(android.R.drawable.ic_media_play)
+            engine.setPaused(true)
+            pauseText.visibility = View.VISIBLE
+            restartButton.visibility = View.VISIBLE
+        }
+
+        pauseText = TextView(this)
+        pauseText.text = "PAUSED"
+        pauseText.textSize = 60f
+        pauseText.setTextColor(resources.getColor(R.color.text_color))
+        pauseText.visibility = View.INVISIBLE
+        pauseText.x = (screenWidth / 2f) - 250f
+        pauseText.y = (screenHeight / 2f) - 100f
+        pauseText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(pauseText, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
+        restartButton = Button(this)
+        restartButton.x = (screenWidth / 2f) - 250f
+        restartButton.y = (screenHeight / 2f) - 125f
+        restartButton.text = "RESTART"
+        restartButton.textSize = 30f
+        restartButton.visibility = View.INVISIBLE
+        restartButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
+        restartButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
+        addContentView(restartButton, ViewGroup.LayoutParams(500, 250))
+
+        restartButton.setOnClickListener{
+            val intent = Intent(this, GameActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+        }
+
+
+
     }
 }
