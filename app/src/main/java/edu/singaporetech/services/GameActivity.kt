@@ -160,6 +160,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     * */
     override fun onPause() {
         super.onPause()
+        engine.setPaused(true)
+        togglePauseView(true)
         // Unregister the listener
         sensorManager.unregisterListener(this)
         handler.removeCallbacks(updateRunnable)
