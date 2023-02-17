@@ -28,7 +28,7 @@ class Player(gameActivity: GameActivity) : Entity() {
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
 
-        position = Vector2(screenWidth / 2F, screenHeight - renderObject.yScale)
+        position = Vector2(screenWidth / 2F, screenHeight - 500f)
     }
 
     override fun updatePosition(dt : Float) {

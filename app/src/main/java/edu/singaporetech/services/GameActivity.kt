@@ -105,8 +105,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-        // FIND ALL SCREEN OBJECTS
-
+        // INIT ALL SCREEN OBJECTS
         initViews()
 
         Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
@@ -427,6 +426,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         addContentView(continueButton, ViewGroup.LayoutParams(500, 150))
         continueButton.setOnClickListener{
             togglePauseView(false)
+            engine.setPaused(false)
         }
 
         yesButton = Button(this)
