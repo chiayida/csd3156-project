@@ -6,7 +6,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
     val shoot: Shoot = Shoot(gameActivity,1000F, 0.5F, screenHeight, true, ProjectileType.Enemy)
-    val projectileDamage: Int = 1
+    var projectileDamage: Int = 1
     var health: Int = 3
 
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)

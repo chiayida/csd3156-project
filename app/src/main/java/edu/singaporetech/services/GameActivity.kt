@@ -292,7 +292,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 var playerAABB = AABB(playerMIN, playerMAX)
 
                 if(Physics.collisionIntersectionRectRect(projAABB, powerUpProjectile.velocity, playerAABB, gamePlayer.velocity, dt)){
-                    //Power hit player
+                    //Power up logic
                     toBeDeleted.add(powerUpProjectile)
                     if(powerUpProjectile.getProjectileType() == ProjectileType.PowerUp1)
                         gamePlayer.projectileDamage += 1
@@ -328,6 +328,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             powerUpBool = true
             scoreCounter -= 6
         }
+        if(score > 100)
+            gameEnemy.projectileDamage += 1
 //        var entity = Entity()
 //        entity.position.x = gamePlayer.position.x - 50f
 //        entity.position.y = gamePlayer.position.y
