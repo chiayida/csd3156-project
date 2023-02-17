@@ -3,8 +3,9 @@ package edu.singaporetech.services
 enum class ProjectileType{
     Player,
     Enemy,
-    PowerUp1,
-    PowerUp2
+    DamageBoost,
+    AddHealth,
+    Sheild
 }
 
 class Projectile(gameActivity: GameActivity,
@@ -27,15 +28,20 @@ class Projectile(gameActivity: GameActivity,
         else if(type == ProjectileType.Enemy){
             renderObject.setImageResource(R.drawable.enemy_bullet)
         }
-        else if(type == ProjectileType.PowerUp1)
+        else if(type == ProjectileType.DamageBoost)
         {
             colliderScale = Vector2(50F, 50F)
             renderObject.setImageResource(R.drawable.player)
         }
-        else
+        else if(type == ProjectileType.AddHealth)
         {
             colliderScale = Vector2(50F, 50F)
             renderObject.setImageResource(R.drawable.enemy)
+        }
+        else if(type == ProjectileType.Sheild)
+        {
+            colliderScale = Vector2(50F, 50F)
+            renderObject.setImageResource(R.drawable.coin)
         }
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y

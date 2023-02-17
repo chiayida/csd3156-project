@@ -62,6 +62,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     var score:Int = 0
     var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
+    var sheildBool: Boolean = false
 
     private var isShoot: Boolean = false
 
@@ -231,7 +232,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                         //Bullet hit player
                         toBeDeleted.add(projectile)
-                        gamePlayer.health -= gameEnemy.projectileDamage
+                        if(sheildBool){
+                            sheildBool = false
+                            gamePlayer.updatePlayerTexture(R.drawable.player)
+                        }
+                        else{
+                            gamePlayer.health -= gameEnemy.projectileDamage
+                        }
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
                         if (gamePlayer.health <= 0) {
@@ -294,10 +301,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 if(Physics.collisionIntersectionRectRect(projAABB, powerUpProjectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                     //Power up logic
                     toBeDeleted.add(powerUpProjectile)
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.PowerUp1)
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.DamageBoost)
                         gamePlayer.projectileDamage += 1
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.PowerUp2)
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.AddHealth)
                         gamePlayer.health += 1
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.Sheild)
+                    {
+                        gamePlayer.updatePlayerTexture(R.drawable.player_bullet)
+                        sheildBool = true
+                    }
                 }
                 for (projectile in toBeDeleted) {
                     GameGLSquare.toBeDeleted.add(projectile.renderObject)

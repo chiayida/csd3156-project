@@ -31,6 +31,10 @@ class Player(gameActivity: GameActivity) : Entity() {
         position = Vector2(screenWidth / 2F, screenHeight - 500f)
     }
 
+    fun updatePlayerTexture(texture :Int)
+    {
+        renderObject.setImageResource(texture)
+    }
     override fun updatePosition(dt : Float) {
         position.x = max(minXPos, min( position.x + velocity.x * dt, maxXPos))
         position.y = max(minYPos, min(position.y + velocity.y * dt, maxYPos))

@@ -51,7 +51,7 @@ class Shoot(private val gameActivity: GameActivity,
                 val randomX = random.nextFloat() * screenWidth
                 pos.x = randomX
                 //randomize the powerup
-                val possiblePowerups = listOf(ProjectileType.PowerUp1, ProjectileType.PowerUp2)
+                val possiblePowerups = listOf(ProjectileType.DamageBoost, ProjectileType.AddHealth, ProjectileType.Sheild)
                 projectileType = possiblePowerups.random()
                 val projectile = Projectile(gameActivity, pos,
                     projectileVelocity, projectileBoundary, projectileType)
