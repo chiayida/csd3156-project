@@ -252,6 +252,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         else{
                             //gamePlayer.health -= gameEnemy.projectileDamage
                         }
+                        soundSys.playDamageSFX(true)
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
                         if (gamePlayer.health <= 0) {
@@ -291,6 +292,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                             //Score Counter logic to be changed later just for testing
                             scoreCounter += 1
                             score += gamePlayer.projectileDamage * 10
+                            soundSys.playDamageSFX(false)
                         }
                     }
                 }

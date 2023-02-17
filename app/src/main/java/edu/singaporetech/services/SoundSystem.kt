@@ -10,6 +10,8 @@ class SoundSystem(var gameActivity: GameActivity)  {
     private lateinit var pew2SFX : MediaPlayer
     private lateinit var clickSFX : MediaPlayer
     private lateinit var gameBGM : MediaPlayer
+    private lateinit var pdamagedSFX : MediaPlayer
+    private lateinit var edamagedSFX : MediaPlayer
 
     fun InitializeSounds(){
         // INIT SOUNDS
@@ -19,6 +21,10 @@ class SoundSystem(var gameActivity: GameActivity)  {
         pew2SFX.setVolume(0.35f, 0.35f)
         clickSFX = MediaPlayer.create(gameActivity, R.raw.button_select)
         gameBGM = MediaPlayer.create(gameActivity, R.raw.game_bgm)
+        pdamagedSFX = MediaPlayer.create(gameActivity, R.raw.explode)
+        pdamagedSFX.setVolume(0.35f, 0.35f)
+        edamagedSFX = MediaPlayer.create(gameActivity, R.raw.explode)
+        edamagedSFX.setVolume(0.35f, 0.35f)
 
     }
 
@@ -28,6 +34,8 @@ class SoundSystem(var gameActivity: GameActivity)  {
         clickSFX.release()
         gameBGM.stop()
         gameBGM.release()
+        pdamagedSFX.release()
+        edamagedSFX.release()
     }
 
     fun playGameBGM(){
@@ -42,6 +50,15 @@ class SoundSystem(var gameActivity: GameActivity)  {
         }
         else{
             pew2SFX.start()
+        }
+    }
+
+    fun playDamageSFX(isPlayer : Boolean){
+        if(isPlayer){
+            pdamagedSFX.start()
+        }
+        else{
+            edamagedSFX.start()
         }
     }
 
