@@ -14,8 +14,8 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val minYPos: Float = 50f
     private val maxYPos: Float = (screenHeight - 50f) // height is the height of the screen
 
-    val shoot: Shoot = Shoot(gameActivity,1000F, -0.5F, 0F, false, ProjectileType.Player)
-    val projectileDamage: Int = 1
+    val shoot: Shoot = Shoot(gameActivity,500F, -0.5F, 0F, false, ProjectileType.Player)
+    var projectileDamage: Int = 1
     var health: Int = 5
 
 
@@ -39,7 +39,6 @@ class Player(gameActivity: GameActivity) : Entity() {
     fun updateProjectilesPosition(dt: Float) {
         shoot.updatePositions(dt)
     }
-
 
     fun update(dt: Float, isShoot: Boolean) {
         shoot.update(dt, this, isShoot)

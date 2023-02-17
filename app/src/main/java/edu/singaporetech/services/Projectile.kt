@@ -2,9 +2,10 @@ package edu.singaporetech.services
 
 enum class ProjectileType{
     Player,
-    Enemy
+    Enemy,
+    PowerUp1,
+    PowerUp2
 }
-
 
 class Projectile(gameActivity: GameActivity,
                  shooterPosition: Vector2, _velocity: Float,
@@ -12,6 +13,7 @@ class Projectile(gameActivity: GameActivity,
     private var flag: Boolean = _velocity > 0F
     val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
+    val projType = type
     init {
         position = Vector2(shooterPosition.x, shooterPosition.y)
         colliderScale = Vector2(50F, 50F)
@@ -22,14 +24,25 @@ class Projectile(gameActivity: GameActivity,
         if(type == ProjectileType.Player){
             renderObject.setImageResource(R.drawable.player_bullet)
         }
-        else{
+        else if(type == ProjectileType.Enemy){
             renderObject.setImageResource(R.drawable.enemy_bullet)
+        }
+        else if(type == ProjectileType.PowerUp1)
+        {
+            renderObject.setImageResource(R.drawable.player)
+        }
+        else
+        {
+            renderObject.setImageResource(R.drawable.enemy)
         }
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
     }
 
-
+    fun getProjectileType():ProjectileType
+    {
+        return projType
+    }
     fun update(): Boolean {
         if ((getColliderMin().y >= projectileBoundary && flag) ||
             (getColliderMax().y <= projectileBoundary && !flag)) {

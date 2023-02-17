@@ -26,6 +26,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var sensorManager: SensorManager
     private lateinit var gamePlayer: Player
     private lateinit var gameEnemy: Enemy
+    private lateinit var powerUp: PowerUp
     private var Enemies: MutableList<Enemy> = mutableListOf()
 
     private var FPSCap = 1L
@@ -58,6 +59,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     var directionSpeed:Float = 1.5f
     var currentOrientation:Float = 0.0f
+    var score:Int = 0
+    var scoreCounter:Int = 0
+    var powerUpBool: Boolean = false
 
     private var isShoot: Boolean = false
 
@@ -112,6 +116,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         gamePlayer = Player(this)
         gameEnemy = Enemy(this)
+        powerUp = PowerUp(this)
 
         playerHealthView = TextView(this)
         playerHealthView.text = "Player Health: " + gamePlayer.health
@@ -134,10 +139,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         val rootView = findViewById<View>(android.R.id.content)
         rootView.setOnClickListener {
-            Log.d(TAG,"Screen is tapped")
             isShoot = true
         }
-
         engine.EngineInit()
     }
 
@@ -208,11 +211,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         Enemies.add(gameEnemy)
     }
 
-
     override fun PhysicsInit(){
-
     }
-
 
     override fun OnPhysicsUpdate(dt : Float){
         // COLLISION CHECK
@@ -229,8 +229,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     var playerAABB = AABB(playerMIN, playerMAX)
 
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
+                        //Bullet hit player
                         toBeDeleted.add(projectile)
-                        gamePlayer.health -= gameEnemy.projectileDamage
+                        //gamePlayer.health -= gameEnemy.projectileDamage
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
                         if (gamePlayer.health <= 0) {
@@ -265,15 +266,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                                 enemyAABB, Enemies[j].velocity, dt
                             )
                         ) {
+                            //Bullet Hit enemy removed cause change to endless
                             toBeDeleted.add(projectile)
-                            gameEnemy.health -= gamePlayer.projectileDamage
-                            enemyHealthView.text = "Enemy Health: " + gameEnemy.health
-
-                            if (gameEnemy.health <= 0) {
-                                // TODO Go to Lose/Win screen
-                                //val intent = Intent(this, GameActivity::class.java)
-                                //startActivity(intent)
-                            }
+                            //Score Counter logic to be changed later just for testing
+                            scoreCounter += 1
+                            score += gamePlayer.projectileDamage * 10
                         }
                     }
                 }
@@ -283,11 +280,34 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 gamePlayer.shoot.projectiles.remove(projectile)
             }
         }
+        if(powerUp.shoot.projectiles.isNotEmpty()){
+            val toBeDeleted: MutableList<Projectile> = mutableListOf()
+            for(powerUpProjectile in powerUp.shoot.projectiles){
+                var projMIN = Vector2(powerUpProjectile.getColliderMin().x , powerUpProjectile.getColliderMin().y)
+                var projMAX = Vector2(powerUpProjectile.getColliderMax().x , powerUpProjectile.getColliderMax().y)
+                var projAABB = AABB(projMIN, projMAX)
 
+                var playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
+                var playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
+                var playerAABB = AABB(playerMIN, playerMAX)
+
+                if(Physics.collisionIntersectionRectRect(projAABB, powerUpProjectile.velocity, playerAABB, gamePlayer.velocity, dt)){
+                    //Power hit player
+                    toBeDeleted.add(powerUpProjectile)
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.PowerUp1)
+                        gamePlayer.projectileDamage += 1
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.PowerUp2)
+                        gamePlayer.health += 1
+                }
+                for (projectile in toBeDeleted) {
+                    GameGLSquare.toBeDeleted.add(projectile.renderObject)
+                    powerUp.shoot.projectiles.remove(powerUpProjectile)
+                }
+            }
+        }
         // MOVEMENT UPDATE
         gamePlayer.updateProjectilesPosition(dt)
-
-
+        powerUp.updateProjectilesPosition(dt)
         if(Enemies.isNotEmpty()) {
             for (i in Enemies.indices) {
                 Enemies[i].updateProjectilesPosition(dt)
@@ -295,6 +315,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             }
         }
         gamePlayer.updatePosition(dt)
+        powerUp.updatePosition(dt)
         //gamePlayer.updatePosition(gamePlayer.position.x + direction
         //    ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
     }
@@ -303,10 +324,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     override fun OnGameLogicUpdate(dt : Float){
         gameEnemy.update(dt)
 
+        if(scoreCounter > 6){
+            powerUpBool = true
+            scoreCounter -= 6
+        }
 //        var entity = Entity()
 //        entity.position.x = gamePlayer.position.x - 50f
 //        entity.position.y = gamePlayer.position.y
-
+        powerUp.update(dt,powerUpBool)
+        powerUpBool = false
         gamePlayer.update(dt, isShoot)
         isShoot = false
     }
