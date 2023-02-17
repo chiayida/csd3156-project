@@ -26,6 +26,7 @@ class Shoot(private val gameActivity: GameActivity,
                     projectileVelocity, projectileBoundary, projectileType)
                 projectiles.add(projectile)
                 projectileTimer = projectileDelay
+                gameActivity.soundSys.playShootSFX(projectileType)
             }
         }
         // Update projectiles

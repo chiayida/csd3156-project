@@ -6,6 +6,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -51,6 +52,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var noButton: Button
     var isRestart = false
 
+    // SOUNDS
+    var soundSys = SoundSystem(this)
+
+
     private var direction:Float = 0.0f
     private var offsetBottom:Float = 250.0f
 
@@ -71,7 +76,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         var halfScreenWidth: Float = 0F
         var screenHeight: Float = 0F
         var halfScreenHeight: Float = 0F
-
         private lateinit var gLView: GameGLSurfaceView
     }
 
@@ -81,11 +85,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             // Perform tasks here when the activity is updated
             engine.EngineUpdate()
 
+            // Debug fps and delta time
             if (engine.getFPSUpdated()) {
                // fpsView.text = "${engine.getFPS()} FPS"
                // dtView.text = "${engine.getDeltaTime()}ms dt"
             }
-
             handler.postDelayed(this, engine.updateInterval)
         }
     }
@@ -142,6 +146,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         rootView.setOnClickListener {
             isShoot = true
         }
+
+        soundSys.InitializeSounds()
+        soundSys.playGameBGM()
         engine.EngineInit()
     }
 
@@ -170,7 +177,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         sensorManager.unregisterListener(this)
         handler.removeCallbacks(updateRunnable)
     }
-
+    /*
+    *
+    * */
+    override fun onDestroy() {
+        super.onDestroy()
+        soundSys.ReleaseSounds()
+    }
     /*
     *
     * */
@@ -342,9 +355,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
         if(score > 100)
             gameEnemy.projectileDamage += 1
-//        var entity = Entity()
-//        entity.position.x = gamePlayer.position.x - 50f
-//        entity.position.y = gamePlayer.position.y
         powerUp.update(dt,powerUpBool)
         powerUpBool = false
         gamePlayer.update(dt, isShoot)
@@ -404,6 +414,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
         addContentView(pauseButton, ViewGroup.LayoutParams(250, 250))
         pauseButton.setOnClickListener{
+            soundSys.playClick()
             if (!engine.getPaused()){
                 togglePauseView(true)
                 engine.setPaused(true)
@@ -439,6 +450,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             confirmationText.text = "Confirm Restart the game?"
             toggleConfirmationView(true)
             togglePauseView(false)
+            soundSys.playClick()
         }
 
         returnMMButton = Button(this)
@@ -455,6 +467,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             confirmationText.text = "Confirm return to the Main Menu?"
             toggleConfirmationView(true)
             togglePauseView(false)
+            soundSys.playClick()
         }
 
         continueButton = Button(this)
@@ -469,6 +482,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         continueButton.setOnClickListener{
             togglePauseView(false)
             engine.setPaused(false)
+            soundSys.playClick()
         }
 
         yesButton = Button(this)
@@ -481,6 +495,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         yesButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(yesButton, ViewGroup.LayoutParams(500, 150))
         yesButton.setOnClickListener{
+            soundSys.playClick()
+            toggleConfirmationView(false)
             if(isRestart){
                 recreate()
             }
@@ -504,6 +520,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         noButton.setOnClickListener{
             togglePauseView(true)
             toggleConfirmationView(false)
+            soundSys.playClick()
         }
 
         confirmationText = TextView(this)
