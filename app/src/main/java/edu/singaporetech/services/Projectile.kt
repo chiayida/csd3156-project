@@ -16,7 +16,7 @@ class Projectile(gameActivity: GameActivity,
     val projType = type
     init {
         position = Vector2(shooterPosition.x, shooterPosition.y)
-        colliderScale = Vector2(50F, 50F)
+        colliderScale = Vector2(35F, 35F)
         speed = _velocity
         velocity.y = speed
 
@@ -29,10 +29,12 @@ class Projectile(gameActivity: GameActivity,
         }
         else if(type == ProjectileType.PowerUp1)
         {
+            colliderScale = Vector2(50F, 50F)
             renderObject.setImageResource(R.drawable.player)
         }
         else
         {
+            colliderScale = Vector2(50F, 50F)
             renderObject.setImageResource(R.drawable.enemy)
         }
         renderObject.xScale = colliderScale.x

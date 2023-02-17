@@ -7,7 +7,7 @@ class PowerUp(gameActivity: GameActivity):Entity() {
     val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
     init {
-        position = Vector2(screenWidth / 2, -10.0f)
+        position = Vector2(screenWidth / 2, -100.0f)
         colliderScale = Vector2(50F, 50F)
         speed = 0.0F
         velocity.y = speed
