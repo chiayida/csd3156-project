@@ -431,14 +431,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         pauseText.setTextColor(resources.getColor(R.color.text_color))
         pauseText.visibility = View.INVISIBLE
         pauseText.x = 0f
-        pauseText.y = 920f
+        pauseText.y = (screenHeight / 2f) - 500f
         pauseText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         pauseText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(pauseText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))
 
         restartButton = Button(this)
         restartButton.x = (screenWidth / 2f) - 250f
-        restartButton.y = 1500f
+        restartButton.y = (screenHeight / 2f) + 100f
         restartButton.text = "RESTART"
         restartButton.textSize = 30f
         restartButton.visibility = View.INVISIBLE
@@ -455,7 +455,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         returnMMButton = Button(this)
         returnMMButton.x = (screenWidth / 2f) - 250f
-        returnMMButton.y = 1700f
+        returnMMButton.y = (screenHeight / 2f) + 300f
         returnMMButton.text = "Main Menu"
         returnMMButton.textSize = 30f
         returnMMButton.visibility = View.INVISIBLE
@@ -472,7 +472,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         continueButton = Button(this)
         continueButton.x = (screenWidth / 2f) - 250f
-        continueButton.y = 1300f
+        continueButton.y = (screenHeight / 2f) - 100f
         continueButton.text = "CONTINUE"
         continueButton.textSize = 30f
         continueButton.visibility = View.INVISIBLE
@@ -487,7 +487,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         yesButton = Button(this)
         yesButton.x = (screenWidth / 2f) - 250f
-        yesButton.y = 1400f
+        yesButton.y = (screenHeight / 2f)
         yesButton.text = "YES"
         yesButton.textSize = 30f
         yesButton.visibility = View.INVISIBLE
@@ -510,7 +510,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         noButton = Button(this)
         noButton.x = (screenWidth / 2f) - 250f
-        noButton.y = 1600f
+        noButton.y = (screenHeight / 2f) + 200f
         noButton.text = "NO"
         noButton.textSize = 30f
         noButton.visibility = View.INVISIBLE
@@ -529,7 +529,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         confirmationText.setTextColor(resources.getColor(R.color.text_color))
         confirmationText.visibility = View.INVISIBLE
         confirmationText.x = 0f
-        confirmationText.y = 1100f
+        confirmationText.y = (screenHeight / 2f) - 300f
         confirmationText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         confirmationText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         addContentView(confirmationText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))
