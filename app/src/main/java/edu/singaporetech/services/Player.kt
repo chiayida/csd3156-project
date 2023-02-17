@@ -21,7 +21,7 @@ class Player(gameActivity: GameActivity) : Entity() {
 
     init {
         colliderScale = Vector2(100F, 100F)
-        speed = 0.5F
+        speed = 0.025F
 
         // Setting texture
         renderObject.setImageResource(R.drawable.player)

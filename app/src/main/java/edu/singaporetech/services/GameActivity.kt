@@ -154,7 +154,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // Register the listener for the gyroscope sensor
         sensorManager.registerListener(
             this,
-            sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
             SensorManager.SENSOR_DELAY_NORMAL
         )
         handler.postDelayed(updateRunnable, engine.updateInterval)
@@ -184,26 +184,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null) {
+        if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
             // Get the three values for the gyroscope
             val x = event.values[0]
-            val y = event.values[1]
-            val deltaOrientationY = y * event.timestamp
-            currentOrientation += deltaOrientationY
-            /*Log.d(TAG,currentOrientation.toString())*/
-            // Shift the game obj base on Y rot which is the x direction
-            if(currentOrientation > 0.1)
-            {
-                gamePlayer.velocity.x = directionSpeed * gamePlayer.speed
-            }
-            else if(currentOrientation < -0.1)
-            {
-                gamePlayer.velocity.x = -directionSpeed * gamePlayer.speed
-            }
-            else
-            {
-                gamePlayer.velocity.x = 0.0f
-            }
+            val z = event.values[2]
+            gamePlayer.velocity.x = x * gamePlayer.speed
         }
     }
 
@@ -211,15 +196,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        if (accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
-            Log.w(TAG, "Sensor accuracy changed to UNRELIABLE")
-        } else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
-            Log.w(TAG, "Sensor accuracy changed to LOW")
-        } else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) {
-            Log.d(TAG, "Sensor accuracy changed to MEDIUM")
-        } else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_HIGH) {
-            Log.d(TAG, "Sensor accuracy changed to HIGH")
-        }
+        //if (accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
+        //    Log.w(TAG, "Sensor accuracy changed to UNRELIABLE")
+        //} else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
+        //    Log.w(TAG, "Sensor accuracy changed to LOW")
+        //} else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) {
+        //    Log.d(TAG, "Sensor accuracy changed to MEDIUM")
+        //} else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_HIGH) {
+        //    Log.d(TAG, "Sensor accuracy changed to HIGH")
+        //}
     }
 
     override fun GameLogicInit(){
