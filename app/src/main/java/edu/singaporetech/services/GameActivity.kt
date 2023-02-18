@@ -69,7 +69,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     var aliveTime:Float = 0F
     var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
-    var sheildBool: Boolean = false
+    var sheildBool: Float = 0f
 
     private var isShoot: Boolean = false
 
@@ -309,15 +309,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        //if (accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
-        //    Log.w(TAG, "Sensor accuracy changed to UNRELIABLE")
-        //} else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
-        //    Log.w(TAG, "Sensor accuracy changed to LOW")
-        //} else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) {
-        //    Log.d(TAG, "Sensor accuracy changed to MEDIUM")
-        //} else if (accuracy == SensorManager.SENSOR_STATUS_ACCURACY_HIGH) {
-        //    Log.d(TAG, "Sensor accuracy changed to HIGH")
-        //}
     }
 
     override fun GameLogicInit(){
@@ -344,18 +335,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                         //Bullet hit player
                         toBeDeleted.add(projectile)
-                        if(sheildBool){
-                            sheildBool = false
+                        if(sheildBool < 0){
+                            //Default Player Texture and will take damage
                             gamePlayer.updatePlayerTexture(2)
-                        }
-                        else{
-                            //gamePlayer.health -= gameEnemy.projectileDamage
+                            gamePlayer.health -= gameEnemy.projectileDamage
                         }
                         soundSys.playDamageSFX(true)
                         playerHealthView.text = "Player Health: " + gamePlayer.health
 
                         if (gamePlayer.health <= 0) {
-
                             GlobalScope.launch {
                                 val score = HighscoreData(0, gamePlayer.score, aliveTime)
                                 myRepository.insertHighscoreData(score)
@@ -426,11 +414,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     if(powerUpProjectile.getProjectileType() == ProjectileType.DamageBoost)
                         gamePlayer.projectileDamage += 1
                     if(powerUpProjectile.getProjectileType() == ProjectileType.AddHealth)
-                        gamePlayer.health += 1
+                    {
+                        if(gamePlayer.health < 5)
+                            gamePlayer.health += 1
+                    }
                     if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
                     {
                         gamePlayer.updatePlayerTexture(1)
-                        sheildBool = true
+                        sheildBool = 20f
+                    }
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.SpeedBoost)
+                    {
+                        gamePlayer.updateProjectileSpeed(gamePlayer.projectileSpeed * 1.5f)
                     }
                 }
                 for (projectile in toBeDeleted) {
@@ -457,13 +452,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     override fun OnGameLogicUpdate(dt : Float){
         gameEnemy.update(dt)
-
-        if(scoreCounter > 5){
+        sheildBool -= dt/1000f
+        aliveTime += dt/1000f
+        //Every 10 hit player will get a power up
+        if(scoreCounter > 10){
             powerUpBool = true
-            scoreCounter -= 5
+            scoreCounter -= 10
         }
-        if(gamePlayer.score > 100)
+        //Enemy Gradually become stronger over time
+        if(gamePlayer.score > Math.pow(gameEnemy.projectileDamage.toDouble(), 2.0) * 100)
+        {
             gameEnemy.projectileDamage += 1
+            gameEnemy.updateEnemyProjectileSpeed(gameEnemy.EnemyProjectileSpeed * 1.2f)
+        }
         powerUp.update(dt,powerUpBool)
         powerUpBool = false
         gamePlayer.update(dt, isShoot)

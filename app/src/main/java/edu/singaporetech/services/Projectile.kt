@@ -5,7 +5,8 @@ enum class ProjectileType{
     Enemy,
     DamageBoost,
     AddHealth,
-    Shield
+    Shield,
+    SpeedBoost
 }
 
 class Projectile(val gameActivity: GameActivity, var position_: Vector2, var velocity_: Float,
@@ -40,6 +41,10 @@ class Projectile(val gameActivity: GameActivity, var position_: Vector2, var vel
                 renderObject.setImageResource(R.drawable.enemy)
             }
             ProjectileType.Shield -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.coin)
+            }
+            ProjectileType.SpeedBoost -> {
                 colliderScale = Vector2(50F, 50F)
                 renderObject.setImageResource(R.drawable.coin)
             }

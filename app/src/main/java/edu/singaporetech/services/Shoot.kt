@@ -28,7 +28,10 @@ class Shoot(private val gameActivity: GameActivity,
             projectile.updatePosition(dt)
         }
     }
-
+    fun UpdateSpeed(speed:Float)
+    {
+        projectileVelocity = speed
+    }
 
     fun update(dt: Float, entity: Entity, isClickToShoot: Boolean) {
         projectileTimer -= dt
@@ -66,10 +69,11 @@ class Shoot(private val gameActivity: GameActivity,
                 pos.x = randomX
 
                 // Randomize the power up
-                val possiblePowerups = listOf(ProjectileType.DamageBoost, ProjectileType.AddHealth, ProjectileType.Shield)
+                val possiblePowerups = listOf(ProjectileType.DamageBoost, ProjectileType.AddHealth,
+                    ProjectileType.Shield,ProjectileType.SpeedBoost)
                 projectileType = possiblePowerups.random()
                 val projectile = Projectile(gameActivity, pos,
-                    projectileVelocity, projectileBoundary, ProjectileType.Shield)
+                    projectileVelocity, projectileBoundary, projectileType)
                 projectiles.add(projectile)
             }
         }

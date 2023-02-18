@@ -17,11 +17,11 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val minYPos: Float = 50f
     private val maxYPos: Float = (screenHeight - 50f) // height is the height of the screen
 
-    val shoot: Shoot = Shoot(gameActivity,500F, -0.5F,
-        0F, false, ProjectileType.Player)
     var projectileDamage: Int = 1
 
     var health: Int = 5
+    var projectileSpeed = -0.5f
+    val shoot: Shoot = Shoot(gameActivity,500F, projectileSpeed, 0F, false, ProjectileType.Player)
 
 
     init {
@@ -40,12 +40,10 @@ class Player(gameActivity: GameActivity) : Entity() {
     {
         if(texture == 1)
         {
-            Log.d("Enter","ASDASDASD")
             renderObject.setImageResource(R.drawable.player_bullet)
         }
         if(texture == 2)
         {
-            Log.d("Enter","enter2")
             renderObject.setImageResource(R.drawable.player)
         }
     }
@@ -58,6 +56,11 @@ class Player(gameActivity: GameActivity) : Entity() {
         shoot.updatePositions(dt)
     }
 
+    fun updateProjectileSpeed(speed:Float)
+    {
+        projectileSpeed = speed
+        shoot.UpdateSpeed(speed)
+    }
     fun update(dt: Float, isShoot: Boolean) {
         shoot.update(dt, this, isShoot)
 

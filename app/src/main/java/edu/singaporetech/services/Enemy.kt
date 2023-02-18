@@ -5,9 +5,10 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
-    val shoot: Shoot = Shoot(gameActivity, 1000F, 0.5F,
-                             screenHeight, true, ProjectileType.Enemy)
     var projectileDamage: Int = 1
+    var EnemyProjectileSpeed:Float = 0.5f
+    val shoot: Shoot = Shoot(gameActivity, 1000F, EnemyProjectileSpeed,
+                             screenHeight, true, ProjectileType.Enemy)
 
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
@@ -40,7 +41,11 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     fun updateProjectilesPosition(dt: Float) {
         shoot.updatePositions(dt)
     }
-
+    fun updateEnemyProjectileSpeed(speed:Float)
+    {
+        EnemyProjectileSpeed = speed
+        shoot.UpdateSpeed(speed)
+    }
 
     fun update(dt: Float) {
         if (getColliderMax().x >= screenWidth) {
