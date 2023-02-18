@@ -36,6 +36,16 @@ class Player(gameActivity: GameActivity) : Entity() {
         position = Vector2(screenWidth / 2F, screenHeight - 500f)
     }
 
+    fun setDatabaseVariables(position_: Vector2, velocity_: Float, score_: Int, health_: Int,
+                             projectileDamage_: Int, projectileSpeed_: Float) {
+        position = Vector2(position_.x, position_.y)
+        velocity.x = velocity_
+        score = score_
+        health = health_
+        projectileDamage = projectileDamage_
+        projectileSpeed = projectileSpeed_
+    }
+
     fun updatePlayerTexture(texture :Int)
     {
         if(texture == 1)

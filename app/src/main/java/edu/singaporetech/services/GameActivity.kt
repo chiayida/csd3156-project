@@ -133,46 +133,73 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             // Enemies Data
             if (myRepository.getEnemiesData().isNotEmpty()) {
                 val enemyData = myRepository.getEnemiesData()[0]
-                gameEnemy.setDatabaseVariables(Vector2(enemyData.positionX, enemyData.positionY),
-                    enemyData.velocityX, enemyData.projectileDamage, enemyData.projectileDelay, enemyData.projectileTimer,
-                    enemyData.projectileVelocity, enemyData.isAutoShoot, enemyData.powerUpTimer)
+                gameEnemy.setDatabaseVariables(
+                    Vector2(enemyData.positionX, enemyData.positionY),
+                    enemyData.velocityX,
+                    enemyData.projectileDamage,
+                    enemyData.projectileDelay,
+                    enemyData.projectileTimer,
+                    enemyData.projectileVelocity,
+                    enemyData.isAutoShoot,
+                    enemyData.powerUpTimer
+                )
             }
             myRepository.deleteAllEnemies()
 
             // Player Data
-
+            if (myRepository.getPlayersData().isNotEmpty()) {
+                val playerData = myRepository.getPlayersData()[0]
+                gamePlayer.setDatabaseVariables(
+                    Vector2(playerData.positionX, playerData.positionY),
+                    playerData.velocityX,
+                    playerData.score,
+                    playerData.health,
+                    playerData.projectileDamage,
+                    playerData.projectileSpeed
+                )
+            }
+            myRepository.deleteAllPlayers()
 
             // Projectiles Data
             if (myRepository.getProjectilesData().isNotEmpty()) {
                 for (i in myRepository.getProjectilesData().indices) {
                     val projectileData = myRepository.getProjectilesData()[i]
 
-                    tempProjectile.setDatabaseVariables(Vector2(projectileData.positionX, projectileData.positionY),
-                        projectileData.projectileVelocity, projectileData.projectileBoundary,
-                        projectileData.projectileType)
+                    tempProjectile.setDatabaseVariables(
+                        Vector2(projectileData.positionX, projectileData.positionY),
+                        projectileData.projectileVelocity,
+                        projectileData.projectileBoundary,
+                        projectileData.projectileType
+                    )
                     var toBeAddedProjectile = tempProjectile.copy()
 
                     when (ProjectileType.values()[projectileData.projectileType]) {
                         ProjectileType.Player -> {
-                            gameEnemy.shoot.projectiles.add(toBeAddedProjectile)
+                            gamePlayer.shoot.projectiles.add(toBeAddedProjectile)
+                            Log.d("type", "Player")
                         }
                         ProjectileType.Enemy -> {
-                            gamePlayer.shoot.projectiles.add(toBeAddedProjectile)
+                            gameEnemy.shoot.projectiles.add(toBeAddedProjectile)
+                            Log.d("type", "Enemy")
                         }
                         else -> {
                             powerUp.shoot.projectiles.add(toBeAddedProjectile)
+                            Log.d("type", "power up")
                         }
                     }
                 }
                 myRepository.deleteAllProjectiles()
             }
         }
+        GameGLSquare.toBeDeleted.add(tempProjectile.renderObject)
+
 
         playerHealthView = TextView(this)
         playerHealthView.text = "Player Health: " + gamePlayer.health
         playerHealthView.textSize = 24f
         playerHealthView.setTextColor(resources.getColor(R.color.text_color))
-        playerHealthView.x = 600f
+        playerHealthView.x = 550f
+        playerHealthView.y = 150f
         playerHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
@@ -180,8 +207,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         currentScoreView.text = "Current score: " + gamePlayer.score
         currentScoreView.textSize = 24f
         currentScoreView.setTextColor(resources.getColor(R.color.text_color))
-        currentScoreView.x = 600f
-        currentScoreView.y = 100f
+        currentScoreView.x = 550f
+        currentScoreView.y = 50f
         currentScoreView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(currentScoreView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
@@ -226,56 +253,74 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onDestroy() {
-        // Save data to database for it to be reloaded
-        GlobalScope.launch {
+        if (!isRestart) {
+            // Save data to database for it to be reloaded
+            GlobalScope.launch {
 
-            // Enemy Data
-            gameEnemy.shoot.projectileDelay = 100f
-
-            var enemyData = EnemyData(0, gameEnemy.position.x, gameEnemy.position.y, gameEnemy.velocity.x,
-                gameEnemy.projectileDamage, gameEnemy.shoot.projectileDelay, gameEnemy.shoot.projectileTimer,
-                gameEnemy.shoot.projectileVelocity, gameEnemy.shoot.isAutoShoot, gameEnemy.shoot.powerUpTimer)
-            myRepository.insertEnemyData(enemyData)
-
-            for (projectile in gameEnemy.shoot.projectiles) {
-                var enemyProjectilesData = ProjectilesData(
+                // Enemy Data
+                var enemyData = EnemyData(
                     0,
-                    projectile.position.x,
-                    projectile.position.y,
-                    projectile.velocity.y,
-                    projectile.projectileBoundary,
-                    projectile.getProjectileType().ordinal
+                    gameEnemy.position.x,
+                    gameEnemy.position.y,
+                    gameEnemy.velocity.x,
+                    gameEnemy.projectileDamage,
+                    gameEnemy.shoot.projectileDelay,
+                    gameEnemy.shoot.projectileTimer,
+                    gameEnemy.shoot.projectileVelocity,
+                    gameEnemy.shoot.isAutoShoot,
+                    gameEnemy.shoot.powerUpTimer
                 )
-                myRepository.insertProjectilesData(enemyProjectilesData)
-            }
+                myRepository.insertEnemyData(enemyData)
 
-            // Player Data
+                for (projectile in gameEnemy.shoot.projectiles) {
+                    var enemyProjectilesData = ProjectilesData(
+                        0,
+                        projectile.position.x,
+                        projectile.position.y,
+                        projectile.velocity.y,
+                        projectile.projectileBoundary,
+                        projectile.getProjectileType().ordinal
+                    )
+                    myRepository.insertProjectilesData(enemyProjectilesData)
+                }
 
-
-            for (projectile in gamePlayer.shoot.projectiles) {
-                var playerProjectilesData = ProjectilesData(
+                // Player Data
+                var playerData = PlayerData(
                     0,
-                    projectile.position.x,
-                    projectile.position.y,
-                    projectile.velocity.y,
-                    projectile.projectileBoundary,
-                    projectile.getProjectileType().ordinal
+                    gamePlayer.position.x,
+                    gamePlayer.position.y,
+                    gamePlayer.velocity.x,
+                    gamePlayer.score,
+                    gamePlayer.health,
+                    gamePlayer.projectileDamage,
+                    gamePlayer.projectileSpeed
                 )
-                myRepository.insertProjectilesData(playerProjectilesData)
-            }
+                myRepository.insertPlayerData(playerData)
 
+                for (projectile in gamePlayer.shoot.projectiles) {
+                    var playerProjectilesData = ProjectilesData(
+                        0,
+                        projectile.position.x,
+                        projectile.position.y,
+                        projectile.velocity.y,
+                        projectile.projectileBoundary,
+                        projectile.getProjectileType().ordinal
+                    )
+                    myRepository.insertProjectilesData(playerProjectilesData)
+                }
 
-            // PowerUp Data
-            for (projectile in powerUp.shoot.projectiles) {
-                var powerUpProjectilesData = ProjectilesData(
-                    0,
-                    projectile.position.x,
-                    projectile.position.y,
-                    projectile.velocity.y,
-                    projectile.projectileBoundary,
-                    projectile.getProjectileType().ordinal
-                )
-                myRepository.insertProjectilesData(powerUpProjectilesData)
+                // PowerUp Data
+                for (projectile in powerUp.shoot.projectiles) {
+                    var powerUpProjectilesData = ProjectilesData(
+                        0,
+                        projectile.position.x,
+                        projectile.position.y,
+                        projectile.velocity.y,
+                        projectile.projectileBoundary,
+                        projectile.getProjectileType().ordinal
+                    )
+                    myRepository.insertProjectilesData(powerUpProjectilesData)
+                }
             }
         }
 
@@ -341,8 +386,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                             gamePlayer.health -= gameEnemy.projectileDamage
                         }
                         soundSys.playDamageSFX(true)
-                        playerHealthView.text = "Player Health: " + gamePlayer.health
-
                         if (gamePlayer.health <= 0) {
                             GlobalScope.launch {
                                 val score = HighscoreData(0, gamePlayer.score, aliveTime)
@@ -362,6 +405,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 }
             }
         }
+
         if(gamePlayer.shoot.projectiles.isNotEmpty()) {
             val toBeDeleted: MutableList<Projectile> = mutableListOf()
             for (projectile in gamePlayer.shoot.projectiles) {
@@ -451,6 +495,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
 
     override fun OnGameLogicUpdate(dt : Float){
+        playerHealthView.text = "Player Health: " + gamePlayer.health
+
         gameEnemy.update(dt)
         sheildBool -= dt/1000f
         aliveTime += dt/1000f
@@ -520,7 +566,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private fun initPauseView(){
         pauseButton = Button(this)
         pauseButton.x = 50f
-        pauseButton.y = 0f
+        pauseButton.y = 25f
         pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
         addContentView(pauseButton, ViewGroup.LayoutParams(250, 250))
         pauseButton.setOnClickListener{

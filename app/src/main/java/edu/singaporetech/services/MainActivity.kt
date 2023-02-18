@@ -22,10 +22,9 @@ class MainActivity : AppCompatActivity() {
         // Initialise repositories
         myRepository = MyRepository(this.applicationContext)
 
-
         // Run it once be before submission to reset database
         //GlobalScope.launch {
-            //myRepository.deleteAllHighscores()
+        //    myRepository.deleteAllHighscores()
         //}
 
         // Upon clicking, user will go to HighscoreActivity

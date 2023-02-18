@@ -59,7 +59,6 @@ class Projectile(val gameActivity: GameActivity, var position_: Vector2, var vel
     }
 
 
-
     fun getProjectileType():ProjectileType {
         return projectileType
     }
@@ -93,6 +92,10 @@ class Projectile(val gameActivity: GameActivity, var position_: Vector2, var vel
                 renderObject.setImageResource(R.drawable.enemy)
             }
             ProjectileType.Shield -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.coin)
+            }
+            ProjectileType.SpeedBoost -> {
                 colliderScale = Vector2(50F, 50F)
                 renderObject.setImageResource(R.drawable.coin)
             }

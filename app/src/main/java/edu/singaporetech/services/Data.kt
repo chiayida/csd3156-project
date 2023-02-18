@@ -40,10 +40,14 @@ data class EnemyData(
     val powerUpTimer: Float
 )
 
-/*
 @Entity(tableName = "player_table")
 data class PlayerData(
     @PrimaryKey(autoGenerate = true) val id: Int,
-
+    val positionX: Float,
+    val positionY: Float,
+    val velocityX: Float,
+    val score: Int,
+    val health: Int,
+    val projectileDamage: Int,
+    val projectileSpeed: Float
 )
- */

@@ -1,7 +1,6 @@
 package edu.singaporetech.services
 
 import android.content.Context
-import androidx.room.Room
 
 
 /*
@@ -13,16 +12,15 @@ class MyRepository(context: Context) {
     private val highscoreDao: HighscoreDao
     private val projectilesDao: ProjectilesDao
     private val enemyDao: EnemyDao
-    //private val playerDao: PlayerDao
+    private val playerDao: PlayerDao
 
     init {
-        //val myDatabase = Room.databaseBuilder(context, MyDatabase::class.java, "my_database").build()
         val myDatabase = MyDatabase.getDatabase(context)
 
         highscoreDao = myDatabase.highscoreDao()
         projectilesDao = myDatabase.projectilesDao()
         enemyDao = myDatabase.enemyDao()
-        //playerDao = myDatabase.playerDao()
+        playerDao = myDatabase.playerDao()
     }
 
 
@@ -68,7 +66,6 @@ class MyRepository(context: Context) {
     }
 
 
-    /*
     // PlayerData operations
     fun insertPlayerData(playerData: PlayerData) {
         playerDao.insert(playerData)
@@ -81,5 +78,4 @@ class MyRepository(context: Context) {
     fun deleteAllPlayers() {
         playerDao.deleteAllPlayers()
     }
-     */
 }

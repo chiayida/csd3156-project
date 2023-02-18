@@ -11,15 +11,14 @@ import androidx.room.RoomDatabase
 * The interface defines methods for inserting, reading, and deleting data from table.
 * */
 
-//@Database(entities = [HighscoreData::class, EnemyData::class, PlayerData::class], version = 1, exportSchema = false)
-@Database(entities = [HighscoreData::class, ProjectilesData::class,
-    EnemyData::class], version = 1, exportSchema = false)
+@Database(entities = [HighscoreData::class, ProjectilesData::class, EnemyData::class, PlayerData::class],
+    version = 1, exportSchema = false)
 abstract class MyDatabase : RoomDatabase() {
 
     abstract fun highscoreDao(): HighscoreDao
     abstract fun projectilesDao(): ProjectilesDao
     abstract fun enemyDao(): EnemyDao
-    //abstract fun playerDao(): PlayerDao
+    abstract fun playerDao(): PlayerDao
 
     companion object {
 

@@ -13,7 +13,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
     init {
-        position = Vector2(screenWidth / 2, screenHeight / 8)
+        position = Vector2(screenWidth / 2, screenHeight / 5)
         colliderScale = Vector2(100F, 100F)
         speed = 0.5F
         velocity.x = speed

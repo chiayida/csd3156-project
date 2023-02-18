@@ -52,7 +52,6 @@ interface EnemyDao {
     fun deleteAllEnemies()
 }
 
-/*
 @Dao
 interface PlayerDao {
     @Insert
@@ -66,4 +65,3 @@ interface PlayerDao {
     @Query("DELETE FROM player_table")
     fun deleteAllPlayers()
 }
- */
