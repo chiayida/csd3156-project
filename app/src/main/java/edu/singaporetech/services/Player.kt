@@ -19,7 +19,7 @@ class Player(gameActivity: GameActivity) : Entity() {
 
     var projectileDamage: Int = 1
 
-    var health: Int = 5
+    var health: Int = 10
     var projectileSpeed = -0.5f
     val shoot: Shoot = Shoot(gameActivity,500F, projectileSpeed, 0F, false, ProjectileType.Player)
 

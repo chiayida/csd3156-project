@@ -243,6 +243,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     * */
     override fun onPause() {
         super.onPause()
+        soundSys.StopSounds()
         engine.setPaused(true)
         if (!isDead) togglePauseView(true)
         // Unregister the listener

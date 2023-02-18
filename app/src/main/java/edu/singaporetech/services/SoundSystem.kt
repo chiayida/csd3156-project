@@ -27,12 +27,13 @@ class SoundSystem(var gameActivity: GameActivity)  {
         edamagedSFX.setVolume(0.35f, 0.35f)
 
     }
-
+    fun StopSounds(){
+        gameBGM.stop()
+    }
     fun ReleaseSounds(){
         pewSFX.release()
         pew2SFX.release()
         clickSFX.release()
-        gameBGM.stop()
         gameBGM.release()
         pdamagedSFX.release()
         edamagedSFX.release()
