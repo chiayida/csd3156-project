@@ -1,13 +1,14 @@
 package edu.singaporetech.services
 
 
-class Enemy(gameActivity: GameActivity) : Entity() {
+class Enemy(gameActivity: GameActivity) : Entity()
+{
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
-    val shoot: Shoot = Shoot(gameActivity,1000F, 0.5F, screenHeight, true, ProjectileType.Enemy)
+    val shoot: Shoot = Shoot(gameActivity, 1000F, 0.5F,
+                             screenHeight, true, ProjectileType.Enemy)
     var projectileDamage: Int = 1
-    var health: Int = 3
 
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
@@ -22,6 +23,18 @@ class Enemy(gameActivity: GameActivity) : Entity() {
         renderObject.rotation = 180f
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
+    }
+
+
+    fun setDatabaseVariables(position_: Vector2, velocityX: Float, projectileDamage_: Int,
+                             projectileDelay_: Float, projectileTimer_: Float, projectileVelocity_: Float,
+                             isAutoShoot_: Boolean, powerUpTimer_: Float) {
+        position = position_
+        velocity.x = velocityX
+        projectileDamage = projectileDamage_
+
+        shoot.setDatabaseVariables(projectileDelay_, projectileTimer_, projectileVelocity_,
+                                   isAutoShoot_, powerUpTimer_)
     }
 
 

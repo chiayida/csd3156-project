@@ -13,7 +13,7 @@ class HighscoreActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHighscoreBinding
 
     // SQL Database
-    private lateinit var highscoreRepository: HighscoreRepository
+    private lateinit var myRepository: MyRepository
 
 
     @SuppressLint("SetTextI18n")
@@ -23,11 +23,11 @@ class HighscoreActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Get repository
-        highscoreRepository = HighscoreRepository(this.applicationContext)
+        myRepository = MyRepository(this.applicationContext)
 
         // Load all time top 5 scores + time (database)
         GlobalScope.launch {
-            val scores = highscoreRepository.getTopScores()
+            val scores = myRepository.getTopHighscores()
 
             for (i in scores.indices) {
                 when (i) {

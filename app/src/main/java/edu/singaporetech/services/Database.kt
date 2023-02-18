@@ -10,18 +10,24 @@ import androidx.room.RoomDatabase
 * Provides an interface for data stored in SQLite database in Android application.
 * The interface defines methods for inserting, reading, and deleting data from table.
 * */
-@Database(entities = [Highscore::class], version = 1, exportSchema = false)
-abstract class HighscoreDatabase : RoomDatabase() {
+
+//@Database(entities = [HighscoreData::class, EnemyData::class, PlayerData::class], version = 1, exportSchema = false)
+@Database(entities = [HighscoreData::class, ProjectilesData::class,
+    EnemyData::class], version = 1, exportSchema = false)
+abstract class MyDatabase : RoomDatabase() {
 
     abstract fun highscoreDao(): HighscoreDao
+    abstract fun projectilesDao(): ProjectilesDao
+    abstract fun enemyDao(): EnemyDao
+    //abstract fun playerDao(): PlayerDao
 
     companion object {
 
         @Volatile
-        private var mInstance: HighscoreDatabase? = null
+        private var mInstance: MyDatabase? = null
 
         // Static method to create a singleton instance
-        fun getDatabase(context: Context): HighscoreDatabase {
+        fun getDatabase(context: Context): MyDatabase {
             val tempInstance = mInstance
             if (tempInstance != null) {
                 return tempInstance
@@ -29,8 +35,8 @@ abstract class HighscoreDatabase : RoomDatabase() {
             synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    HighscoreDatabase::class.java,
-                    "highscore_database"
+                    MyDatabase::class.java,
+                    "my_database"
                 ).build()
                 mInstance = instance
                 return instance

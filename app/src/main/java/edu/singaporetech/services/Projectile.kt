@@ -5,52 +5,99 @@ enum class ProjectileType{
     Enemy,
     DamageBoost,
     AddHealth,
-    Sheild
+    Shield
 }
 
-class Projectile(gameActivity: GameActivity,
-                 shooterPosition: Vector2, _velocity: Float,
-                 private val projectileBoundary: Float, type : ProjectileType): Entity() {
-    private var flag: Boolean = _velocity > 0F
+class Projectile(val gameActivity: GameActivity, var position_: Vector2, var velocity_: Float,
+                 var projectileBoundary_: Float, var projectileType_: ProjectileType): Entity() {
+    var flag: Boolean = velocity_ > 0F
     val renderObject: GameGLSquare = GameGLSquare(gameActivity)
+    var projectileBoundary = projectileBoundary_
 
-    val projType = type
+    private var projectileType = projectileType_
+
     init {
-        position = Vector2(shooterPosition.x, shooterPosition.y)
-        colliderScale = Vector2(35F, 35F)
-        speed = _velocity
+        position = Vector2(position_.x, position_.y)
+        speed = velocity_
         velocity.y = speed
 
         // Setting texture
-        if(type == ProjectileType.Player){
-            renderObject.setImageResource(R.drawable.player_bullet)
-        }
-        else if(type == ProjectileType.Enemy){
-            renderObject.setImageResource(R.drawable.enemy_bullet)
-        }
-        else if(type == ProjectileType.DamageBoost)
-        {
-            colliderScale = Vector2(50F, 50F)
-            renderObject.setImageResource(R.drawable.player)
-        }
-        else if(type == ProjectileType.AddHealth)
-        {
-            colliderScale = Vector2(50F, 50F)
-            renderObject.setImageResource(R.drawable.enemy)
-        }
-        else if(type == ProjectileType.Sheild)
-        {
-            colliderScale = Vector2(50F, 50F)
-            renderObject.setImageResource(R.drawable.coin)
+        when (projectileType) {
+            ProjectileType.Player -> {
+                colliderScale = Vector2(35F, 35F)
+                renderObject.setImageResource(R.drawable.player_bullet)
+            }
+            ProjectileType.Enemy -> {
+                colliderScale = Vector2(35F, 35F)
+                renderObject.setImageResource(R.drawable.enemy_bullet)
+            }
+            ProjectileType.DamageBoost -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.player)
+            }
+            ProjectileType.AddHealth -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.enemy)
+            }
+            ProjectileType.Shield -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.coin)
+            }
         }
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
     }
 
-    fun getProjectileType():ProjectileType
-    {
-        return projType
+
+    fun copy(): Projectile {
+        return Projectile(gameActivity, position_, velocity_, projectileBoundary_, projectileType_)
     }
+
+
+
+    fun getProjectileType():ProjectileType {
+        return projectileType
+    }
+
+
+    fun setDatabaseVariables(position_: Vector2, velocity_: Float,
+                             projectileBoundary_: Float, type: Int) {
+        position = position_
+        speed = velocity_
+        velocity.y = speed
+        flag = velocity_ > 0F
+
+        projectileBoundary = projectileBoundary_
+
+        projectileType = ProjectileType.values()[type]
+        when (projectileType) {
+            ProjectileType.Player -> {
+                colliderScale = Vector2(35F, 35F)
+                renderObject.setImageResource(R.drawable.player_bullet)
+            }
+            ProjectileType.Enemy -> {
+                colliderScale = Vector2(35F, 35F)
+                renderObject.setImageResource(R.drawable.enemy_bullet)
+            }
+            ProjectileType.DamageBoost -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.player)
+            }
+            ProjectileType.AddHealth -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.enemy)
+            }
+            ProjectileType.Shield -> {
+                colliderScale = Vector2(50F, 50F)
+                renderObject.setImageResource(R.drawable.coin)
+            }
+        }
+        renderObject.xScale = colliderScale.x
+        renderObject.yScale = colliderScale.y
+    }
+
+
+
     fun update(): Boolean {
         if ((getColliderMin().y >= projectileBoundary && flag) ||
             (getColliderMax().y <= projectileBoundary && !flag)) {

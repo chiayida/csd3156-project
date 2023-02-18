@@ -22,8 +22,9 @@ import kotlinx.coroutines.launch
 
 
 class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
+    val gameActivity: GameActivity = this
     // SQL Database
-    private lateinit var highscoreRepository: HighscoreRepository
+    private lateinit var myRepository: MyRepository
 
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
@@ -61,13 +62,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
 
     private var direction:Float = 0.0f
-    private var offsetBottom:Float = 250.0f
 
     private var screenWidth: Float = 0F
     private var screenHeight: Float = 0f
 
-    var directionSpeed:Float = 1.5f
-    var currentOrientation:Float = 0.0f
     var score:Int = 0
     var aliveTime:Float = 0F
     var scoreCounter:Int = 0
@@ -91,10 +89,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             engine.EngineUpdate()
 
             // Debug fps and delta time
-            if (engine.getFPSUpdated()) {
+            //if (engine.getFPSUpdated()) {
                // fpsView.text = "${engine.getFPS()} FPS"
                // dtView.text = "${engine.getDeltaTime()}ms dt"
-            }
+            //}
             handler.postDelayed(this, engine.updateInterval)
         }
     }
@@ -105,8 +103,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        highscoreRepository = HighscoreRepository(this.applicationContext)
+        myRepository = MyRepository(this.applicationContext)
 
         screenWidth = (resources.displayMetrics.widthPixels).toFloat()
         halfScreenWidth = screenWidth / 2F
@@ -125,11 +122,57 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // INIT ALL SCREEN OBJECTS
         initViews()
 
-        Log.d(TAG,resources.displayMetrics.heightPixels.toFloat().toString())
 
-        gamePlayer = Player(this)
-        gameEnemy = Enemy(this)
-        powerUp = PowerUp(this)
+        // Initialise gameEnemy
+        gameEnemy = Enemy(gameActivity)
+        gamePlayer = Player(gameActivity)
+        powerUp = PowerUp(gameActivity)
+
+        var tempProjectile = Projectile(gameActivity, Vector2(0F, 0F),
+            0F, 0F, ProjectileType.Enemy)
+
+        GlobalScope.launch {
+
+            // Enemies Data
+            if (myRepository.getEnemiesData().isNotEmpty()) {
+                val enemyData = myRepository.getEnemiesData()[0]
+                gameEnemy.setDatabaseVariables(Vector2(enemyData.positionX, enemyData.positionY),
+                    enemyData.velocityX, enemyData.projectileDamage, enemyData.projectileDelay, enemyData.projectileTimer,
+                    enemyData.projectileVelocity, enemyData.isAutoShoot, enemyData.powerUpTimer)
+            }
+            myRepository.deleteAllEnemies()
+
+            // Player Data
+
+
+            // Projectiles Data
+            Log.d("snooze", "size: " + myRepository.getProjectilesData().size.toString())
+            if (myRepository.getProjectilesData().isNotEmpty()) {
+                for (i in myRepository.getProjectilesData().indices) {
+                    val projectileData = myRepository.getProjectilesData()[i]
+                    tempProjectile.setDatabaseVariables(Vector2(projectileData.positionX, projectileData.positionY),
+                        projectileData.projectileVelocity, projectileData.projectileBoundary,
+                        projectileData.projectileType)
+
+                    var toBeAddedProjectile = tempProjectile.copy()
+
+                    when (ProjectileType.values()[projectileData.projectileType]) {
+                        ProjectileType.Player -> {
+                            gameEnemy.shoot.projectiles.add(toBeAddedProjectile)
+                        }
+                        ProjectileType.Enemy -> {
+                            gamePlayer.shoot.projectiles.add(toBeAddedProjectile)
+                        }
+                        else -> {
+                            powerUp.shoot.projectiles.add(toBeAddedProjectile)
+                        }
+                    }
+                }
+                myRepository.deleteAllProjectiles()
+
+                //tempProjectile.setDatabaseVariables()
+            }
+        }
 
         playerHealthView = TextView(this)
         playerHealthView.text = "Player Health: " + gamePlayer.health
@@ -189,6 +232,38 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onDestroy() {
+
+        // Save data to be reloaded
+        GlobalScope.launch {
+            // Enemy Data
+            gameEnemy.shoot.projectileDelay = 100F
+
+            var enemyData = EnemyData(0, gameEnemy.position.x, gameEnemy.position.y, gameEnemy.velocity.x,
+                gameEnemy.projectileDamage, gameEnemy.shoot.projectileDelay, gameEnemy.shoot.projectileTimer,
+                gameEnemy.shoot.projectileVelocity, gameEnemy.shoot.isAutoShoot, gameEnemy.shoot.powerUpTimer)
+            myRepository.insertEnemyData(enemyData)
+
+            Log.i("snooze", "bas1: " + gameEnemy.shoot.projectiles.size.toString())
+            for (projectile in gameEnemy.shoot.projectiles) {
+                var enemyProjectilesData = ProjectilesData(
+                    0,
+                    projectile.position.x,
+                    projectile.position.y,
+                    projectile.velocity.y,
+                    projectile.projectileBoundary,
+                    projectile.getProjectileType().ordinal
+                )
+                myRepository.insertProjectilesData(enemyProjectilesData)
+            }
+            Log.i("snooze", "bas2: " + myRepository.getProjectilesData().size.toString())
+
+
+            // Player Data
+
+
+
+            // PowerUp Data
+        }
         super.onDestroy()
         soundSys.ReleaseSounds()
     }
@@ -258,7 +333,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                             gamePlayer.updatePlayerTexture(2)
                         }
                         else{
-                            gamePlayer.health -= gameEnemy.projectileDamage
+                            //gamePlayer.health -= gameEnemy.projectileDamage
                         }
                         soundSys.playDamageSFX(true)
                         playerHealthView.text = "Player Health: " + gamePlayer.health
@@ -266,8 +341,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         if (gamePlayer.health <= 0) {
 
                             GlobalScope.launch {
-                                val score = Highscore(0, score, aliveTime)
-                                highscoreRepository.insert(score)
+                                val score = HighscoreData(0, score, aliveTime)
+                                myRepository.insertHighscoreData(score)
                             }
 
                             isDead = true
@@ -336,7 +411,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         gamePlayer.projectileDamage += 1
                     if(powerUpProjectile.getProjectileType() == ProjectileType.AddHealth)
                         gamePlayer.health += 1
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.Sheild)
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
                     {
                         gamePlayer.updatePlayerTexture(1)
                         sheildBool = true
