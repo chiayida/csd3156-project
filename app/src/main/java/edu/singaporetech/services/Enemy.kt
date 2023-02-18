@@ -1,8 +1,7 @@
 package edu.singaporetech.services
 
 
-class Enemy(gameActivity: GameActivity) : Entity()
-{
+class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 

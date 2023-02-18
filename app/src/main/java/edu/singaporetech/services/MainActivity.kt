@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         // Run it once be before submission to reset database
         //GlobalScope.launch {
             //myRepository.deleteAllHighscores()
-            //myRepository.deleteAllEnemies()
         //}
 
         // Upon clicking, user will go to HighscoreActivity

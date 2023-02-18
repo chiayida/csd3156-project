@@ -66,7 +66,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private var screenWidth: Float = 0F
     private var screenHeight: Float = 0f
 
-    var score:Int = 0
     var aliveTime:Float = 0F
     var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
@@ -114,7 +113,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // Initialize view binding
         binding = ActivityGameBinding.inflate(layoutInflater)
         gLView = GameGLSurfaceView(this)
-        //setContentView(binding.root)
         setContentView(gLView)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -122,8 +120,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // INIT ALL SCREEN OBJECTS
         initViews()
 
-
-        // Initialise gameEnemy
+        // Initialise game objects
         gameEnemy = Enemy(gameActivity)
         gamePlayer = Player(gameActivity)
         powerUp = PowerUp(gameActivity)
@@ -146,14 +143,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
 
             // Projectiles Data
-            Log.d("snooze", "size: " + myRepository.getProjectilesData().size.toString())
             if (myRepository.getProjectilesData().isNotEmpty()) {
                 for (i in myRepository.getProjectilesData().indices) {
                     val projectileData = myRepository.getProjectilesData()[i]
+
                     tempProjectile.setDatabaseVariables(Vector2(projectileData.positionX, projectileData.positionY),
                         projectileData.projectileVelocity, projectileData.projectileBoundary,
                         projectileData.projectileType)
-
                     var toBeAddedProjectile = tempProjectile.copy()
 
                     when (ProjectileType.values()[projectileData.projectileType]) {
@@ -169,8 +165,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     }
                 }
                 myRepository.deleteAllProjectiles()
-
-                //tempProjectile.setDatabaseVariables()
             }
         }
 
@@ -183,7 +177,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         currentScoreView = TextView(this)
-        currentScoreView.text = "Current score: " + score
+        currentScoreView.text = "Current score: " + gamePlayer.score
         currentScoreView.textSize = 24f
         currentScoreView.setTextColor(resources.getColor(R.color.text_color))
         currentScoreView.x = 600f
@@ -232,18 +226,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onDestroy() {
-
-        // Save data to be reloaded
+        // Save data to database for it to be reloaded
         GlobalScope.launch {
+
             // Enemy Data
-            gameEnemy.shoot.projectileDelay = 100F
+            gameEnemy.shoot.projectileDelay = 100f
 
             var enemyData = EnemyData(0, gameEnemy.position.x, gameEnemy.position.y, gameEnemy.velocity.x,
                 gameEnemy.projectileDamage, gameEnemy.shoot.projectileDelay, gameEnemy.shoot.projectileTimer,
                 gameEnemy.shoot.projectileVelocity, gameEnemy.shoot.isAutoShoot, gameEnemy.shoot.powerUpTimer)
             myRepository.insertEnemyData(enemyData)
 
-            Log.i("snooze", "bas1: " + gameEnemy.shoot.projectiles.size.toString())
             for (projectile in gameEnemy.shoot.projectiles) {
                 var enemyProjectilesData = ProjectilesData(
                     0,
@@ -255,18 +248,41 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 )
                 myRepository.insertProjectilesData(enemyProjectilesData)
             }
-            Log.i("snooze", "bas2: " + myRepository.getProjectilesData().size.toString())
-
 
             // Player Data
 
 
+            for (projectile in gamePlayer.shoot.projectiles) {
+                var playerProjectilesData = ProjectilesData(
+                    0,
+                    projectile.position.x,
+                    projectile.position.y,
+                    projectile.velocity.y,
+                    projectile.projectileBoundary,
+                    projectile.getProjectileType().ordinal
+                )
+                myRepository.insertProjectilesData(playerProjectilesData)
+            }
+
 
             // PowerUp Data
+            for (projectile in powerUp.shoot.projectiles) {
+                var powerUpProjectilesData = ProjectilesData(
+                    0,
+                    projectile.position.x,
+                    projectile.position.y,
+                    projectile.velocity.y,
+                    projectile.projectileBoundary,
+                    projectile.getProjectileType().ordinal
+                )
+                myRepository.insertProjectilesData(powerUpProjectilesData)
+            }
         }
+
         super.onDestroy()
         soundSys.ReleaseSounds()
     }
+
     /*
     *
     * */
@@ -341,7 +357,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         if (gamePlayer.health <= 0) {
 
                             GlobalScope.launch {
-                                val score = HighscoreData(0, score, aliveTime)
+                                val score = HighscoreData(0, gamePlayer.score, aliveTime)
                                 myRepository.insertHighscoreData(score)
                             }
 
@@ -381,8 +397,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                             toBeDeleted.add(projectile)
                             //Score Counter logic to be changed later just for testing
                             scoreCounter += 1
-                            score += gamePlayer.projectileDamage * 10
-                            currentScoreView.text = "Current score: " + score
+                            gamePlayer.score += gamePlayer.projectileDamage * 10
+                            currentScoreView.text = "Current score: " + gamePlayer.score
                             soundSys.playDamageSFX(false)
                         }
                     }
@@ -446,7 +462,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             powerUpBool = true
             scoreCounter -= 5
         }
-        if(score > 100)
+        if(gamePlayer.score > 100)
             gameEnemy.projectileDamage += 1
         powerUp.update(dt,powerUpBool)
         powerUpBool = false

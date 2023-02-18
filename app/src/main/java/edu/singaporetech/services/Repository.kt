@@ -16,7 +16,9 @@ class MyRepository(context: Context) {
     //private val playerDao: PlayerDao
 
     init {
-        val myDatabase = Room.databaseBuilder(context, MyDatabase::class.java, "my_database").build()
+        //val myDatabase = Room.databaseBuilder(context, MyDatabase::class.java, "my_database").build()
+        val myDatabase = MyDatabase.getDatabase(context)
+
         highscoreDao = myDatabase.highscoreDao()
         projectilesDao = myDatabase.projectilesDao()
         enemyDao = myDatabase.enemyDao()

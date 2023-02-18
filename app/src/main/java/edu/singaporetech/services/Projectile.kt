@@ -50,7 +50,7 @@ class Projectile(val gameActivity: GameActivity, var position_: Vector2, var vel
 
 
     fun copy(): Projectile {
-        return Projectile(gameActivity, position_, velocity_, projectileBoundary_, projectileType_)
+        return Projectile(gameActivity, position, velocity.y, projectileBoundary, projectileType)
     }
 
 

@@ -44,6 +44,6 @@ data class EnemyData(
 @Entity(tableName = "player_table")
 data class PlayerData(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val player: Player
+
 )
  */
