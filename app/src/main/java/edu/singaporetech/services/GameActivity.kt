@@ -660,6 +660,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             else{
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("flag", true)
                 startActivity(intent)
                 finish()
             }

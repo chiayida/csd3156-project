@@ -6,6 +6,9 @@
     <string name="_MainMenu">MAIN MENU</string>
     <string name="_Highscore">HIGHSCORE </string>
     <string name="_Nil">-- </string>
+    <string name="_Continue">CONTINUE?</string>
+    <string name="_YES">YES</string>
+    <string name="_NO">NO</string>
     <string name="todo">TODO</string>
     <string name="_Team">Team Members:\n\nChia Yi Da\n\nReuven Tan\n\nOw Jian Wen\n\nJonathan Lim</string>
     <string name="_Instructor">Instructor:\n\nChen Kan</string>
