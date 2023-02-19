@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class HighscoreActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHighscoreBinding
+    var soundSys = SoundSystem(this)
 
     // SQL Database
     private lateinit var myRepository: MyRepository
@@ -22,7 +23,7 @@ class HighscoreActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHighscoreBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        soundSys.InitializeSounds()
         // Get repository
         myRepository = MyRepository(this.applicationContext)
 
@@ -65,14 +66,20 @@ class HighscoreActivity : AppCompatActivity() {
 
         // Upon clicking, user will go to HighscoreActivity
         binding.playagainButton.setOnClickListener {
+            soundSys.playClick()
             val intent = Intent(this, GameActivity::class.java)
             startActivity(intent)
         }
 
         // Upon clicking, user will go to CreditsActivity
         binding.mainmenuButton.setOnClickListener {
+            soundSys.playClick()
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        soundSys.ReleaseSounds()
     }
 }

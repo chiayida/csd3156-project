@@ -1,9 +1,13 @@
 package edu.singaporetech.services
 
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioTrack
 import android.media.MediaPlayer
+import androidx.appcompat.app.AppCompatActivity
 import java.io.IOException
 
-class SoundSystem(var gameActivity: GameActivity)  {
+class SoundSystem(var gameActivity: AppCompatActivity)  {
 
 
     private lateinit var pewSFX : MediaPlayer
@@ -14,6 +18,7 @@ class SoundSystem(var gameActivity: GameActivity)  {
     private lateinit var edamagedSFX : MediaPlayer
 
     fun InitializeSounds(){
+
         // INIT SOUNDS
         pewSFX = MediaPlayer.create(gameActivity, R.raw.pew1)
         pewSFX.setVolume(0.35f, 0.35f)

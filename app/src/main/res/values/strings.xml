@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Game Project</string>
+    <string name="game_title">Spaceships</string>
     <string name="_Play">PLAY</string>
-    <string name="_Start">START</string>
+    <string name="_Start">PLAY</string>
     <string name="_Credits">CREDITS</string>
     <string name="_MainMenu">MAIN MENU</string>
     <string name="_Highscore">HIGHSCORE </string>

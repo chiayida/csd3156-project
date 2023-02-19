@@ -34,19 +34,19 @@ class Projectile(val gameActivity: GameActivity, var position_: Vector2, var vel
             }
             ProjectileType.DamageBoost -> {
                 colliderScale = Vector2(50F, 50F)
-                renderObject.setImageResource(R.drawable.player)
+                renderObject.setImageResource(R.drawable.damage)
             }
             ProjectileType.AddHealth -> {
                 colliderScale = Vector2(50F, 50F)
-                renderObject.setImageResource(R.drawable.enemy)
+                renderObject.setImageResource(R.drawable.health)
             }
             ProjectileType.Shield -> {
                 colliderScale = Vector2(50F, 50F)
-                renderObject.setImageResource(R.drawable.coin)
+                renderObject.setImageResource(R.drawable.shield)
             }
             ProjectileType.SpeedBoost -> {
                 colliderScale = Vector2(50F, 50F)
-                renderObject.setImageResource(R.drawable.coin)
+                renderObject.setImageResource(R.drawable.speed)
             }
         }
         renderObject.xScale = colliderScale.x

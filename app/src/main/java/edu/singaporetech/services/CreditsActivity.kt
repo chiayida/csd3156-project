@@ -8,17 +8,24 @@ import edu.singaporetech.services.databinding.ActivityCreditsBinding
 
 class CreditsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreditsBinding
+    // SOUNDS
+    var soundSys = SoundSystem(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreditsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        soundSys.InitializeSounds()
         // Upon clicking, user will go to MainActivity
         binding.backButton.setOnClickListener {
+            soundSys.playClick()
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        soundSys.ReleaseSounds()
     }
 }

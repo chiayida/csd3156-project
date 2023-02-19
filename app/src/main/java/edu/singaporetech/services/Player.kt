@@ -4,6 +4,12 @@ import android.util.Log
 import java.lang.Float.max
 import java.lang.Float.min
 
+enum class PlayerTexture{
+    default,
+    shielded
+}
+
+
 class Player(gameActivity: GameActivity) : Entity() {
     private val screenWidth = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
@@ -18,8 +24,8 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val maxYPos: Float = (screenHeight - 50f) // height is the height of the screen
 
     var projectileDamage: Int = 1
-
-    var health: Int = 10
+    var texture: PlayerTexture = PlayerTexture.default
+    var health: Int = 5
     var projectileSpeed = -0.5f
     val shoot: Shoot = Shoot(gameActivity,500F, projectileSpeed, 0F, false, ProjectileType.Player)
 
@@ -46,16 +52,17 @@ class Player(gameActivity: GameActivity) : Entity() {
         projectileSpeed = projectileSpeed_
     }
 
-    fun updatePlayerTexture(texture :Int)
+    fun updatePlayerTexture(_texture : PlayerTexture)
     {
-        if(texture == 1)
+        if(_texture == PlayerTexture.shielded)
         {
-            renderObject.setImageResource(R.drawable.player_bullet)
+            renderObject.setImageResource(R.drawable.shield_player)
         }
-        if(texture == 2)
+       else if(_texture == PlayerTexture.default)
         {
             renderObject.setImageResource(R.drawable.player)
         }
+       texture = _texture
     }
     override fun updatePosition(dt : Float) {
         position.x = max(minXPos, min( position.x + velocity.x * dt, maxXPos))

@@ -1,5 +1,6 @@
 package edu.singaporetech.services
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -54,7 +55,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var confirmationText: TextView
     private lateinit var yesButton: Button
     private lateinit var noButton: Button
-    var isRestart = false
+    var isRestartShow = false
+    var isRestarting = false
     var isDead = false
 
     // SOUNDS
@@ -70,6 +72,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
     var sheildBool: Float = 0f
+    var powerUpRespawnTimer: Float = 0f
 
     private var isShoot: Boolean = false
 
@@ -222,6 +225,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         soundSys.InitializeSounds()
         soundSys.playGameBGM()
         engine.EngineInit()
+
+        val flag = intent.getBooleanExtra("Resume", false)
+        if(flag){
+            engine.EngineUpdate()
+            engine.setPaused(true)
+            togglePauseView(true)
+        }
     }
 
     /*
@@ -229,6 +239,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     * */
     override fun onResume() {
         super.onResume()
+        soundSys.playGameBGM()
         // Register the listener for the gyroscope sensor
         sensorManager.registerListener(
             this,
@@ -238,6 +249,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         handler.postDelayed(updateRunnable, engine.updateInterval)
     }
 
+    override fun onStart() {
+        super.onStart()
+        soundSys.playGameBGM()
+    }
     /*
     *
     * */
@@ -253,8 +268,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     /*
     *
     * */
+    override fun onBackPressed() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.putExtra("flag", true)
+        startActivity(intent)
+        finish()
+    }
+    /*
+    *
+    * */
     override fun onDestroy() {
-        if (!isRestart) {
+        if (!isRestarting && !isDead) {
             // Save data to database for it to be reloaded
             GlobalScope.launch {
 
@@ -328,17 +353,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         super.onDestroy()
         soundSys.ReleaseSounds()
     }
-
-    /*
-    *
-    * */
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        Log.i("Mouse","X: ${event.x}, Y: ${event.y} ")
-        val touchX = event.x
-        val touchY = event.y
-        return super.onTouchEvent(event)
-    }
-
     /*
     *
     * */
@@ -381,22 +395,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                         //Bullet hit player
                         toBeDeleted.add(projectile)
-                        if(sheildBool < 0){
-                            //Default Player Texture and will take damage
-                            gamePlayer.updatePlayerTexture(2)
+                        if(sheildBool <= 0){
+                            // Player will take damage if no shield
                             gamePlayer.health -= gameEnemy.projectileDamage
+                            soundSys.playDamageSFX(true)
                         }
-                        soundSys.playDamageSFX(true)
                         if (gamePlayer.health <= 0) {
                             GlobalScope.launch {
                                 val score = HighscoreData(0, gamePlayer.score, aliveTime)
                                 myRepository.insertHighscoreData(score)
                             }
-
                             isDead = true
 
                             val intent = Intent(this, HighscoreActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                             startActivity(intent)
+                            finish()
                         }
                     }
                 }
@@ -443,7 +457,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             }
         }
         if(powerUp.shoot.projectiles.isNotEmpty()){
-            val toBeDeleted: MutableList<Projectile> = mutableListOf()
+            val toBeDeleted: MutableList<Int> = mutableListOf()
+            var index = 0
             for(powerUpProjectile in powerUp.shoot.projectiles){
                 var projMIN = Vector2(powerUpProjectile.getColliderMin().x , powerUpProjectile.getColliderMin().y)
                 var projMAX = Vector2(powerUpProjectile.getColliderMax().x , powerUpProjectile.getColliderMax().y)
@@ -455,27 +470,31 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
                 if(Physics.collisionIntersectionRectRect(projAABB, powerUpProjectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                     //Power up logic
-                    toBeDeleted.add(powerUpProjectile)
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.DamageBoost)
+                    toBeDeleted.add(index)
+                    if(powerUpProjectile.getProjectileType() == ProjectileType.DamageBoost){
                         gamePlayer.projectileDamage += 1
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.AddHealth)
-                    {
-                        if(gamePlayer.health < 5)
-                            gamePlayer.health += 1
                     }
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
+                    else if(powerUpProjectile.getProjectileType() == ProjectileType.AddHealth)
                     {
-                        gamePlayer.updatePlayerTexture(1)
-                        sheildBool = 20f
+                       // if(gamePlayer.health < 5)
+                       gamePlayer.health += 1
                     }
-                    if(powerUpProjectile.getProjectileType() == ProjectileType.SpeedBoost)
+                    else if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
+                    {
+                        gamePlayer.updatePlayerTexture(PlayerTexture.shielded)
+                        sheildBool = 10f
+                    }
+                    else if(powerUpProjectile.getProjectileType() == ProjectileType.SpeedBoost)
                     {
                         gamePlayer.updateProjectileSpeed(gamePlayer.projectileSpeed * 1.5f)
                     }
                 }
-                for (projectile in toBeDeleted) {
-                    GameGLSquare.toBeDeleted.add(projectile.renderObject)
-                    powerUp.shoot.projectiles.remove(powerUpProjectile)
+                index++
+            }
+            for (i in toBeDeleted) {
+                if(i < powerUp.shoot.projectiles.size){
+                    GameGLSquare.toBeDeleted.add(powerUp.shoot.projectiles[i].renderObject)
+                    powerUp.shoot.projectiles.removeAt(i)
                 }
             }
         }
@@ -499,12 +518,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         playerHealthView.text = "Player Health: " + gamePlayer.health
 
         gameEnemy.update(dt)
-        sheildBool -= dt/1000f
+        if(sheildBool > 0f) sheildBool -= dt/1000f
         aliveTime += dt/1000f
-        //Every 10 hit player will get a power up
-        if(scoreCounter > 10){
+        powerUpRespawnTimer += dt/1000f
+        //Every 5 hit player will get a power up
+//        if(scoreCounter > 5){
+//            powerUpBool = true
+//            scoreCounter -= 5
+//        }
+        if(sheildBool <= 0 && gamePlayer.texture != PlayerTexture.default){
+            //If no shield, return to Default Player Texture
+            gamePlayer.updatePlayerTexture(PlayerTexture.default)
+        }
+        if(powerUpRespawnTimer >= 5f){
             powerUpBool = true
-            scoreCounter -= 10
+            powerUpRespawnTimer = 0f
         }
         //Enemy Gradually become stronger over time
         if(gamePlayer.score > Math.pow(gameEnemy.projectileDamage.toDouble(), 2.0) * 100)
@@ -603,7 +631,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         restartButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(restartButton, ViewGroup.LayoutParams(500, 150))
         restartButton.setOnClickListener{
-            isRestart = true
+            isRestartShow = true
             confirmationText.text = "Confirm Restart the game?"
             toggleConfirmationView(true)
             togglePauseView(false)
@@ -620,7 +648,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         returnMMButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(returnMMButton, ViewGroup.LayoutParams(500, 150))
         returnMMButton.setOnClickListener{
-            isRestart = false
+            isRestartShow = false
             confirmationText.text = "Confirm return to the Main Menu?"
             toggleConfirmationView(true)
             togglePauseView(false)
@@ -654,7 +682,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         yesButton.setOnClickListener{
             soundSys.playClick()
             toggleConfirmationView(false)
-            if(isRestart){
+            if(isRestartShow){
+                isRestarting = true
                 recreate()
             }
             else{
