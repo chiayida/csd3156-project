@@ -1,6 +1,5 @@
 package edu.singaporetech.services
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -18,12 +17,12 @@ import androidx.core.content.res.ResourcesCompat
 import edu.singaporetech.services.databinding.ActivityGameBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.math.pow
 
 
 class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
     val gameActivity: GameActivity = this
 
-    val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
     // ENGINE
     private var FPSCap = 1L
@@ -56,9 +55,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var confirmationText: TextView
     private lateinit var yesButton: Button
     private lateinit var noButton: Button
-    var isRestartShow = false
-    var isRestarting = false
-    var isDead = false
+    private var isRestartShow = false
+    private var isRestarting = false
+    private var isDead = false
 
     // SOUNDS
     var soundSys = SoundSystem(this)
@@ -66,9 +65,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     // GAME LOGIC VARIABLES
     private lateinit var sensorManager: SensorManager
-    var aliveTime:Float = 0F
-    var powerUpBool: Boolean = false
-    var powerUpRespawnTimer: Float = 0f
+    private var aliveTime:Float = 0F
+    private var powerUpBool: Boolean = false
+    private var powerUpRespawnTimer: Float = 0f
     private var isShoot: Boolean = false
 
     companion object {
@@ -115,7 +114,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         gamePlayer = Player(gameActivity)
         powerUp = PowerUp(gameActivity)
 
-        var tempProjectile = Projectile(gameActivity, Vector2(0F, 0F),
+        val tempProjectile = Projectile(gameActivity, Vector2(0F, 0F),
             0F, 0F, ProjectileType.Enemy)
 
         GlobalScope.launch {
@@ -160,7 +159,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         projectileData.projectileBoundary,
                         projectileData.projectileType
                     )
-                    var toBeAddedProjectile = tempProjectile.copy()
+                    val toBeAddedProjectile = tempProjectile.copy()
 
                     when (ProjectileType.values()[projectileData.projectileType]) {
                         ProjectileType.Player -> {
@@ -257,7 +256,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             GlobalScope.launch {
 
                 // Enemy Data
-                var enemyData = EnemyData(
+                val enemyData = EnemyData(
                     0,
                     gameEnemy.position.x,
                     gameEnemy.position.y,
@@ -272,7 +271,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 myRepository.insertEnemyData(enemyData)
 
                 for (projectile in gameEnemy.shoot.projectiles) {
-                    var enemyProjectilesData = ProjectilesData(
+                    val enemyProjectilesData = ProjectilesData(
                         0,
                         projectile.position.x,
                         projectile.position.y,
@@ -284,7 +283,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 }
 
                 // Player Data
-                var playerData = PlayerData(
+                val playerData = PlayerData(
                     0,
                     gamePlayer.position.x,
                     gamePlayer.position.y,
@@ -297,7 +296,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 myRepository.insertPlayerData(playerData)
 
                 for (projectile in gamePlayer.shoot.projectiles) {
-                    var playerProjectilesData = ProjectilesData(
+                    val playerProjectilesData = ProjectilesData(
                         0,
                         projectile.position.x,
                         projectile.position.y,
@@ -310,7 +309,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
                 // PowerUp Data
                 for (projectile in powerUp.shoot.projectiles) {
-                    var powerUpProjectilesData = ProjectilesData(
+                    val powerUpProjectilesData = ProjectilesData(
                         0,
                         projectile.position.x,
                         projectile.position.y,
@@ -354,13 +353,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             for(k in Enemies.indices) {
                 val toBeDeleted: MutableList<Projectile> = mutableListOf()
                 for(projectile in Enemies[k].shoot.projectiles){
-                    var projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
-                    var projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
-                    var projAABB = AABB(projMIN, projMAX)
+                    val projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
+                    val projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
+                    val projAABB = AABB(projMIN, projMAX)
 
-                    var playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
-                    var playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
-                    var playerAABB = AABB(playerMIN, playerMAX)
+                    val playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
+                    val playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
+                    val playerAABB = AABB(playerMIN, playerMAX)
 
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                         //Bullet hit player
@@ -394,17 +393,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         if(gamePlayer.shoot.projectiles.isNotEmpty()) {
             val toBeDeleted: MutableList<Projectile> = mutableListOf()
             for (projectile in gamePlayer.shoot.projectiles) {
-                var projMIN = Vector2(projectile.getColliderMin().x, projectile.getColliderMin().y)
-                var projMAX = Vector2(projectile.getColliderMax().x, projectile.getColliderMax().y)
-                var projAABB = AABB(projMIN, projMAX)
+                val projMIN = Vector2(projectile.getColliderMin().x, projectile.getColliderMin().y)
+                val projMAX = Vector2(projectile.getColliderMax().x, projectile.getColliderMax().y)
+                val projAABB = AABB(projMIN, projMAX)
                 // else if it is the player's projectile, check collision with All ENEMIES
                 if(Enemies.isNotEmpty()) {
                     for (j in Enemies.indices) {
-                        var enemyMIN =
+                        val enemyMIN =
                             Vector2(Enemies[j].getColliderMin().x, Enemies[j].getColliderMin().y)
-                        var enemyMAX =
+                        val enemyMAX =
                             Vector2(Enemies[j].getColliderMax().x, Enemies[j].getColliderMax().y)
-                        var enemyAABB = AABB(enemyMIN, enemyMAX)
+                        val enemyAABB = AABB(enemyMIN, enemyMAX)
                         if (Physics.collisionIntersectionRectRect(
                                 projAABB, projectile.velocity,
                                 enemyAABB, Enemies[j].velocity, dt
@@ -427,13 +426,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             val toBeDeleted: MutableList<Int> = mutableListOf()
             var index = 0
             for(powerUpProjectile in powerUp.shoot.projectiles){
-                var projMIN = Vector2(powerUpProjectile.getColliderMin().x , powerUpProjectile.getColliderMin().y)
-                var projMAX = Vector2(powerUpProjectile.getColliderMax().x , powerUpProjectile.getColliderMax().y)
-                var projAABB = AABB(projMIN, projMAX)
+                val projMIN = Vector2(powerUpProjectile.getColliderMin().x , powerUpProjectile.getColliderMin().y)
+                val projMAX = Vector2(powerUpProjectile.getColliderMax().x , powerUpProjectile.getColliderMax().y)
+                val projAABB = AABB(projMIN, projMAX)
 
-                var playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
-                var playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
-                var playerAABB = AABB(playerMIN, playerMAX)
+                val playerMIN = Vector2(gamePlayer.getColliderMin().x , gamePlayer.getColliderMin().y)
+                val playerMAX = Vector2(gamePlayer.getColliderMax().x , gamePlayer.getColliderMax().y)
+                val playerAABB = AABB(playerMIN, playerMAX)
 
                 if(Physics.collisionIntersectionRectRect(projAABB, powerUpProjectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                     //Power up logic
@@ -494,7 +493,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             powerUpRespawnTimer = 0f
         }
         //Enemy Gradually become stronger over time
-        if(gamePlayer.score > Math.pow(gameEnemy.projectileDamage.toDouble(), 2.0) * 100)
+        if(gamePlayer.score > gameEnemy.projectileDamage.toDouble().pow(2.0) * 100)
         {
             gameEnemy.projectileDamage += 1
             gameEnemy.updateEnemyProjectileSpeed(gameEnemy.EnemyProjectileSpeed * 1.2f)
