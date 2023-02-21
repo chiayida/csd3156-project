@@ -27,6 +27,7 @@ class Player(gameActivity: GameActivity) : Entity() {
     var texture: PlayerTexture = PlayerTexture.default
     var health: Int = 5
     var projectileSpeed = -0.5f
+    var shieldDuration = 0.0f
     val shoot: Shoot = Shoot(gameActivity,500F, projectileSpeed, 0F, false, ProjectileType.Player)
 
 

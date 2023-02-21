@@ -71,7 +71,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     var aliveTime:Float = 0F
     var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
-    var sheildBool: Float = 0f
     var powerUpRespawnTimer: Float = 0f
 
     private var isShoot: Boolean = false
@@ -243,7 +242,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // Register the listener for the gyroscope sensor
         sensorManager.registerListener(
             this,
-            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+            sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
             SensorManager.SENSOR_DELAY_NORMAL
         )
         handler.postDelayed(updateRunnable, engine.updateInterval)
@@ -357,11 +356,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     *
     * */
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
+        if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
             // Get the three values for the gyroscope
             val x = event.values[0]
+            val y = event.values[1]
+            Log.d("Moving",y.toString())
             val z = event.values[2]
-            gamePlayer.velocity.x = x * gamePlayer.speed
+            if(y > 0.1)
+            {
+                Log.d("Moving","Right")
+                gamePlayer.velocity.x = 1F
+            }
+            else if (y < 0)
+            {
+                Log.d("Moving","Left")
+                gamePlayer.velocity.x = -1F
+            }
         }
     }
 
@@ -395,7 +405,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     if(Physics.collisionIntersectionRectRect(projAABB, projectile.velocity, playerAABB, gamePlayer.velocity, dt)){
                         //Bullet hit player
                         toBeDeleted.add(projectile)
-                        if(sheildBool <= 0){
+                        if(gamePlayer.shieldDuration <= 0){
                             // Player will take damage if no shield
                             gamePlayer.health -= gameEnemy.projectileDamage
                             soundSys.playDamageSFX(true)
@@ -482,7 +492,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     else if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
                     {
                         gamePlayer.updatePlayerTexture(PlayerTexture.shielded)
-                        sheildBool = 10f
+                        gamePlayer.shieldDuration = 10f
                     }
                     else if(powerUpProjectile.getProjectileType() == ProjectileType.SpeedBoost)
                     {
@@ -518,7 +528,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         playerHealthView.text = "Player Health: " + gamePlayer.health
 
         gameEnemy.update(dt)
-        if(sheildBool > 0f) sheildBool -= dt/1000f
+        if(gamePlayer.shieldDuration > 0f) gamePlayer.shieldDuration -= dt/1000f
         aliveTime += dt/1000f
         powerUpRespawnTimer += dt/1000f
         //Every 5 hit player will get a power up
@@ -526,7 +536,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 //            powerUpBool = true
 //            scoreCounter -= 5
 //        }
-        if(sheildBool <= 0 && gamePlayer.texture != PlayerTexture.default){
+        if(gamePlayer.shieldDuration <= 0 && gamePlayer.texture != PlayerTexture.default){
             //If no shield, return to Default Player Texture
             gamePlayer.updatePlayerTexture(PlayerTexture.default)
         }
