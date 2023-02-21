@@ -13,7 +13,7 @@ enum class PlayerTexture{
 class Player(gameActivity: GameActivity) : Entity() {
     private val screenWidth = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
-    private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
+    private val renderObject: GameSquare = GameSquare(gameActivity)
 
     //Boundaries to prevent the player from moving out of the screen.
     private val minXPos: Float = 50f

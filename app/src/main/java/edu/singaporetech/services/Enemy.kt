@@ -9,7 +9,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     val shoot: Shoot = Shoot(gameActivity, 1000F, EnemyProjectileSpeed,
                              screenHeight, true, ProjectileType.Enemy)
 
-    private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
+    private val renderObject: GameSquare = GameSquare(gameActivity)
 
     //Initializing the entity variables
     init {

@@ -73,13 +73,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private var powerUpRespawnTimer: Float = 0f
     private var isShoot: Boolean = false
 
-    companion object {
-        var screenWidth: Float = 0F
-        var halfScreenWidth: Float = 0F
-        var screenHeight: Float = 0F
-        var halfScreenHeight: Float = 0F
-        private lateinit var gLView: GameGLSurfaceView
-    }
+    //companion object {
+    //    var screenWidth: Float = 0F
+    //    var halfScreenWidth: Float = 0F
+    //    var screenHeight: Float = 0F
+    //    var halfScreenHeight: Float = 0F
+    //}
 
     private val updateRunnable = object : Runnable {
 
@@ -96,17 +95,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         myRepository = MyRepository(this.applicationContext)
 
-        screenWidth = (resources.displayMetrics.widthPixels).toFloat()
-        halfScreenWidth = screenWidth / 2F
-        screenHeight = (resources.displayMetrics.heightPixels).toFloat()
-        halfScreenHeight = screenHeight / 2F
+        //screenWidth = (resources.displayMetrics.widthPixels).toFloat()
+        //halfScreenWidth = screenWidth / 2F
+        //screenHeight = (resources.displayMetrics.heightPixels).toFloat()
+        //halfScreenHeight = screenHeight / 2F
 
-        GameGLSquare.Clear()
-        // Initialize view binding
-        //binding = ActivityGameBinding.inflate(layoutInflater)
-        //gLView = GameGLSurfaceView(this)
-        //setContentView(gLView)
-
+        GameSquare.Clear()
         gameCanvasView = GameCanvasView(this)
         setContentView(gameCanvasView)
 
@@ -183,7 +177,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 myRepository.deleteAllProjectiles()
             }
         }
-        GameGLSquare.toBeDeleted.add(tempProjectile.renderObject)
+        GameSquare.toBeDeleted.add(tempProjectile.renderObject)
 
         //Setting the GAME UI OBJECTS Values and position
         playerHealthView = TextView(this)
@@ -391,7 +385,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     }
                 }
                 for (projectile in toBeDeleted) {
-                    GameGLSquare.toBeDeleted.add(projectile.renderObject)
+                    GameSquare.toBeDeleted.add(projectile.renderObject)
                     Enemies[k].shoot.projectiles.remove(projectile)
                 }
             }
@@ -425,7 +419,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 }
             }
             for (projectile in toBeDeleted) {
-                GameGLSquare.toBeDeleted.add(projectile.renderObject)
+                GameSquare.toBeDeleted.add(projectile.renderObject)
                 gamePlayer.shoot.projectiles.remove(projectile)
             }
         }
@@ -465,7 +459,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             }
             for (i in toBeDeleted) {
                 if(i < powerUp.shoot.projectiles.size){
-                    GameGLSquare.toBeDeleted.add(powerUp.shoot.projectiles[i].renderObject)
+                    GameSquare.toBeDeleted.add(powerUp.shoot.projectiles[i].renderObject)
                     powerUp.shoot.projectiles.removeAt(i)
                 }
             }

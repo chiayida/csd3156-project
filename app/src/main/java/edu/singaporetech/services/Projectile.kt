@@ -12,7 +12,7 @@ enum class ProjectileType{
 class Projectile(val gameActivity: GameActivity, var position_: Vector2, var velocity_: Float,
                  var projectileBoundary_: Float, var projectileType_: ProjectileType): Entity() {
     var flag: Boolean = velocity_ > 0F
-    val renderObject: GameGLSquare = GameGLSquare(gameActivity)
+    val renderObject: GameSquare = GameSquare(gameActivity)
     var projectileBoundary = projectileBoundary_
 
     private var projectileType = projectileType_
@@ -109,7 +109,7 @@ class Projectile(val gameActivity: GameActivity, var position_: Vector2, var vel
     fun update(): Boolean {
         if ((getColliderMin().y >= projectileBoundary && flag) ||
             (getColliderMax().y <= projectileBoundary && !flag)) {
-            GameGLSquare.toBeDeleted.add(renderObject)
+            GameSquare.toBeDeleted.add(renderObject)
             return false
         }
 

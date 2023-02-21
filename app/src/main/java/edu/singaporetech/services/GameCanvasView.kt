@@ -1,22 +1,7 @@
 package edu.singaporetech.services
 import android.content.Context
 import android.graphics.*
-import android.opengl.GLSurfaceView
 import android.view.View
-
-
-class GameGLSurfaceView(context: Context) : GLSurfaceView(context) {
-    private val renderer: GameGLRenderer
-    init {
-        // Create an OpenGL ES 2.0 context
-        setEGLContextClientVersion(2)
-
-        renderer = GameGLRenderer(context)
-
-        // Set the Renderer for drawing on the GLSurfaceView
-        setRenderer(renderer)
-    }
-}
 
 class GameCanvasView(context: Context) : View(context) {
     private lateinit var extraCanvas: Canvas
@@ -52,22 +37,23 @@ class GameCanvasView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         extraCanvas.drawColor(Color.BLACK)
 
-        for (sl in GameGLSquare.toBeDeleted) {
-            GameGLSquare.squareList.remove(sl)
+        for (sl in GameSquare.toBeDeleted) {
+            GameSquare.squareList.remove(sl)
         }
-        GameGLSquare.toBeDeleted.clear()
+        GameSquare.toBeDeleted.clear()
 
-        for (sl in GameGLSquare.squareList) {
+        for (sl in GameSquare.squareList) {
             val texture = BitmapFactory.decodeResource(resources, sl.textureHandle)
             val matrix = Matrix()
             val pathBounds = RectF()
             val path = sl.getPath()
             path.computeBounds(pathBounds, true)
-            // Map the texture to the bounds of the path
+            // Map the texture to the bounds of the path so that texture always appear on path
             matrix.setRectToRect(
                 RectF(0f, 0f, texture.width.toFloat(), texture.height.toFloat()),
                 pathBounds, Matrix.ScaleToFit.FILL
             )
+            //matrix.postRotate(45f)
             paint.shader = BitmapShader(texture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
             paint.shader.setLocalMatrix(matrix)
             extraCanvas.drawPath(path, paint)
@@ -76,6 +62,7 @@ class GameCanvasView(context: Context) : View(context) {
         // Draw the bitmap that has the saved path.
         canvas.drawBitmap(extraBitmap, 0f, 0f, null)
 
+        //Force redraw
         postInvalidate()
     }
 }

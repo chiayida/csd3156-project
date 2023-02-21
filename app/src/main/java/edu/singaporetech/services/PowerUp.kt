@@ -9,7 +9,7 @@ class PowerUp(gameActivity: GameActivity):Entity() {
     private val minXPos: Float = 50f
     private val maxXPos: Float = (screenWidth - 50f) // width is the width of the screen
     val shoot: Shoot = Shoot(gameActivity,1000F, 0.5F, screenHeight, true, ProjectileType.DamageBoost)
-    private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
+    private val renderObject: GameSquare = GameSquare(gameActivity)
 
     // Initializing of entity variables
     init {
