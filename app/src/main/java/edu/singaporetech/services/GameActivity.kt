@@ -69,7 +69,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private var screenHeight: Float = 0f
 
     var aliveTime:Float = 0F
-    var scoreCounter:Int = 0
     var powerUpBool: Boolean = false
     var powerUpRespawnTimer: Float = 0f
 
@@ -452,8 +451,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                         ) {
                             //Bullet Hit enemy removed cause change to endless
                             toBeDeleted.add(projectile)
-                            //Score Counter logic to be changed later just for testing
-                            scoreCounter += 1
+
                             gamePlayer.score += gamePlayer.projectileDamage * 10
                             currentScoreView.text = "Current score: " + gamePlayer.score
                             soundSys.playDamageSFX(false)
@@ -531,11 +529,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         if(gamePlayer.shieldDuration > 0f) gamePlayer.shieldDuration -= dt/1000f
         aliveTime += dt/1000f
         powerUpRespawnTimer += dt/1000f
-        //Every 5 hit player will get a power up
-//        if(scoreCounter > 5){
-//            powerUpBool = true
-//            scoreCounter -= 5
-//        }
         if(gamePlayer.shieldDuration <= 0 && gamePlayer.texture != PlayerTexture.default){
             //If no shield, return to Default Player Texture
             gamePlayer.updatePlayerTexture(PlayerTexture.default)
