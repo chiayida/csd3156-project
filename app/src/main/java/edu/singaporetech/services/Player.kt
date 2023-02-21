@@ -40,7 +40,7 @@ class Player(gameActivity: GameActivity) : Entity() {
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
 
-        position = Vector2(screenWidth / 2F, screenHeight - 500f)
+        position = Vector2(screenWidth / 2F, screenHeight / 1.2F)
     }
 
     fun setDatabaseVariables(position_: Vector2, velocity_: Float, score_: Int, health_: Int,
