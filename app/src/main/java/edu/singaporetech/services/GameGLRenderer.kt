@@ -51,85 +51,85 @@ class GameGLRenderer(context: Context) : GLSurfaceView.Renderer {
     //Function to be called when surface changed
     //Update the width, height, viewport and projection matrix
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
-        GLES20.glViewport(0, 0, width, height)
-
-        val ratio: Float = width.toFloat() / height.toFloat()
-
-        // this projection matrix is applied to object coordinates
-        // in the onDrawFrame() method
-        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
-
-        GameActivity.screenWidth = width.toFloat()
-        GameActivity.halfScreenWidth = GameActivity.screenWidth / 2F
-        GameActivity.screenHeight = height.toFloat()
-        GameActivity.halfScreenHeight = GameActivity.screenHeight / 2F
+        //GLES20.glViewport(0, 0, width, height)
+//
+        //val ratio: Float = width.toFloat() / height.toFloat()
+//
+        //// this projection matrix is applied to object coordinates
+        //// in the onDrawFrame() method
+        //Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
+//
+        //GameActivity.screenWidth = width.toFloat()
+        //GameActivity.halfScreenWidth = GameActivity.screenWidth / 2F
+        //GameActivity.screenHeight = height.toFloat()
+        //GameActivity.halfScreenHeight = GameActivity.screenHeight / 2F
     }
 
     //Function to be called when surface is created
     //Setup shaders
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
-        // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-
-        //Shader Initialize
-        val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
-        val fragmentShader: Int = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram().also {
-            // add the vertex shader to program
-            GLES20.glAttachShader(it, vertexShader)
-            // add the fragment shader to program
-            GLES20.glAttachShader(it, fragmentShader)
-            // creates OpenGL ES program executables
-            GLES20.glLinkProgram(it)
-
-            val linkStatus = IntArray(1)
-            GLES20.glGetProgramiv(it, GLES20.GL_LINK_STATUS, linkStatus, 0)
-            if (linkStatus[0] != GLES20.GL_TRUE) {
-                val log = GLES20.glGetProgramInfoLog(it)
-                throw RuntimeException("Error linking program:\n$log")
-            }
-        }
-        GameGLSquare.InitStartSquare(mProgram)
-
-        for (sl in GameGLSquare.toBeInitializeList) {
-            sl.Init()
-        }
-        GameGLSquare.toBeInitializeList.clear()
+        //// Set the background frame color
+        //GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+//
+        ////Shader Initialize
+        //val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
+        //val fragmentShader: Int = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
+        //// create empty OpenGL ES Program
+        //mProgram = GLES20.glCreateProgram().also {
+        //    // add the vertex shader to program
+        //    GLES20.glAttachShader(it, vertexShader)
+        //    // add the fragment shader to program
+        //    GLES20.glAttachShader(it, fragmentShader)
+        //    // creates OpenGL ES program executables
+        //    GLES20.glLinkProgram(it)
+//
+        //    val linkStatus = IntArray(1)
+        //    GLES20.glGetProgramiv(it, GLES20.GL_LINK_STATUS, linkStatus, 0)
+        //    if (linkStatus[0] != GLES20.GL_TRUE) {
+        //        val log = GLES20.glGetProgramInfoLog(it)
+        //        throw RuntimeException("Error linking program:\n$log")
+        //    }
+        //}
+        //GameGLSquare.InitStartSquare(mProgram)
+//
+        //for (sl in GameGLSquare.toBeInitializeList) {
+        //    sl.Init()
+        //}
+        //GameGLSquare.toBeInitializeList.clear()
     }
 
     //Function to be called every frame
     //Clear color and draw all squares
     override fun onDrawFrame(unused: GL10) {
-        // Redraw background color
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
-        // Calculate the projection and view transformation
-        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-
-
-
-        for (sl in GameGLSquare.toBeInitializeList) {
-            sl.Init()
-        }
-        GameGLSquare.toBeInitializeList.clear()
-        for (sl in GameGLSquare.toBeDeleted) {
-            GameGLSquare.squareList.remove(sl)
-        }
-        GameGLSquare.toBeDeleted.clear()
-
-        GLES20.glUseProgram(mProgram)
-        for (sl in GameGLSquare.squareList) {
-            val mvpMatrix1 = vPMatrix.copyOf()
-            sl.draw(mvpMatrix1)
-        }
-
-        GLES20.glUseProgram(0)
+        //// Redraw background color
+        //GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+//
+        //GLES20.glEnable(GLES20.GL_BLEND)
+        //GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+//
+        //// Set the camera position (View matrix)
+        //Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
+        //// Calculate the projection and view transformation
+        //Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+//
+//
+//
+        //for (sl in GameGLSquare.toBeInitializeList) {
+        //    sl.Init()
+        //}
+        //GameGLSquare.toBeInitializeList.clear()
+        //for (sl in GameGLSquare.toBeDeleted) {
+        //    GameGLSquare.squareList.remove(sl)
+        //}
+        //GameGLSquare.toBeDeleted.clear()
+//
+        //GLES20.glUseProgram(mProgram)
+        //for (sl in GameGLSquare.squareList) {
+        //    val mvpMatrix1 = vPMatrix.copyOf()
+        //    sl.draw(mvpMatrix1)
+        //}
+//
+        //GLES20.glUseProgram(0)
     }
 
 }

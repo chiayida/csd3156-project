@@ -2,6 +2,7 @@ package edu.singaporetech.services
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.*
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -11,6 +12,8 @@ import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
@@ -86,6 +89,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             handler.postDelayed(this, engine.updateInterval)
         }
     }
+    lateinit var gameCanvasView : GameCanvasView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,9 +103,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         GameGLSquare.Clear()
         // Initialize view binding
-        binding = ActivityGameBinding.inflate(layoutInflater)
-        gLView = GameGLSurfaceView(this)
-        setContentView(gLView)
+        //binding = ActivityGameBinding.inflate(layoutInflater)
+        //gLView = GameGLSurfaceView(this)
+        //setContentView(gLView)
+
+        gameCanvasView = GameCanvasView(this)
+        setContentView(gameCanvasView)
 
         // Initialize Gyroscope
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -502,6 +509,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         powerUpBool = false
         gamePlayer.update(dt, isShoot)
         isShoot = false
+
+        //// Create a new Path object to draw the square
+        //val path = Path().apply {
+        //    moveTo(100f, 100f)
+        //    lineTo(200f, 100f)
+        //    lineTo(200f, 200f)
+        //    lineTo(100f, 200f)
+        //    close()
+        //}
+        //// Draw the square with the texture
+        //canvas.drawColor(Color.RED, PorterDuff.Mode.CLEAR)
+        //canvas.drawPath(path, paint)
     }
 
     private fun initViews(){

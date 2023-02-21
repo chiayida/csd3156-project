@@ -38,7 +38,7 @@ class Player(gameActivity: GameActivity) : Entity() {
         renderObject.setImageResource(R.drawable.player)
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
-
+        renderObject.x = 300f
         position = Vector2(screenWidth / 2F, screenHeight / 1.2F)
     }
 
