@@ -1,6 +1,5 @@
 package edu.singaporetech.services
 
-
 class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
@@ -12,6 +11,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
 
     private val renderObject: GameGLSquare = GameGLSquare(gameActivity)
 
+    //Initializing the entity variables
     init {
         position = Vector2(screenWidth / 2, screenHeight / 5)
         colliderScale = Vector2(100F, 100F)
@@ -25,7 +25,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
         renderObject.yScale = colliderScale.y
     }
 
-
+    //Storing the enemy data into the database
     fun setDatabaseVariables(position_: Vector2, velocityX: Float, projectileDamage_: Int,
                              projectileDelay_: Float, projectileTimer_: Float, projectileVelocity_: Float,
                              isAutoShoot_: Boolean, powerUpTimer_: Float) {
@@ -37,16 +37,19 @@ class Enemy(gameActivity: GameActivity) : Entity() {
                                    isAutoShoot_, powerUpTimer_)
     }
 
-
+    //Update the projectiles position
     fun updateProjectilesPosition(dt: Float) {
         shoot.updatePositions(dt)
     }
+
+    //Update the Enemy projectiles speed
     fun updateEnemyProjectileSpeed(speed:Float)
     {
         EnemyProjectileSpeed = speed
         shoot.UpdateSpeed(speed)
     }
 
+    //Update the logic for the Enemy projectiles to shoot as well as the rendering of the Enemy
     fun update(dt: Float) {
         if (getColliderMax().x >= screenWidth) {
             velocity.x = -speed
@@ -54,7 +57,6 @@ class Enemy(gameActivity: GameActivity) : Entity() {
             velocity.x = speed
         }
 
-        // Update position
         renderObject.x = position.x
         renderObject.y = position.y
 

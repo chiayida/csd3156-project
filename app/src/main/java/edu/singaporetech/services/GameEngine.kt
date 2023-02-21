@@ -34,7 +34,6 @@ class GameEngine constructor( val updateInterval: Long, private val listener: On
         FPSUpdated = false
 
         if (System.currentTimeMillis() - fpsTime >= 1000) {
-            //Log.d("Game:", "Game is Running at $frames fps")
             FPSUpdated = true
             FPS = frames
             frames = 0

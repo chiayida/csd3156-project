@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         toggleContinue(false)
         soundSys.InitializeSounds()
         flag = intent.getBooleanExtra("flag", false)
-        Log.d("Main", flag.toString())
 
         // Initialise repositories
         myRepository = MyRepository(this.applicationContext)
@@ -53,23 +52,21 @@ class MainActivity : AppCompatActivity() {
                         myRepository.deleteAllEnemies()
                         myRepository.deleteAllProjectiles()
                     }
-
                     val intent = Intent(this@MainActivity, GameActivity::class.java)
                     startActivity(intent)
                 }
-            } else {
+            }
+            else {
                 val intent = Intent(this@MainActivity, GameActivity::class.java)
                 startActivity(intent)
             }
         }
-
         // Upon clicking, user will go to HighscoreActivity
         binding.scoreButton.setOnClickListener {
             soundSys.playClick()
             val intent = Intent(this, HighscoreActivity::class.java)
             startActivity(intent)
         }
-
         // Upon clicking, user will go to CreditsActivity
         binding.creditsButton.setOnClickListener {
             soundSys.playClick()
@@ -93,7 +90,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         flag = intent.getBooleanExtra("flag", false)
-        Log.i("Main", flag.toString())
         toggleContinue(false)
     }
     fun toggleContinue(show : Boolean){
@@ -115,6 +111,5 @@ class MainActivity : AppCompatActivity() {
             binding.scoreButton.visibility = View.VISIBLE
             binding.creditsButton.visibility = View.VISIBLE
         }
-
     }
 }

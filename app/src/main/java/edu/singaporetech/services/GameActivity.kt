@@ -9,8 +9,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -24,25 +22,28 @@ import kotlinx.coroutines.launch
 
 class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
     val gameActivity: GameActivity = this
-    // SQL Database
-    private lateinit var myRepository: MyRepository
 
     val TAG: String = "GameActivity"
     private lateinit var binding: ActivityGameBinding
-    private lateinit var sensorManager: SensorManager
+    // ENGINE
+    private var FPSCap = 1L
+    private var engine = GameEngine(FPSCap, this)
+    private var screenWidth: Float = 0F
+    private var screenHeight: Float = 0f
+
+    // SQL Database
+    private lateinit var myRepository: MyRepository
+
+    // GAME OBJECTS
     private lateinit var gamePlayer: Player
     private lateinit var gameEnemy: Enemy
     private lateinit var powerUp: PowerUp
     private var Enemies: MutableList<Enemy> = mutableListOf()
 
-    private var FPSCap = 1L
-    private var engine = GameEngine(FPSCap, this)
 
     private val handler = Handler()
 
-   // private lateinit var fpsView: TextView
-   // private lateinit var dtView: TextView
-
+    // GAME UI OBJECTS
     private lateinit var playerHealthView: TextView
     private lateinit var currentScoreView: TextView
 
@@ -63,15 +64,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     var soundSys = SoundSystem(this)
 
 
-    private var direction:Float = 0.0f
-
-    private var screenWidth: Float = 0F
-    private var screenHeight: Float = 0f
-
+    // GAME LOGIC VARIABLES
+    private lateinit var sensorManager: SensorManager
     var aliveTime:Float = 0F
     var powerUpBool: Boolean = false
     var powerUpRespawnTimer: Float = 0f
-
     private var isShoot: Boolean = false
 
     companion object {
@@ -87,19 +84,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         override fun run() {
             // Perform tasks here when the activity is updated
             engine.EngineUpdate()
-
-            // Debug fps and delta time
-            //if (engine.getFPSUpdated()) {
-               // fpsView.text = "${engine.getFPS()} FPS"
-               // dtView.text = "${engine.getDeltaTime()}ms dt"
-            //}
             handler.postDelayed(this, engine.updateInterval)
         }
     }
 
-    /*
-    *
-    * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -116,6 +104,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         gLView = GameGLSurfaceView(this)
         setContentView(gLView)
 
+        // Initialize Gyroscope
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         // INIT ALL SCREEN OBJECTS
@@ -130,7 +119,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             0F, 0F, ProjectileType.Enemy)
 
         GlobalScope.launch {
-
             // Enemies Data
             if (myRepository.getEnemiesData().isNotEmpty()) {
                 val enemyData = myRepository.getEnemiesData()[0]
@@ -177,15 +165,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     when (ProjectileType.values()[projectileData.projectileType]) {
                         ProjectileType.Player -> {
                             gamePlayer.shoot.projectiles.add(toBeAddedProjectile)
-                            Log.d("type", "Player")
                         }
                         ProjectileType.Enemy -> {
                             gameEnemy.shoot.projectiles.add(toBeAddedProjectile)
-                            Log.d("type", "Enemy")
                         }
                         else -> {
                             powerUp.shoot.projectiles.add(toBeAddedProjectile)
-                            Log.d("type", "power up")
                         }
                     }
                 }
@@ -194,7 +179,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
         GameGLSquare.toBeDeleted.add(tempProjectile.renderObject)
 
-
+        //Setting the GAME UI OBJECTS Values and position
         playerHealthView = TextView(this)
         playerHealthView.text = "Player Health: " + gamePlayer.health
         playerHealthView.textSize = 24f
@@ -213,8 +198,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         currentScoreView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(currentScoreView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
-        direction = 0F
-
+        // To shoot when player taps the screen
         val rootView = findViewById<View>(android.R.id.content)
         rootView.setOnClickListener {
             isShoot = true
@@ -232,9 +216,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
     }
 
-    /*
-    *
-    * */
     override fun onResume() {
         super.onResume()
         soundSys.playGameBGM()
@@ -251,9 +232,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         super.onStart()
         soundSys.playGameBGM()
     }
-    /*
-    *
-    * */
+
     override fun onPause() {
         super.onPause()
         soundSys.StopSounds()
@@ -263,9 +242,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         sensorManager.unregisterListener(this)
         handler.removeCallbacks(updateRunnable)
     }
-    /*
-    *
-    * */
+
     override fun onBackPressed() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -273,9 +250,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         startActivity(intent)
         finish()
     }
-    /*
-    *
-    * */
+
     override fun onDestroy() {
         if (!isRestarting && !isDead) {
             // Save data to database for it to be reloaded
@@ -351,32 +326,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         super.onDestroy()
         soundSys.ReleaseSounds()
     }
-    /*
-    *
-    * */
+
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
             // Get the three values for the gyroscope
-            val x = event.values[0]
             val y = event.values[1]
-            Log.d("Moving",y.toString())
-            val z = event.values[2]
             if(y > 0.1)
-            {
-                Log.d("Moving","Right")
-                gamePlayer.velocity.x = 1F
-            }
+                gamePlayer.velocity.x = gamePlayer.speed
             else if (y < 0)
-            {
-                Log.d("Moving","Left")
-                gamePlayer.velocity.x = -1F
-            }
+                gamePlayer.velocity.x = -gamePlayer.speed
         }
     }
 
-    /*
-    *
-    * */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
@@ -448,10 +409,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                                 projAABB, projectile.velocity,
                                 enemyAABB, Enemies[j].velocity, dt
                             )
-                        ) {
-                            //Bullet Hit enemy removed cause change to endless
+                        ){
                             toBeDeleted.add(projectile)
-
                             gamePlayer.score += gamePlayer.projectileDamage * 10
                             currentScoreView.text = "Current score: " + gamePlayer.score
                             soundSys.playDamageSFX(false)
@@ -484,7 +443,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     }
                     else if(powerUpProjectile.getProjectileType() == ProjectileType.AddHealth)
                     {
-                       // if(gamePlayer.health < 5)
                        gamePlayer.health += 1
                     }
                     else if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
@@ -517,10 +475,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
         gamePlayer.updatePosition(dt)
         powerUp.updatePosition(dt)
-        //gamePlayer.updatePosition(gamePlayer.position.x + direction
-        //    ,resources.displayMetrics.heightPixels.toFloat() - offsetBottom)
     }
-
 
     override fun OnGameLogicUpdate(dt : Float){
         playerHealthView.text = "Player Health: " + gamePlayer.health
@@ -533,6 +488,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             //If no shield, return to Default Player Texture
             gamePlayer.updatePlayerTexture(PlayerTexture.default)
         }
+        //Power up spawn timer
         if(powerUpRespawnTimer >= 5f){
             powerUpBool = true
             powerUpRespawnTimer = 0f
@@ -551,18 +507,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     private fun initViews(){
         initPauseView()
-        //        fpsView = TextView(this)
-//        fpsView.text = "Hello, world!"
-//        fpsView.textSize = 24f
-//        fpsView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-//        addContentView(fpsView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-
-//        dtView = TextView(this)
-//        dtView.text = " delta time"
-//        dtView.textSize = 24f
-//        dtView.y = 100f
-//        dtView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-//        addContentView(dtView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
     }
 
     private fun togglePauseView(show : Boolean){
@@ -595,6 +539,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
     }
 
+    //UI Layout for Pause View
     private fun initPauseView(){
         pauseButton = Button(this)
         pauseButton.x = 50f

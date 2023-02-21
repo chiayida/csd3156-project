@@ -4,11 +4,8 @@ import android.opengl.GLSurfaceView
 
 
 class GameGLSurfaceView(context: Context) : GLSurfaceView(context) {
-
     private val renderer: GameGLRenderer
-
     init {
-
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2)
 

@@ -9,7 +9,6 @@ import java.io.IOException
 
 class SoundSystem(var gameActivity: AppCompatActivity)  {
 
-
     private lateinit var pewSFX : MediaPlayer
     private lateinit var pew2SFX : MediaPlayer
     private lateinit var clickSFX : MediaPlayer
