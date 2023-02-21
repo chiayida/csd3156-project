@@ -16,14 +16,6 @@ class GameCanvasView(context: Context) : View(context) {
     // Set up the paint with which to draw.
     private val paint = Paint().apply {
         color = Color.BLACK
-        //// Smooths out edges of what is drawn without affecting shape.
-        //isAntiAlias = true
-        //// Dithering affects how colors with higher-precision than the device are down-sampled.
-        //isDither = true
-        //style = Paint.Style.STROKE // default: FILL
-        //strokeJoin = Paint.Join.ROUND // default: MITER
-        //strokeCap = Paint.Cap.ROUND // default: BUTT
-        //strokeWidth = STROKE_WIDTH // default: Hairline-width (really thin)
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -35,15 +27,21 @@ class GameCanvasView(context: Context) : View(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
+        //Clear scene
         extraCanvas.drawColor(Color.BLACK)
 
+        //Remove objects at the start to prevent cases where objects is deleted while looping below
         for (sl in GameSquare.toBeDeleted) {
             GameSquare.squareList.remove(sl)
         }
         GameSquare.toBeDeleted.clear()
 
+        //Loop through all square to draw
         for (sl in GameSquare.squareList) {
             val texture = BitmapFactory.decodeResource(resources, sl.textureHandle)
+            val rotationMatrix = Matrix()
+            rotationMatrix.postRotate(sl.rotation)
+            val rotatedTexture = Bitmap.createBitmap(texture, 0, 0, texture.width, texture.height, rotationMatrix, true)
             val matrix = Matrix()
             val pathBounds = RectF()
             val path = sl.getPath()
@@ -53,8 +51,8 @@ class GameCanvasView(context: Context) : View(context) {
                 RectF(0f, 0f, texture.width.toFloat(), texture.height.toFloat()),
                 pathBounds, Matrix.ScaleToFit.FILL
             )
-            //matrix.postRotate(45f)
-            paint.shader = BitmapShader(texture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+
+            paint.shader = BitmapShader(rotatedTexture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
             paint.shader.setLocalMatrix(matrix)
             extraCanvas.drawPath(path, paint)
         }

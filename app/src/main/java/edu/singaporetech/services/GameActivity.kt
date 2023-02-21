@@ -100,7 +100,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         //screenHeight = (resources.displayMetrics.heightPixels).toFloat()
         //halfScreenHeight = screenHeight / 2F
 
-        GameSquare.Clear()
+        GameSquare.clear()
         gameCanvasView = GameCanvasView(this)
         setContentView(gameCanvasView)
 

@@ -1,13 +1,8 @@
 package edu.singaporetech.services
 
 import android.content.Context
-
 import android.graphics.Path
 import java.util.concurrent.CopyOnWriteArrayList
-
-
-const val COORDS_PER_VERTEX = 3
-const val COORDS_PER_TEXTURE = 2
 
 class GameSquare(context: Context) {
 
@@ -25,7 +20,7 @@ class GameSquare(context: Context) {
         val squareList: CopyOnWriteArrayList<GameSquare> = CopyOnWriteArrayList()
         val toBeDeleted: CopyOnWriteArrayList<GameSquare> = CopyOnWriteArrayList()
 
-        fun Clear() {
+        fun clear() {
             squareList.clear()
             toBeDeleted.clear()
         }
