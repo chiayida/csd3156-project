@@ -2,7 +2,6 @@ package edu.singaporetech.services
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.*
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -13,8 +12,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
@@ -475,7 +472,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                     }
                     else if(powerUpProjectile.getProjectileType() == ProjectileType.Shield)
                     {
-                        gamePlayer.updatePlayerTexture(PlayerTexture.shielded)
+                        gamePlayer.updatePlayerTexture(PlayerTexture.Shielded)
                         gamePlayer.shieldDuration = 10f
                     }
                     else if(powerUpProjectile.getProjectileType() == ProjectileType.SpeedBoost)
@@ -512,9 +509,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         if(gamePlayer.shieldDuration > 0f) gamePlayer.shieldDuration -= dt/1000f
         aliveTime += dt/1000f
         powerUpRespawnTimer += dt/1000f
-        if(gamePlayer.shieldDuration <= 0 && gamePlayer.texture != PlayerTexture.default){
+        if(gamePlayer.shieldDuration <= 0 && gamePlayer.texture != PlayerTexture.Default){
             //If no shield, return to Default Player Texture
-            gamePlayer.updatePlayerTexture(PlayerTexture.default)
+            gamePlayer.updatePlayerTexture(PlayerTexture.Default)
         }
         //Power up spawn timer
         if(powerUpRespawnTimer >= 5f){
@@ -525,7 +522,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         if(gamePlayer.score > gameEnemy.projectileDamage.toDouble().pow(2.0) * 100)
         {
             gameEnemy.projectileDamage += 1
-            gameEnemy.updateEnemyProjectileSpeed(gameEnemy.EnemyProjectileSpeed * 1.2f)
+            gameEnemy.updateEnemyProjectileSpeed(gameEnemy.enemyProjectileSpeed * 1.2f)
         }
         powerUp.update(dt,powerUpBool)
         powerUpBool = false

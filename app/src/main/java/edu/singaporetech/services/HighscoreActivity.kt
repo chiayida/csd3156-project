@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class HighscoreActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHighscoreBinding
-    var soundSys = SoundSystem(this)
+    private var soundSys = SoundSystem(this)
 
     // SQL Database
     private lateinit var myRepository: MyRepository
@@ -78,6 +78,8 @@ class HighscoreActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+
     override fun onDestroy() {
         super.onDestroy()
         soundSys.ReleaseSounds()

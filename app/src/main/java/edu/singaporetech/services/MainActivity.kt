@@ -1,21 +1,19 @@
 package edu.singaporetech.services
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import edu.singaporetech.services.databinding.ActivityMainBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import android.app.Activity.RESULT_OK
 
 
 class MainActivity : AppCompatActivity() {
+    // Binding
     private lateinit var binding: ActivityMainBinding
-    // SOUNDS
-    var soundSys = SoundSystem(this)
+    // Audio
+    private var soundSys = SoundSystem(this)
     // SQL Database
     private lateinit var myRepository: MyRepository
     private var flag = false
@@ -27,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 
         toggleContinue(false)
         soundSys.InitializeSounds()
+
+        // Flag to determine "continue" prompt
         flag = intent.getBooleanExtra("flag", false)
 
         // Initialise repositories
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
 
+                // Delete "preloaded" data as it will be a new game
                 binding.noButton.setOnClickListener {
                     soundSys.playClick()
                     GlobalScope.launch {
@@ -61,12 +62,14 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
         // Upon clicking, user will go to HighscoreActivity
         binding.scoreButton.setOnClickListener {
             soundSys.playClick()
             val intent = Intent(this, HighscoreActivity::class.java)
             startActivity(intent)
         }
+
         // Upon clicking, user will go to CreditsActivity
         binding.creditsButton.setOnClickListener {
             soundSys.playClick()
@@ -75,25 +78,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onStart() {
         super.onStart()
         soundSys.playGameBGM()
     }
+
+
     override fun onPause() {
         super.onPause()
         soundSys.StopSounds()
     }
+
+
     override fun onDestroy() {
         super.onDestroy()
         soundSys.ReleaseSounds()
     }
+
+
     override fun onResume() {
         super.onResume()
         flag = intent.getBooleanExtra("flag", false)
         toggleContinue(false)
     }
-    fun toggleContinue(show : Boolean){
-        if(show){
+
+
+    private fun toggleContinue(show : Boolean) {
+        if (show) {
             binding.continueText.visibility = View.VISIBLE
             binding.yesButton.visibility = View.VISIBLE
             binding.noButton.visibility = View.VISIBLE
@@ -102,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             binding.scoreButton.visibility = View.INVISIBLE
             binding.creditsButton.visibility = View.INVISIBLE
         }
-        else{
+        else {
             binding.continueText.visibility = View.INVISIBLE
             binding.yesButton.visibility = View.INVISIBLE
             binding.noButton.visibility = View.INVISIBLE

@@ -9,7 +9,7 @@ import edu.singaporetech.services.databinding.ActivityCreditsBinding
 class CreditsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreditsBinding
     // SOUNDS
-    var soundSys = SoundSystem(this)
+    private var soundSys = SoundSystem(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

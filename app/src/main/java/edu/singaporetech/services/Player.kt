@@ -1,12 +1,11 @@
 package edu.singaporetech.services
 
-import android.util.Log
 import java.lang.Float.max
 import java.lang.Float.min
 
 enum class PlayerTexture{
-    default,
-    shielded
+    Default,
+    Shielded
 }
 
 
@@ -22,7 +21,7 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val maxYPos: Float = (screenHeight - 50f)
 
     var projectileDamage: Int = 1
-    var texture: PlayerTexture = PlayerTexture.default
+    var texture: PlayerTexture = PlayerTexture.Default
     var health: Int = 5
     var projectileSpeed = -0.5f
     var shieldDuration = 0.0f
@@ -56,11 +55,11 @@ class Player(gameActivity: GameActivity) : Entity() {
     //Changing of textures
     fun updatePlayerTexture(_texture : PlayerTexture)
     {
-        if(_texture == PlayerTexture.shielded)
+        if(_texture == PlayerTexture.Shielded)
         {
             renderObject.setImageResource(R.drawable.shield_player)
         }
-       else if(_texture == PlayerTexture.default)
+       else if(_texture == PlayerTexture.Default)
         {
             renderObject.setImageResource(R.drawable.player)
         }
@@ -82,7 +81,7 @@ class Player(gameActivity: GameActivity) : Entity() {
     fun updateProjectileSpeed(speed:Float)
     {
         projectileSpeed = speed
-        shoot.UpdateSpeed(speed)
+        shoot.updateSpeed(speed)
     }
 
     //Update the logic for the projectiles to shoot as well as the rendering of the player

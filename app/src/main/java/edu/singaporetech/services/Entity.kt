@@ -1,11 +1,14 @@
 package edu.singaporetech.services
 
-open class Vector2( var x: Float = 0F, var y: Float = 0F) {
+
+open class Vector2(var x: Float = 0F, var y: Float = 0F) {
     fun copy(x: Float = this.x, y: Float = this.y) = Vector2(x, y)
+
     fun toZero() {
         x = 0F
         y = 0F
     }
+
     fun vec2String() : String {
         return "($x, $y)"
     }

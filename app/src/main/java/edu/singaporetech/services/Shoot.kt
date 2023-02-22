@@ -28,7 +28,7 @@ class Shoot(private val gameActivity: GameActivity,
             projectile.updatePosition(dt)
         }
     }
-    fun UpdateSpeed(speed:Float)
+    fun updateSpeed(speed:Float)
     {
         projectileVelocity = speed
     }
@@ -63,7 +63,7 @@ class Shoot(private val gameActivity: GameActivity,
             if(powerBool)
             {
                 //randomize the position
-                var pos = Vector2(entity.position.x , entity.position.y)
+                val pos = Vector2(entity.position.x , entity.position.y)
                 val random = Random.Default
                 val randomX = random.nextFloat() * screenWidth
                 pos.x = randomX

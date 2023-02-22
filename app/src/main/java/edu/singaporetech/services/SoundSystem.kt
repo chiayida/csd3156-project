@@ -1,11 +1,7 @@
 package edu.singaporetech.services
 
-import android.media.AudioAttributes
-import android.media.AudioFormat
-import android.media.AudioTrack
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
-import java.io.IOException
 
 class SoundSystem(var gameActivity: AppCompatActivity)  {
 

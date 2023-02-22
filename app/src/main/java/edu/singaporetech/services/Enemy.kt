@@ -5,8 +5,8 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
     var projectileDamage: Int = 1
-    var EnemyProjectileSpeed:Float = 0.5f
-    val shoot: Shoot = Shoot(gameActivity, 1000F, EnemyProjectileSpeed,
+    var enemyProjectileSpeed: Float = 0.5f
+    val shoot: Shoot = Shoot(gameActivity, 1000F, enemyProjectileSpeed,
                              screenHeight, true, ProjectileType.Enemy)
 
     private val renderObject: GameSquare = GameSquare(gameActivity)
@@ -45,8 +45,8 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     //Update the Enemy projectiles speed
     fun updateEnemyProjectileSpeed(speed:Float)
     {
-        EnemyProjectileSpeed = speed
-        shoot.UpdateSpeed(speed)
+        enemyProjectileSpeed = speed
+        shoot.updateSpeed(speed)
     }
 
     //Update the logic for the Enemy projectiles to shoot as well as the rendering of the Enemy

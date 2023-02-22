@@ -9,9 +9,9 @@ enum class ProjectileType{
     SpeedBoost
 }
 
-class Projectile(val gameActivity: GameActivity, var position_: Vector2, var velocity_: Float,
-                 var projectileBoundary_: Float, var projectileType_: ProjectileType): Entity() {
-    var flag: Boolean = velocity_ > 0F
+class Projectile(val gameActivity: GameActivity, position_: Vector2, velocity_: Float,
+                 projectileBoundary_: Float, projectileType_: ProjectileType): Entity() {
+    private var flag: Boolean = velocity_ > 0F
     val renderObject: GameSquare = GameSquare(gameActivity)
     var projectileBoundary = projectileBoundary_
 
