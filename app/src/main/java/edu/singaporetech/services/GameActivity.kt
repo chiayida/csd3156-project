@@ -183,19 +183,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         //Setting the GAME UI OBJECTS Values and position
         playerHealthView = TextView(this)
         playerHealthView.text = "Player Health: " + gamePlayer.health
-        playerHealthView.textSize = 24f
+        playerHealthView.textSize = 25f
         playerHealthView.setTextColor(resources.getColor(R.color.text_color))
-        playerHealthView.x = 550f
-        playerHealthView.y = 150f
+        playerHealthView.x = screenWidth * 0.3f
+        playerHealthView.y = screenHeight * 0.065f
         playerHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         currentScoreView = TextView(this)
         currentScoreView.text = "Current score: " + gamePlayer.score
-        currentScoreView.textSize = 24f
+        currentScoreView.textSize = 25f
         currentScoreView.setTextColor(resources.getColor(R.color.text_color))
-        currentScoreView.x = 550f
-        currentScoreView.y = 50f
+        currentScoreView.x = screenWidth * 0.3f
+        currentScoreView.y = screenHeight * 0.025f
         currentScoreView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(currentScoreView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
@@ -234,6 +234,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         soundSys.playGameBGM()
     }
 
+    override fun onStop() {
+        super.onStop()
+        soundSys.StopSounds()
+        soundSys.ReleaseSounds()
+    }
     override fun onPause() {
         super.onPause()
         soundSys.StopSounds()
@@ -325,7 +330,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         super.onDestroy()
-        soundSys.ReleaseSounds()
     }
 
     var directionSpeed:Float = 1.5f
@@ -578,10 +582,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     //UI Layout for Pause View
     private fun initPauseView(){
         pauseButton = Button(this)
-        pauseButton.x = 50f
-        pauseButton.y = 25f
+        pauseButton.x = screenWidth * 0.05f
+        pauseButton.y = pauseButton.x
+        var size : Int = (screenWidth * 0.15f).toInt()
         pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
-        addContentView(pauseButton, ViewGroup.LayoutParams(250, 250))
+        addContentView(pauseButton, ViewGroup.LayoutParams(size,size))
         pauseButton.setOnClickListener{
             soundSys.playClick()
             if (!engine.getPaused()){
@@ -596,24 +601,26 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         
         pauseText = TextView(this)
         pauseText.text = "PAUSED"
-        pauseText.textSize = 90f
         pauseText.setTextColor(resources.getColor(R.color.text_color))
         pauseText.visibility = View.INVISIBLE
         pauseText.x = 0f
-        pauseText.y = (screenHeight / 2f) - 500f
+        pauseText.y = screenHeight * 0.3f
+        pauseText.textSize = 90f
         pauseText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         pauseText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(pauseText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))
 
         restartButton = Button(this)
-        restartButton.x = (screenWidth / 2f) - 250f
-        restartButton.y = (screenHeight / 2f) + 100f
+        val btWidth = (screenWidth * 0.4f).toInt()
+        val btHeight = (btWidth * 0.3f).toInt()
+        restartButton.x = screenWidth * 0.5f - btWidth * 0.5f
+        restartButton.y = screenHeight * 0.53f
         restartButton.text = "RESTART"
         restartButton.textSize = 30f
         restartButton.visibility = View.INVISIBLE
         restartButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
         restartButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(restartButton, ViewGroup.LayoutParams(500, 150))
+        addContentView(restartButton, ViewGroup.LayoutParams(btWidth, btHeight))
         restartButton.setOnClickListener{
             isRestartShow = true
             confirmationText.text = "Confirm Restart the game?"
@@ -623,14 +630,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         returnMMButton = Button(this)
-        returnMMButton.x = (screenWidth / 2f) - 250f
-        returnMMButton.y = (screenHeight / 2f) + 300f
+        returnMMButton.x = screenWidth * 0.5f - btWidth * 0.5f
+        returnMMButton.y = screenHeight * 0.61f
         returnMMButton.text = "Main Menu"
         returnMMButton.textSize = 30f
         returnMMButton.visibility = View.INVISIBLE
         returnMMButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
         returnMMButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(returnMMButton, ViewGroup.LayoutParams(500, 150))
+        addContentView(returnMMButton, ViewGroup.LayoutParams(btWidth, btHeight))
         returnMMButton.setOnClickListener{
             isRestartShow = false
             confirmationText.text = "Confirm return to the Main Menu?"
@@ -640,14 +647,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         continueButton = Button(this)
-        continueButton.x = (screenWidth / 2f) - 250f
-        continueButton.y = (screenHeight / 2f) - 100f
+        continueButton.x = screenWidth * 0.5f - btWidth * 0.5f
+        continueButton.y = screenHeight * 0.45f
         continueButton.text = "CONTINUE"
         continueButton.textSize = 30f
         continueButton.visibility = View.INVISIBLE
         continueButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
         continueButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(continueButton, ViewGroup.LayoutParams(500, 150))
+        addContentView(continueButton, ViewGroup.LayoutParams(btWidth, btHeight))
         continueButton.setOnClickListener{
             togglePauseView(false)
             engine.setPaused(false)
@@ -655,14 +662,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         yesButton = Button(this)
-        yesButton.x = (screenWidth / 2f) - 250f
-        yesButton.y = (screenHeight / 2f)
+        yesButton.x = screenWidth * 0.5f - btWidth * 0.5f
+        yesButton.y = screenHeight * 0.5f
         yesButton.text = "YES"
         yesButton.textSize = 30f
         yesButton.visibility = View.INVISIBLE
         yesButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
         yesButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(yesButton, ViewGroup.LayoutParams(500, 150))
+        addContentView(yesButton, ViewGroup.LayoutParams(btWidth, btHeight))
         yesButton.setOnClickListener{
             soundSys.playClick()
             toggleConfirmationView(false)
@@ -680,14 +687,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         noButton = Button(this)
-        noButton.x = (screenWidth / 2f) - 250f
-        noButton.y = (screenHeight / 2f) + 200f
+        noButton.x = screenWidth * 0.5f - btWidth * 0.5f
+        noButton.y = screenHeight * 0.58f
         noButton.text = "NO"
         noButton.textSize = 30f
         noButton.visibility = View.INVISIBLE
         noButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
         noButton.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
-        addContentView(noButton, ViewGroup.LayoutParams(500, 150))
+        addContentView(noButton, ViewGroup.LayoutParams(btWidth, btHeight))
         noButton.setOnClickListener{
             togglePauseView(true)
             toggleConfirmationView(false)
@@ -700,7 +707,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         confirmationText.setTextColor(resources.getColor(R.color.text_color))
         confirmationText.visibility = View.INVISIBLE
         confirmationText.x = 0f
-        confirmationText.y = (screenHeight / 2f) - 300f
+        confirmationText.y = screenHeight * 0.375f
         confirmationText.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         confirmationText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         addContentView(confirmationText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))

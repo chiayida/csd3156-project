@@ -9,138 +9,145 @@
     android:orientation="vertical">
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="119dp"
-        android:layout_height="97dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="8dp"
-        android:contentDescription="@string/todo"
-        android:src="@drawable/player"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.993"
-        tools:ignore="ImageContrastCheck,ImageContrastCheck" />
-
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
-        android:fontFamily="@font/aldotheapache"
-        android:shadowColor="#75D8FF"
-        android:text="@string/game_title"
-        android:textAlignment="center"
-        android:textColor="#E6E6E6"
-        android:textColorHighlight="#88FFF1"
-        android:textSize="70sp"
-        app:layout_constraintBottom_toTopOf="@+id/playButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/playButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/button_outline"
-        android:fontFamily="@font/aldotheapache"
-        android:text="@string/_Start"
-        android:textColor="@color/text_color"
-        android:textSize="32sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/scoreButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/scoreButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/button_outline"
-        android:fontFamily="@font/aldotheapache"
-        android:text="@string/_Highscore"
-        android:textColor="@color/text_color"
-        android:textSize="32sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/creditsButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/creditsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="156dp"
-        android:background="@drawable/button_outline"
-        android:fontFamily="@font/aldotheapache"
-        android:text="@string/_Credits"
-        android:textColor="@color/text_color"
-        android:textSize="32sp"
-        android:visibility="visible"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/continueText"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/aldotheapache"
-        android:gravity="center"
-        android:text="@string/_Continue"
-        android:textColor="@color/text_color"
-        android:textSize="48sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/scoreButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/yesButton"
-        android:layout_width="120dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/button_outline"
-        android:fontFamily="@font/aldotheapache"
-        android:text="@string/_YES"
-        android:textColor="@color/text_color"
-        android:textSize="32sp"
-        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/continueText" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/noButton"
-        android:layout_width="120dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/button_outline"
-        android:fontFamily="@font/aldotheapache"
-        android:text="@string/_NO"
-        android:textColor="@color/text_color"
-        android:textSize="32sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/creditsButton"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="132dp"
+            android:layout_height="114dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/player"
+            tools:ignore="ImageContrastCheck,ImageContrastCheck" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/aldotheapache"
+            android:shadowColor="#75D8FF"
+            android:text="@string/game_title"
+            android:textAlignment="center"
+            android:textColor="#E6E6E6"
+            android:textColorHighlight="#88FFF1"
+            android:textSize="70sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="60dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/playButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button_outline"
+                android:fontFamily="@font/aldotheapache"
+                android:gravity="center"
+                android:text="@string/_Start"
+                android:textColor="@color/text_color"
+                android:textSize="32sp"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/scoreButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button_outline"
+                android:fontFamily="@font/aldotheapache"
+                android:text="@string/_Highscore"
+                android:textColor="@color/text_color"
+                android:textSize="32sp"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/creditsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_outline"
+                android:fontFamily="@font/aldotheapache"
+                android:text="@string/_Credits"
+                android:textColor="@color/text_color"
+                android:textSize="32sp"
+                android:visibility="visible" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="180dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/continueText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/aldotheapache"
+            android:gravity="center"
+            android:text="@string/_Continue"
+            android:textColor="@color/text_color"
+            android:textSize="48sp"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/yesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/button_outline"
+                android:fontFamily="@font/aldotheapache"
+                android:gravity="center"
+                android:text="@string/_YES"
+                android:textColor="@color/text_color"
+                android:textSize="32sp"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/noButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/button_outline"
+                android:fontFamily="@font/aldotheapache"
+                android:gravity="center|center_horizontal"
+                android:text="@string/_NO"
+                android:textColor="@color/text_color"
+                android:textSize="32sp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
