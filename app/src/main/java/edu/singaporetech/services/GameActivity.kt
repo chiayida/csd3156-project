@@ -96,9 +96,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         myRepository = MyRepository(this.applicationContext)
 
-        //screenWidth = (resources.displayMetrics.widthPixels).toFloat()
+        screenWidth = (resources.displayMetrics.widthPixels).toFloat()
         //halfScreenWidth = screenWidth / 2F
-        //screenHeight = (resources.displayMetrics.heightPixels).toFloat()
+        screenHeight = (resources.displayMetrics.heightPixels).toFloat()
         //halfScreenHeight = screenHeight / 2F
 
         GameSquare.clear()
