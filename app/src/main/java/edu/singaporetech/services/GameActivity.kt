@@ -86,7 +86,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             handler.postDelayed(this, engine.updateInterval)
         }
     }
-    lateinit var gameCanvasView : GameCanvasView
+    private lateinit var gameCanvasView : GameCanvasView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

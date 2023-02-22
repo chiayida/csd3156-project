@@ -20,7 +20,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
 
         // Setting texture
         renderObject.setImageResource(R.drawable.enemy)
-        renderObject.rotation = 180f
+        renderObject.setRotate(180f)
         renderObject.xScale = colliderScale.x
         renderObject.yScale = colliderScale.y
     }

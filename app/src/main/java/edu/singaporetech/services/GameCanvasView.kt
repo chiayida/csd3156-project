@@ -4,8 +4,10 @@ import android.graphics.*
 import android.view.View
 
 class GameCanvasView(context: Context) : View(context) {
-    private lateinit var extraCanvas: Canvas
-    private lateinit var extraBitmap: Bitmap
+    private var extraCanvas: Canvas
+    private var extraBitmap: Bitmap
+
+    private val pathBounds = RectF()
 
     init {
         extraBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
@@ -38,21 +40,17 @@ class GameCanvasView(context: Context) : View(context) {
 
         //Loop through all square to draw
         for (sl in GameSquare.squareList) {
-            val texture = BitmapFactory.decodeResource(resources, sl.textureHandle)
-            val rotationMatrix = Matrix()
-            rotationMatrix.postRotate(sl.rotation)
-            val rotatedTexture = Bitmap.createBitmap(texture, 0, 0, texture.width, texture.height, rotationMatrix, true)
+
             val matrix = Matrix()
-            val pathBounds = RectF()
             val path = sl.getPath()
             path.computeBounds(pathBounds, true)
             // Map the texture to the bounds of the path so that texture always appear on path
             matrix.setRectToRect(
-                RectF(0f, 0f, texture.width.toFloat(), texture.height.toFloat()),
+                sl.textureSquare,
                 pathBounds, Matrix.ScaleToFit.FILL
             )
 
-            paint.shader = BitmapShader(rotatedTexture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+            paint.shader = sl.bitmapShader
             paint.shader.setLocalMatrix(matrix)
             extraCanvas.drawPath(path, paint)
         }
