@@ -10,10 +10,14 @@ enum class ProjectileType{
 }
 
 class Projectile(val gameActivity: GameActivity, position_: Vector2, velocity_: Float,
-                 projectileBoundary_: Float, projectileType_: ProjectileType): Entity() {
+                var projectileBoundary: Float, projectileType_: ProjectileType): Entity() {
     private var flag: Boolean = velocity_ > 0F
     val renderObject: GameSquare = GameSquare(gameActivity)
-    var projectileBoundary = projectileBoundary_
+
+    private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
+    private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
+    private val powerUpSize: Float = screenWidth * 0.04f
+    private val bulletSize: Float = powerUpSize * 0.6f
 
     private var projectileType = projectileType_
 
@@ -25,27 +29,27 @@ class Projectile(val gameActivity: GameActivity, position_: Vector2, velocity_: 
         // Setting texture
         when (projectileType) {
             ProjectileType.Player -> {
-                colliderScale = Vector2(35F, 35F)
+                colliderScale = Vector2(bulletSize, bulletSize)
                 renderObject.setImageResource(R.drawable.player_bullet)
             }
             ProjectileType.Enemy -> {
-                colliderScale = Vector2(35F, 35F)
+                colliderScale = Vector2(bulletSize, bulletSize)
                 renderObject.setImageResource(R.drawable.enemy_bullet)
             }
             ProjectileType.DamageBoost -> {
-                colliderScale = Vector2(50F, 50F)
+                colliderScale = Vector2(powerUpSize, powerUpSize)
                 renderObject.setImageResource(R.drawable.damage)
             }
             ProjectileType.AddHealth -> {
-                colliderScale = Vector2(50F, 50F)
+                colliderScale = Vector2(powerUpSize, powerUpSize)
                 renderObject.setImageResource(R.drawable.health)
             }
             ProjectileType.Shield -> {
-                colliderScale = Vector2(50F, 50F)
+                colliderScale = Vector2(powerUpSize, powerUpSize)
                 renderObject.setImageResource(R.drawable.shield)
             }
             ProjectileType.SpeedBoost -> {
-                colliderScale = Vector2(50F, 50F)
+                colliderScale = Vector2(powerUpSize, powerUpSize)
                 renderObject.setImageResource(R.drawable.speed)
             }
         }

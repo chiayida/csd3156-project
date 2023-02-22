@@ -8,9 +8,17 @@
     <string name="_Highscore">HIGHSCORE </string>
     <string name="_Nil">-- </string>
     <string name="_Continue">CONTINUE?</string>
+    <string name="_ContinueBtn">CONTINUE</string>
     <string name="_YES">YES</string>
     <string name="_NO">NO</string>
     <string name="todo">TODO</string>
     <string name="_Team">Team Members:\n\nChia Yi Da\n\nReuven Tan\n\nOw Jian Wen\n\nJonathan Lim</string>
     <string name="_Instructor">Instructor:\n\nChen Kan</string>
+    <string name="_HealthUI">Player Health: %d</string>
+    <string name="_ScoreUI">Current score: %d</string>
+    <string name="_PAUSED">PAUSED</string>
+    <string name="_RESTART">RESTART</string>
+    <string name="_ConfirmRestart">Confirm Restart the game?</string>
+    <string name="_ConfirmMMenu">Confirm return to the Main Menu?</string>
+    <string name="_Confirm">CONFIRM?</string>
 </resources>

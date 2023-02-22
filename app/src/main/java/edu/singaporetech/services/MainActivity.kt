@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         toggleContinue(false)
-        soundSys.InitializeSounds()
+        soundSys.initializeSounds()
 
         // Flag to determine "continue" prompt
         flag = intent.getBooleanExtra("flag", false)
@@ -87,13 +87,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        soundSys.StopSounds()
+        soundSys.stopSounds()
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
-        soundSys.ReleaseSounds()
+        soundSys.releaseSounds()
     }
 
 

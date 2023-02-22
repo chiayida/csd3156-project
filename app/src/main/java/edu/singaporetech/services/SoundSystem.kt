@@ -9,10 +9,10 @@ class SoundSystem(var gameActivity: AppCompatActivity)  {
     private lateinit var pew2SFX : MediaPlayer
     private lateinit var clickSFX : MediaPlayer
     private lateinit var gameBGM : MediaPlayer
-    private lateinit var pdamagedSFX : MediaPlayer
-    private lateinit var edamagedSFX : MediaPlayer
+    private lateinit var playerDamagedSFX : MediaPlayer
+    private lateinit var enmeyDamagedSFX : MediaPlayer
 
-    fun InitializeSounds(){
+    fun initializeSounds(){
 
         // INIT SOUNDS
         pewSFX = MediaPlayer.create(gameActivity, R.raw.pew1)
@@ -21,22 +21,22 @@ class SoundSystem(var gameActivity: AppCompatActivity)  {
         pew2SFX.setVolume(0.35f, 0.35f)
         clickSFX = MediaPlayer.create(gameActivity, R.raw.button_select)
         gameBGM = MediaPlayer.create(gameActivity, R.raw.game_bgm)
-        pdamagedSFX = MediaPlayer.create(gameActivity, R.raw.explode)
-        pdamagedSFX.setVolume(0.35f, 0.35f)
-        edamagedSFX = MediaPlayer.create(gameActivity, R.raw.explode)
-        edamagedSFX.setVolume(0.35f, 0.35f)
+        playerDamagedSFX = MediaPlayer.create(gameActivity, R.raw.explode)
+        playerDamagedSFX.setVolume(0.35f, 0.35f)
+        enmeyDamagedSFX = MediaPlayer.create(gameActivity, R.raw.explode)
+        enmeyDamagedSFX.setVolume(0.35f, 0.35f)
 
     }
-    fun StopSounds(){
+    fun stopSounds(){
         gameBGM.stop()
     }
-    fun ReleaseSounds(){
+    fun releaseSounds(){
         pewSFX.release()
         pew2SFX.release()
         clickSFX.release()
         gameBGM.release()
-        pdamagedSFX.release()
-        edamagedSFX.release()
+        playerDamagedSFX.release()
+        enmeyDamagedSFX.release()
     }
 
     fun playGameBGM(){
@@ -56,10 +56,10 @@ class SoundSystem(var gameActivity: AppCompatActivity)  {
 
     fun playDamageSFX(isPlayer : Boolean){
         if(isPlayer){
-            pdamagedSFX.start()
+            playerDamagedSFX.start()
         }
         else{
-            edamagedSFX.start()
+            enmeyDamagedSFX.start()
         }
     }
 

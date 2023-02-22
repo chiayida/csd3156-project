@@ -23,7 +23,7 @@ class HighscoreActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHighscoreBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        soundSys.InitializeSounds()
+        soundSys.initializeSounds()
         // Get repository
         myRepository = MyRepository(this.applicationContext)
 
@@ -82,6 +82,6 @@ class HighscoreActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        soundSys.ReleaseSounds()
+        soundSys.releaseSounds()
     }
 }

@@ -4,6 +4,8 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     private val screenWidth: Float = (gameActivity.resources.displayMetrics.widthPixels).toFloat()
     private val screenHeight: Float = (gameActivity.resources.displayMetrics.heightPixels).toFloat()
 
+    private val size: Float = screenWidth * 0.07f
+
     var projectileDamage: Int = 1
     var enemyProjectileSpeed: Float = 0.5f
     val shoot: Shoot = Shoot(gameActivity, 1000F, enemyProjectileSpeed,
@@ -14,7 +16,7 @@ class Enemy(gameActivity: GameActivity) : Entity() {
     //Initializing the entity variables
     init {
         position = Vector2(screenWidth / 2, screenHeight / 5)
-        colliderScale = Vector2(100F, 100F)
+        colliderScale = Vector2(size, size)
         speed = 0.5F
         velocity.x = speed
 

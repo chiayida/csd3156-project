@@ -1,10 +1,10 @@
 package edu.singaporetech.services
 
 interface OnGameEngineUpdate{
-    fun GameLogicInit()
-    fun PhysicsInit()
-    fun OnPhysicsUpdate(dt : Float)
-    fun OnGameLogicUpdate(dt : Float)
+    fun gameLogicInit()
+    fun physicsInit()
+    fun onPhysicsUpdate(dt : Float)
+    fun onGameLogicUpdate(dt : Float)
 }
 
 class GameEngine constructor( val updateInterval: Long, private val listener: OnGameEngineUpdate  ) {
@@ -13,50 +13,50 @@ class GameEngine constructor( val updateInterval: Long, private val listener: On
     private var fpsTime = System.currentTimeMillis()
     private var deltaTime: Float = 0f
     fun getDeltaTime(): Float { return deltaTime }
-    private var frames = 0
-    private var FPS = 0
-    fun getFPS(): Int { return FPS }
-    private var FPSUpdated = false
-    fun getFPSUpdated(): Boolean { return FPSUpdated }
+    private var frames: Int = 0
+    private var fps: Int = 0
+    fun getFPS(): Int { return fps }
+    private var fpsUpdated = false
+    fun getFPSUpdated(): Boolean { return fpsUpdated }
 
     private var paused : Boolean = false
     fun setPaused(_Pause : Boolean) {paused = _Pause}
     fun getPaused() : Boolean {return paused}
 
-    fun EngineInit() {
-        SystemsInit()
+    fun engineInit() {
+        systemsInit()
     }
-    fun EngineUpdate() {
+    fun engineUpdate() {
 
         frames++
         deltaTime = (System.currentTimeMillis() - previousTime).toFloat()
         previousTime = System.currentTimeMillis()
-        FPSUpdated = false
+        fpsUpdated = false
 
         if (System.currentTimeMillis() - fpsTime >= 1000) {
-            FPSUpdated = true
-            FPS = frames
+            fpsUpdated = true
+            fps = frames
             frames = 0
             fpsTime = System.currentTimeMillis()
         }
 
         if(paused) return
-        SystemsUpdate(deltaTime)
+        systemsUpdate(deltaTime)
     }
     /*
     *
     * */
-    private fun SystemsInit() {
-        listener?.GameLogicInit()
-        listener?.PhysicsInit()
+    private fun systemsInit() {
+        listener.gameLogicInit()
+        listener.physicsInit()
     }
 
     /*
     *
     * */
-    private fun SystemsUpdate(dt : Float) {
-        listener?.OnGameLogicUpdate(dt)
-        listener?.OnPhysicsUpdate(dt)
+    private fun systemsUpdate(dt : Float) {
+        listener.onGameLogicUpdate(dt)
+        listener.onPhysicsUpdate(dt)
     }
 
 

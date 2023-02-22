@@ -16,7 +16,7 @@ class CreditsActivity : AppCompatActivity() {
         binding = ActivityCreditsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        soundSys.InitializeSounds()
+        soundSys.initializeSounds()
         // Upon clicking, user will go to MainActivity
         binding.backButton.setOnClickListener {
             soundSys.playClick()
@@ -26,6 +26,6 @@ class CreditsActivity : AppCompatActivity() {
     }
     override fun onDestroy() {
         super.onDestroy()
-        soundSys.ReleaseSounds()
+        soundSys.releaseSounds()
     }
 }

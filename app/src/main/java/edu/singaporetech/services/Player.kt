@@ -15,10 +15,11 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val renderObject: GameSquare = GameSquare(gameActivity)
 
     //Boundaries to prevent the player from moving out of the screen.
-    private val minXPos: Float = 100f
-    private val maxXPos: Float = (screenWidth - 100f)
-    private val minYPos: Float = 50f
-    private val maxYPos: Float = (screenHeight - 50f)
+    private val size: Float = screenWidth * 0.07f
+    private val minXPos: Float = size
+    private val maxXPos: Float = (screenWidth - size)
+    private val minYPos: Float = size
+    private val maxYPos: Float = (screenHeight - size)
 
     var projectileDamage: Int = 1
     var texture: PlayerTexture = PlayerTexture.Default
@@ -30,7 +31,7 @@ class Player(gameActivity: GameActivity) : Entity() {
 
     //Initialization of the Entity variables
     init {
-        colliderScale = Vector2(100F, 100F)
+        colliderScale = Vector2(size, size)
         speed = 0.5F
 
         // Setting texture

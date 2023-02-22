@@ -2,6 +2,10 @@ package edu.singaporetech.services
 
 
 open class Vector2(var x: Float = 0F, var y: Float = 0F) {
+
+    // UNUSED Functions
+
+    /*
     fun copy(x: Float = this.x, y: Float = this.y) = Vector2(x, y)
 
     fun toZero() {
@@ -12,6 +16,7 @@ open class Vector2(var x: Float = 0F, var y: Float = 0F) {
     fun vec2String() : String {
         return "($x, $y)"
     }
+    */
 }
 
 // Parent class that is to be inherited by other classes

@@ -8,14 +8,15 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import edu.singaporetech.services.databinding.ActivityGameBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.pow
@@ -24,10 +25,10 @@ import kotlin.math.pow
 class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdate {
     val gameActivity: GameActivity = this
 
-    private lateinit var binding: ActivityGameBinding
+    //private lateinit var binding: ActivityGameBinding
     // ENGINE
-    private var FPSCap = 1L
-    private var engine = GameEngine(FPSCap, this)
+    private var fpsCap = 1L
+    private var engine = GameEngine(fpsCap, this)
     private var screenWidth: Float = 0F
     private var screenHeight: Float = 0f
 
@@ -38,10 +39,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
     private lateinit var gamePlayer: Player
     private lateinit var gameEnemy: Enemy
     private lateinit var powerUp: PowerUp
-    private var Enemies: MutableList<Enemy> = mutableListOf()
+    private var enemies: MutableList<Enemy> = mutableListOf()
 
 
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     // GAME UI OBJECTS
     private lateinit var playerHealthView: TextView
@@ -82,7 +83,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         override fun run() {
             // Perform tasks here when the activity is updated
-            engine.EngineUpdate()
+            engine.engineUpdate()
             handler.postDelayed(this, engine.updateInterval)
         }
     }
@@ -179,18 +180,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
         //Setting the GAME UI OBJECTS Values and position
         playerHealthView = TextView(this)
-        playerHealthView.text = "Player Health: " + gamePlayer.health
+        playerHealthView.text = resources.getString(R.string._HealthUI, gamePlayer.health)
         playerHealthView.textSize = 25f
-        playerHealthView.setTextColor(resources.getColor(R.color.text_color))
+        playerHealthView.setTextColor(ContextCompat.getColor(this, R.color.text_color))
         playerHealthView.x = screenWidth * 0.3f
         playerHealthView.y = screenHeight * 0.065f
         playerHealthView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
         addContentView(playerHealthView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         currentScoreView = TextView(this)
-        currentScoreView.text = "Current score: " + gamePlayer.score
+        currentScoreView.text = resources.getString(R.string._ScoreUI, gamePlayer.score)
         currentScoreView.textSize = 25f
-        currentScoreView.setTextColor(resources.getColor(R.color.text_color))
+        currentScoreView.setTextColor(ContextCompat.getColor(this, R.color.text_color))
         currentScoreView.x = screenWidth * 0.3f
         currentScoreView.y = screenHeight * 0.025f
         currentScoreView.typeface = ResourcesCompat.getFont(this, R.font.aldotheapache)
@@ -202,13 +203,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             isShoot = true
         }
 
-        soundSys.InitializeSounds()
+        soundSys.initializeSounds()
         soundSys.playGameBGM()
-        engine.EngineInit()
+        engine.engineInit()
 
         val flag = intent.getBooleanExtra("Resume", false)
         if(flag){
-            engine.EngineUpdate()
+            engine.engineUpdate()
             engine.setPaused(true)
             togglePauseView(true)
         }
@@ -233,12 +234,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
 
     override fun onStop() {
         super.onStop()
-        soundSys.StopSounds()
-        soundSys.ReleaseSounds()
+        soundSys.stopSounds()
+        soundSys.releaseSounds()
     }
     override fun onPause() {
         super.onPause()
-        soundSys.StopSounds()
+        soundSys.stopSounds()
         engine.setPaused(true)
         if (!isDead) togglePauseView(true)
         // Unregister the listener
@@ -329,7 +330,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         super.onDestroy()
     }
 
-    var directionSpeed:Float = 1.5f
+    //var directionSpeed:Float = 1.5f
     var currentOrientation:Float = 0.0f
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
@@ -346,39 +347,23 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 gamePlayer.velocity.x = -gamePlayer.speed
         }
     }
-    private val alpha = 0.8f // Filter coefficient
-    private var lastValues = floatArrayOf(0f, 0f, 0f)
-
-    private fun applyFilteringTechniques(values: FloatArray): FloatArray {
-        val filteredValues = FloatArray(3)
-
-        // Apply a low-pass filter to the raw data
-        filteredValues[0] = alpha * lastValues[0] + (1 - alpha) * values[0]
-        filteredValues[1] = alpha * lastValues[1] + (1 - alpha) * values[1]
-        filteredValues[2] = alpha * lastValues[2] + (1 - alpha) * values[2]
-
-        // Save the filtered values for the next iteration
-        lastValues = filteredValues
-
-        return filteredValues
-    }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
-    override fun GameLogicInit(){
-        Enemies.add(gameEnemy)
+    override fun gameLogicInit(){
+        enemies.add(gameEnemy)
     }
 
-    override fun PhysicsInit(){
+    override fun physicsInit(){
     }
 
-    override fun OnPhysicsUpdate(dt : Float){
+    override fun onPhysicsUpdate(dt : Float){
         // COLLISION CHECK
-        if(Enemies.isNotEmpty()){
-            for(k in Enemies.indices) {
+        if(enemies.isNotEmpty()){
+            for(k in enemies.indices) {
                 val toBeDeleted: MutableList<Projectile> = mutableListOf()
-                for(projectile in Enemies[k].shoot.projectiles){
+                for(projectile in enemies[k].shoot.projectiles){
                     val projMIN = Vector2(projectile.getColliderMin().x , projectile.getColliderMin().y)
                     val projMAX = Vector2(projectile.getColliderMax().x , projectile.getColliderMax().y)
                     val projAABB = AABB(projMIN, projMAX)
@@ -411,7 +396,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 }
                 for (projectile in toBeDeleted) {
                     GameSquare.toBeDeleted.add(projectile.renderObject)
-                    Enemies[k].shoot.projectiles.remove(projectile)
+                    enemies[k].shoot.projectiles.remove(projectile)
                 }
             }
         }
@@ -423,21 +408,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
                 val projMAX = Vector2(projectile.getColliderMax().x, projectile.getColliderMax().y)
                 val projAABB = AABB(projMIN, projMAX)
                 // else if it is the player's projectile, check collision with All ENEMIES
-                if(Enemies.isNotEmpty()) {
-                    for (j in Enemies.indices) {
+                if(enemies.isNotEmpty()) {
+                    for (j in enemies.indices) {
                         val enemyMIN =
-                            Vector2(Enemies[j].getColliderMin().x, Enemies[j].getColliderMin().y)
+                            Vector2(enemies[j].getColliderMin().x, enemies[j].getColliderMin().y)
                         val enemyMAX =
-                            Vector2(Enemies[j].getColliderMax().x, Enemies[j].getColliderMax().y)
+                            Vector2(enemies[j].getColliderMax().x, enemies[j].getColliderMax().y)
                         val enemyAABB = AABB(enemyMIN, enemyMAX)
                         if (Physics.collisionIntersectionRectRect(
                                 projAABB, projectile.velocity,
-                                enemyAABB, Enemies[j].velocity, dt
+                                enemyAABB, enemies[j].velocity, dt
                             )
                         ){
                             toBeDeleted.add(projectile)
                             gamePlayer.score += gamePlayer.projectileDamage * 10
-                            currentScoreView.text = "Current score: " + gamePlayer.score
+                            currentScoreView.text = resources.getString(R.string._ScoreUI, gamePlayer.score)
                             soundSys.playDamageSFX(false)
                         }
                     }
@@ -492,18 +477,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         // MOVEMENT UPDATE
         gamePlayer.updateProjectilesPosition(dt)
         powerUp.updateProjectilesPosition(dt)
-        if(Enemies.isNotEmpty()) {
-            for (i in Enemies.indices) {
-                Enemies[i].updateProjectilesPosition(dt)
-                Enemies[i].updatePosition(dt)
+        if(enemies.isNotEmpty()) {
+            for (i in enemies.indices) {
+                enemies[i].updateProjectilesPosition(dt)
+                enemies[i].updatePosition(dt)
             }
         }
         gamePlayer.updatePosition(dt)
         powerUp.updatePosition(dt)
     }
 
-    override fun OnGameLogicUpdate(dt : Float){
-        playerHealthView.text = "Player Health: " + gamePlayer.health
+    override fun onGameLogicUpdate(dt : Float){
+        playerHealthView.text = resources.getString(R.string._HealthUI, gamePlayer.health)
 
         gameEnemy.update(dt)
         if(gamePlayer.shieldDuration > 0f) gamePlayer.shieldDuration -= dt/1000f
@@ -581,7 +566,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         pauseButton = Button(this)
         pauseButton.x = screenWidth * 0.05f
         pauseButton.y = pauseButton.x
-        var size : Int = (screenWidth * 0.15f).toInt()
+        val size : Int = (screenWidth * 0.15f).toInt()
         pauseButton.setBackgroundResource(android.R.drawable.ic_media_pause)
         addContentView(pauseButton, ViewGroup.LayoutParams(size,size))
         pauseButton.setOnClickListener{
@@ -597,8 +582,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
         
         pauseText = TextView(this)
-        pauseText.text = "PAUSED"
-        pauseText.setTextColor(resources.getColor(R.color.text_color))
+        pauseText.text = resources.getString(R.string._PAUSED)
+        pauseText.setTextColor(ContextCompat.getColor(this, R.color.text_color))
         pauseText.visibility = View.INVISIBLE
         pauseText.x = 0f
         pauseText.y = screenHeight * 0.3f
@@ -612,7 +597,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         val btHeight = (btWidth * 0.3f).toInt()
         restartButton.x = screenWidth * 0.5f - btWidth * 0.5f
         restartButton.y = screenHeight * 0.53f
-        restartButton.text = "RESTART"
+        restartButton.text = resources.getString(R.string._RESTART)
         restartButton.textSize = 30f
         restartButton.visibility = View.INVISIBLE
         restartButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
@@ -620,7 +605,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         addContentView(restartButton, ViewGroup.LayoutParams(btWidth, btHeight))
         restartButton.setOnClickListener{
             isRestartShow = true
-            confirmationText.text = "Confirm Restart the game?"
+            confirmationText.text = resources.getString(R.string._ConfirmRestart)
             toggleConfirmationView(true)
             togglePauseView(false)
             soundSys.playClick()
@@ -629,7 +614,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         returnMMButton = Button(this)
         returnMMButton.x = screenWidth * 0.5f - btWidth * 0.5f
         returnMMButton.y = screenHeight * 0.61f
-        returnMMButton.text = "Main Menu"
+        returnMMButton.text =  resources.getString(R.string._MainMenu)
         returnMMButton.textSize = 30f
         returnMMButton.visibility = View.INVISIBLE
         returnMMButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
@@ -637,7 +622,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         addContentView(returnMMButton, ViewGroup.LayoutParams(btWidth, btHeight))
         returnMMButton.setOnClickListener{
             isRestartShow = false
-            confirmationText.text = "Confirm return to the Main Menu?"
+            confirmationText.text = resources.getString(R.string._ConfirmMMenu)
             toggleConfirmationView(true)
             togglePauseView(false)
             soundSys.playClick()
@@ -646,7 +631,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         continueButton = Button(this)
         continueButton.x = screenWidth * 0.5f - btWidth * 0.5f
         continueButton.y = screenHeight * 0.45f
-        continueButton.text = "CONTINUE"
+        continueButton.text = resources.getString(R.string._ContinueBtn)
         continueButton.textSize = 30f
         continueButton.visibility = View.INVISIBLE
         continueButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
@@ -661,7 +646,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         yesButton = Button(this)
         yesButton.x = screenWidth * 0.5f - btWidth * 0.5f
         yesButton.y = screenHeight * 0.5f
-        yesButton.text = "YES"
+        yesButton.text = resources.getString(R.string._YES)
         yesButton.textSize = 30f
         yesButton.visibility = View.INVISIBLE
         yesButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
@@ -686,7 +671,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         noButton = Button(this)
         noButton.x = screenWidth * 0.5f - btWidth * 0.5f
         noButton.y = screenHeight * 0.58f
-        noButton.text = "NO"
+        noButton.text = resources.getString(R.string._NO)
         noButton.textSize = 30f
         noButton.visibility = View.INVISIBLE
         noButton.setBackgroundResource(android.R.drawable.editbox_dropdown_light_frame)
@@ -699,9 +684,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         }
 
         confirmationText = TextView(this)
-        confirmationText.text = "CONFIRM?"
+        confirmationText.text = resources.getString(R.string._Confirm)
         confirmationText.textSize = 40f
-        confirmationText.setTextColor(resources.getColor(R.color.text_color))
+        confirmationText.setTextColor(ContextCompat.getColor(this, R.color.text_color))
         confirmationText.visibility = View.INVISIBLE
         confirmationText.x = 0f
         confirmationText.y = screenHeight * 0.375f
@@ -709,4 +694,25 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         confirmationText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         addContentView(confirmationText, ViewGroup.LayoutParams(screenWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT))
     }
+
+    // UNUSED Functions
+    /*
+    private val alpha = 0.8f // Filter coefficient
+    private var lastValues = floatArrayOf(0f, 0f, 0f)
+
+
+    private fun applyFilteringTechniques(values: FloatArray): FloatArray {
+        val filteredValues = FloatArray(3)
+
+        // Apply a low-pass filter to the raw data
+        filteredValues[0] = alpha * lastValues[0] + (1 - alpha) * values[0]
+        filteredValues[1] = alpha * lastValues[1] + (1 - alpha) * values[1]
+        filteredValues[2] = alpha * lastValues[2] + (1 - alpha) * values[2]
+
+        // Save the filtered values for the next iteration
+        lastValues = filteredValues
+
+        return filteredValues
+    }
+    */
 }
