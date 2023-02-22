@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -327,15 +328,38 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         soundSys.ReleaseSounds()
     }
 
+    var directionSpeed:Float = 1.5f
+    var currentOrientation:Float = 0.0f
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
             // Get the three values for the gyroscope
-            val y = event.values[1]
-            if(y > 0.1)
+            var y = event.values[1]
+            if(y == -6.1086525E-4F || y == 6.1086525E-4F)
+                y = 0F
+            val deltaOrientationY = y * event.timestamp
+            currentOrientation += deltaOrientationY
+            Log.d("GyroO",currentOrientation.toString())
+            if(currentOrientation > 0.1)
                 gamePlayer.velocity.x = gamePlayer.speed
-            else if (y < 0)
+            else if (currentOrientation < -0.1)
                 gamePlayer.velocity.x = -gamePlayer.speed
         }
+    }
+    private val alpha = 0.8f // Filter coefficient
+    private var lastValues = floatArrayOf(0f, 0f, 0f)
+
+    private fun applyFilteringTechniques(values: FloatArray): FloatArray {
+        val filteredValues = FloatArray(3)
+
+        // Apply a low-pass filter to the raw data
+        filteredValues[0] = alpha * lastValues[0] + (1 - alpha) * values[0]
+        filteredValues[1] = alpha * lastValues[1] + (1 - alpha) * values[1]
+        filteredValues[2] = alpha * lastValues[2] + (1 - alpha) * values[2]
+
+        // Save the filtered values for the next iteration
+        lastValues = filteredValues
+
+        return filteredValues
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {

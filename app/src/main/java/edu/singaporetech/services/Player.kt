@@ -16,8 +16,8 @@ class Player(gameActivity: GameActivity) : Entity() {
     private val renderObject: GameSquare = GameSquare(gameActivity)
 
     //Boundaries to prevent the player from moving out of the screen.
-    private val minXPos: Float = 50f
-    private val maxXPos: Float = (screenWidth - 50f)
+    private val minXPos: Float = 100f
+    private val maxXPos: Float = (screenWidth - 100f)
     private val minYPos: Float = 50f
     private val maxYPos: Float = (screenHeight - 50f)
 
