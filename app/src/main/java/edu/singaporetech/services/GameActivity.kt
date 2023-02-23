@@ -336,11 +336,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
         if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
             // Get the three values for the gyroscope
             var y = event.values[1]
-            if(y == -6.1086525E-4F || y == 6.1086525E-4F)
+            //Filtering
+            if(y == -6.1086525E-4F || y == 6.1086525E-4F ||
+                y > 0 && y < 0.1f || y < 0 && y > -0.1f)
                 y = 0F
+
             val deltaOrientationY = y * event.timestamp
             currentOrientation += deltaOrientationY
-            Log.d("GyroO",currentOrientation.toString())
             if(currentOrientation > 0.1)
                 gamePlayer.velocity.x = gamePlayer.speed
             else if (currentOrientation < -0.1)
@@ -658,8 +660,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, OnGameEngineUpdat
             if(isRestartShow){
                 isRestarting = true
                 recreate()
+
             }
             else{
+                currentOrientation = 0f
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("flag", true)
