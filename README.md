@@ -1,8 +1,8 @@
-# Space Wars - DigiPen CSD3156 (~1.5 weeks) 
+# SpaceShips - DigiPen CSD3156 (~1.5 weeks) 
 
 ## Project Description
 
-**Space Wars** is a 2D space-themed Android game built with Kotlin and Gradle. The player controls a spaceship to navigate through 
+**SpaceShips** is a 2D space-themed Android game built with Kotlin and Gradle. The player controls a spaceship to navigate through 
 waves of enemies, collecting power-ups and striving for the highest score. The game follows modern Android development practices 
 and integrates multiple libraries and tools to enhance the user experience.
 
